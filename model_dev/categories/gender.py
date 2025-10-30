@@ -13,9 +13,10 @@ def _normalize_gender(value: Any) -> str:
         return "any"
     return "unknown"
 
-def gender_weighted_results(
+def gender_results(
     mentees_df: pd.DataFrame,
     mentors_df: pd.DataFrame,
+    importance_modifier: float = 1.0,
 ) -> Dict[Tuple[int, int], float]:
     """
     Compute weighted pairing scores between mentees and mentors based on gender.
@@ -71,6 +72,6 @@ def gender_weighted_results(
             else:
                 score = 0.0
 
-            result[(mentee_id, mentor_id)] = score
+            result[(mentee_id, mentor_id)] = score * importance_modifier
 
     return result

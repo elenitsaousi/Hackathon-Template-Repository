@@ -34,9 +34,16 @@ def run_all_categories(
     print(mentors_df.columns)
     print(mentees_df["Gender"].head(2))
     print(mentors_df["Geschlecht / Gender"].head(2))
+    
+    # Importance modifiers
+    importance_modifiers = {
+        "gender": 1.0,
+    }
 
-    # Gender scoring (weighted)
-    gender_results = gender.gender_weighted_results(mentees_df, mentors_df)
+    # Output formats Dict[Tuple[int, int], float] - (mentee_id, mentor_id) -> score
+
+    # Gender
+    gender_results = gender.gender_results(mentees_df=mentees_df, mentors_df=mentors_df, importance_modifier=importance_modifiers["gender"])
 
     return {"gender": gender_results}
 
