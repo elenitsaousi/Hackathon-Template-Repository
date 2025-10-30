@@ -48,8 +48,22 @@ def run_all_categories(
     return {"gender": gender_results}
 
 
+
 if __name__ == "__main__":
     output = run_all_categories()
     print(output)
+
+    # Convert tuple keys to strings before saving
+    output_serializable = {
+        cat: {f"{m}-{n}": score for (m, n), score in results.items()}
+        for cat, results in output.items()
+    }
+
+    with open(BASE_DIR / "results.json", "w") as f:
+        json.dump(output_serializable, f, indent=2)
+
+    print("Results saved to results.json")
+
+
 
 
