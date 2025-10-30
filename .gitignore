@@ -10,6 +10,11 @@ output/
 # Logs
 logs/
 
+# Cache
+temp/
+
 .pytest_cache/
 
 .venv/
+
+.env*

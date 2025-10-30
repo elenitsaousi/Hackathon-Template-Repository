@@ -3,12 +3,14 @@ from typing import Any, Dict
 try:
     from model_dev.categories import gender
     from model_dev.categories import age_difference
+    from model_dev.categories import geographic_proximity
 except ModuleNotFoundError:
     # Allow running this file directly: python model_dev/main.py
     import sys
     sys.path.append(str(Path(__file__).resolve().parent.parent))
     from model_dev.categories import gender
     from model_dev.categories import age_difference
+    from model_dev.categories import geographic_proximity
 import pandas as pd
 
 
@@ -40,6 +42,7 @@ def run_all_categories(
     importance_modifiers = {
         "gender": 1.0,
         "age_difference": 1.0,
+        "geographic_proximity": 1.0,
     }
 
     # Output formats Dict[Tuple[int, int], float] - (mentee_id, mentor_id) -> score
@@ -54,7 +57,18 @@ def run_all_categories(
         importance_modifier=importance_modifiers["age_difference"],
     )
 
-    return {"gender": gender_results, "age_difference": age_results}
+    # Geographic Proximity (minimize)
+    geo_results = geographic_proximity.geographic_proximity_results(
+        mentees_df=mentees_df,
+        mentors_df=mentors_df,
+        importance_modifier=importance_modifiers["geographic_proximity"],
+    )
+
+    return {
+        "gender": gender_results,
+        "age_difference": age_results,
+        "geographic_proximity": geo_results,
+    }
 
 
 if __name__ == "__main__":
