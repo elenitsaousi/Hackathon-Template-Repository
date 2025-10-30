@@ -19,57 +19,53 @@ def gender_results(
     importance_modifier: float = 1.0,
 ) -> Dict[Tuple[int, int], float]:
     """
-    Compute weighted pairing scores between mentees and mentors based on gender.
+    Compute weighted pairing scores between mentees and mentors based on gender columns:
+    - mentee's gender,
+    - desired gender of mentor,
+    - mentor's own gender.
 
     Scoring rules:
     - 1.0 when mentee's desired gender exactly matches mentor's gender
-    - 0.5 when desired gender is "any" and mentor gender is known (male/female)
+    - 0.5 when desired gender is "any" and mentor gender equivalent to mentee's gender
     - 0.0 when either side is unknown or no rule applies
-    - -inf for explicit mismatch: desired male with female mentor, or desired female with male mentor
+    - -inf for explicit mismatch (desired male/female and mentor gender is not the same)
     """
+
     mentee_id_col = "Mentee Number"
     mentor_id_col = "Mentor Number"
     mentor_gender_col = "Geschlecht / Gender"
     mentor_desired_gender_col = "Desired gender of mentor"
+    mentee_gender_col = "Gender"
 
-    # Normalize genders for all mentors for fast lookup
-    mentor_gender_lookup: Dict[int, str] = {}
-    for _, mentor_row in mentors_df.iterrows():
-        mentor_id = mentor_row.get(mentor_id_col)
-        mentor_gender = _normalize_gender(mentor_row.get(mentor_gender_col))
-        mentor_gender_lookup[mentor_id] = mentor_gender
+    result = {}
 
-    # Normalize desired gender for all mentees for fast lookup
-    mentee_desired_gender_lookup: Dict[int, str] = {}
-    for _, mentee_row in mentees_df.iterrows():
-        mentee_id = mentee_row.get(mentee_id_col)
-        desired_gender = _normalize_gender(mentee_row.get(mentor_desired_gender_col))
-        mentee_desired_gender_lookup[mentee_id] = desired_gender
+    for mentee_idx, mentee_row in mentees_df.iterrows():
+        mentee_id = mentee_row[mentee_id_col]
+        mentee_gender = _normalize_gender(mentee_row.get(mentee_gender_col, None))
+        mentee_desired_gender = _normalize_gender(mentee_row.get(mentor_desired_gender_col, None))
 
-    result: Dict[Tuple[int, int], float] = {}
+        for mentor_idx, mentor_row in mentors_df.iterrows():
+            mentor_id = mentor_row[mentor_id_col]
+            mentor_gender = _normalize_gender(mentor_row.get(mentor_gender_col, None))
 
-    # Compute scores for all mentee-mentor pairs directly
-    for _, mentee_row in mentees_df.iterrows():
-        mentee_id = mentee_row.get(mentee_id_col)
-        desired = mentee_desired_gender_lookup.get(mentee_id, "unknown")
+            score = 0.0
 
-        for _, mentor_row in mentors_df.iterrows():
-            mentor_id = mentor_row.get(mentor_id_col)
-            mentor_gender = mentor_gender_lookup.get(mentor_id, "unknown")
-            
-            print(f"Mentee {mentee_id} desired {desired} mentor {mentor_id} gender {mentor_gender}")
-
-            if desired == "unknown" or mentor_gender == "unknown":
+            # Either side unknown, can't score; keep at 0.0
+            if mentee_desired_gender == "unknown" or mentor_gender == "unknown":
                 score = 0.0
-            elif desired == "any":
-                score = 0.5 if mentor_gender in ("male", "female") else 0.0
-            elif desired == mentor_gender:
-                score = 1.0
-            elif (desired == "male" and mentor_gender == "female") or (
-                desired == "female" and mentor_gender == "male"
-            ):
-                score = float("-inf")
+            elif mentee_desired_gender in ["male", "female"]:
+                if mentor_gender == mentee_desired_gender:
+                    score = 1.0
+                else:
+                    score = float('-inf')
+            elif mentee_desired_gender == "any":
+                # Give half score if mentee and mentor have same gender (optionally)
+                if mentee_gender != "unknown" and mentor_gender == mentee_gender:
+                    score = 0.5
+                else:
+                    score = 0.0
             else:
+                # No scoring rule applies
                 score = 0.0
 
             result[(mentee_id, mentor_id)] = score * importance_modifier
