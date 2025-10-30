@@ -42,11 +42,16 @@ def gender_results(
             # Default: no match
             score = 0.0
 
-            # If mentee explicitly specifies a gender → check match
+            # Explicit gender preference
             if mentee_pref in ["male", "female"]:
                 if mentee_pref == mentor_gender:
                     score = 1.0
-            # If mentee says "any" or unknown → always 0.0 (no preference = no boost)
+
+            # If mentee says “doesn't matter / any / egal” → give medium weight (0.75)
+            elif mentee_pref == "any":
+                score = 0.75
+
+            # Else (unknown or mismatch) stays 0.0
 
             results[(mentee_id, mentor_id)] = score * importance_modifier
 
