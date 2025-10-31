@@ -24,7 +24,8 @@ import os
 import time
 from collections import deque
 from pathlib import Path
-from typing import Dict, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple
+
 
 import openrouteservice
 import pandas as pd
@@ -214,7 +215,10 @@ def _city_to_coords(location_str: str) -> Optional[Tuple[float, float]]:
     for attempt in range(max_retries):
         try:
             # Try Nominatim first (free, no API key needed)
-            location = _nominatim_geolocator.geocode(f"{location_str}, Switzerland")
+            query = location_str.encode("utf-8", errors="ignore").decode()
+            query = query.replace("ü", "ue").replace("ä", "ae").replace("ö", "oe")
+            location = _nominatim_geolocator.geocode(f"{query}, Switzerland")
+
             if not location:
                 # Fallback to global Nominatim search
                 location = _nominatim_geolocator.geocode(location_str)
@@ -554,117 +558,108 @@ def geographic_proximity_results(
     mentors_df: pd.DataFrame,
     importance_modifier: float = 1.0,
     ors_api_key: Optional[str] = None,
-) -> Dict[Tuple[int, int], float]:
+) -> Dict[Tuple[int, int], Dict[str, Any]]:
     """
-    Normalized minimize score based on driving distance where:
-    - 1.0 when distance is minimum (closest pair)
-    - 0.0 when distance is maximum (farthest pair) across all calculated distances
-    
-    If either location cannot be geocoded or distance cannot be calculated, score is 0.0.
-    
-    Args:
-        mentees_df: DataFrame with mentee data
-        mentors_df: DataFrame with mentor data
-        importance_modifier: Weight multiplier for scores
-        ors_api_key: OpenRouteService API key. If None, tries to load from OPEN_ROUTE_SERVICE env var
+    Compute geographic proximity between mentees and mentors.
+    Returns a structured dictionary with score, cities, and fallback handling.
     """
-    
+
     mentee_id_col = "Mentee Number"
     mentor_id_col = "Mentor Number"
     mentor_address_col = "Postadresse / Postal address"
     mentee_city_col = "Residence (city)"
-    
-    # Get API key from parameter or environment
+
+    # --- Load API key ---
     api_key = ors_api_key or os.getenv("OPEN_ROUTE_SERVICE")
     ors_client = None
     if api_key:
-        ors_client = openrouteservice.Client(key=api_key)
+        try:
+            ors_client = openrouteservice.Client(key=api_key)
+        except Exception as e:
+            print(f"⚠️ Warning: Could not initialize OpenRouteService client: {e}")
     else:
-        # Return empty results if no API key
-        return {}
-    
-    # Precompute coordinates for all locations
+        print("⚠️ No OPEN_ROUTE_SERVICE key found in .env, skipping API routing.")
+        ors_client = None
+
+    # --- Precompute coordinates for all locations ---
     print("\n=== MENTEE LOCATIONS ===")
-    mentee_coords = []
+    mentee_coords, mentee_cities = [], []
     for _, row in mentees_df.iterrows():
-        city = row.get(mentee_city_col, None)
+        city = str(row.get(mentee_city_col, "")).strip()
         mentee_id = row.get(mentee_id_col, None)
         print(f"\n[Mentee {mentee_id}]")
-        coords = _city_to_coords(city if city is not None else "")
+        coords = _city_to_coords(city)
         mentee_coords.append(coords)
-    
+        mentee_cities.append(city)
+
     print("\n=== MENTOR LOCATIONS ===")
-    mentor_coords = []
+    mentor_coords, mentor_cities = [], []
     for _, row in mentors_df.iterrows():
-        address = row.get(mentor_address_col, None)
+        address = str(row.get(mentor_address_col, "")).strip()
         mentor_id = row.get(mentor_id_col, None)
         print(f"\n[Mentor {mentor_id}]")
-        coords = _city_to_coords(address if address is not None else "")
+        coords = _city_to_coords(address)
         mentor_coords.append(coords)
-    
-    # Calculate all distances with caching
+        mentor_cities.append(address)
+
+    # --- Compute distances ---
     print("\n=== CALCULATING DISTANCES ===")
     all_distances: list[float] = []
-    
-    for mentee_idx, mentee_row in mentees_df.iterrows():
-        mentee_id = mentee_row[mentee_id_col]
-        mentee_coord = mentee_coords[mentee_idx]
-        
-        for mentor_idx, mentor_row in mentors_df.iterrows():
-            mentor_id = mentor_row[mentor_id_col]
-            mentor_coord = mentor_coords[mentor_idx]
-            
-            if mentee_coord is not None and mentor_coord is not None:
-                # Use cache key for checking/adding to all_distances
-                cache_key_str = _cache_key_for_coords(mentee_coord, mentor_coord)
-                
-                # Check if already in global cache
-                if cache_key_str in _distance_cache:
-                    dist = _distance_cache[cache_key_str]
-                else:
-                    # This will check cache internally and save new results
-                    dist = _driving_distance_km(
-                        mentee_coord, mentor_coord, ors_client, 
-                        mentee_id=mentee_id, mentor_id=mentor_id
-                    )
-                
-                if dist is not None:
-                    all_distances.append(dist)
-    
-    if not all_distances:
-        return {}
-    
-    min_dist = min(all_distances)
-    max_dist = max(all_distances)
-    dist_range = max_dist - min_dist
-    print(f"\nDistance range: min={min_dist:.2f} km, max={max_dist:.2f} km, range={dist_range:.2f} km")
-    
-    # Now calculate scores
-    print("\n=== CALCULATING SCORES ===")
-    results: Dict[Tuple[int, int], float] = {}
-    
-    for mentee_idx, mentee_row in mentees_df.iterrows():
-        mentee_id = mentee_row[mentee_id_col]
-        mentee_coord = mentee_coords[mentee_idx]
-        
-        for mentor_idx, mentor_row in mentors_df.iterrows():
-            mentor_id = mentor_row[mentor_id_col]
-            mentor_coord = mentor_coords[mentor_idx]
-            
-            score = 0.0
-            if mentee_coord is not None and mentor_coord is not None:
-                cache_key_str = _cache_key_for_coords(mentee_coord, mentor_coord)
-                dist = _distance_cache.get(cache_key_str)
-                
-                if dist is not None:
-                    if dist_range > 0:
-                        # Normalized minimize: 1.0 for min distance, 0.0 for max distance
-                        score = max(0.0, 1.0 - ((dist - min_dist) / dist_range))
-                    else:
-                        # All distances are the same
-                        score = 1.0
-            
-            results[(mentee_id, mentor_id)] = score * importance_modifier
-    
-    return results
 
+    for mentee_idx, mentee_row in mentees_df.iterrows():
+        mentee_coord = mentee_coords[mentee_idx]
+        mentee_id = mentee_row[mentee_id_col]
+
+        for mentor_idx, mentor_row in mentors_df.iterrows():
+            mentor_coord = mentor_coords[mentor_idx]
+            mentor_id = mentor_row[mentor_id_col]
+
+            if mentee_coord is None or mentor_coord is None:
+                continue
+
+            cache_key = _cache_key_for_coords(mentee_coord, mentor_coord)
+            dist = _distance_cache.get(cache_key)
+
+            if dist is None:
+                dist = _driving_distance_km(
+                    mentee_coord, mentor_coord, ors_client, mentee_id, mentor_id
+                )
+
+            if dist is not None and math.isfinite(dist):
+                all_distances.append(dist)
+
+    if not all_distances:
+        print("⚠️ No valid distances found.")
+        return {}
+
+    min_dist, max_dist = min(all_distances), max(all_distances)
+    dist_range = max(max_dist - min_dist, 1e-6)
+    print(f"\nDistance range: min={min_dist:.2f} km, max={max_dist:.2f} km, range={dist_range:.2f} km")
+
+    # --- Compute normalized scores ---
+    results: Dict[Tuple[int, int], Dict[str, Any]] = {}
+    for mentee_idx, mentee_row in mentees_df.iterrows():
+        mentee_id = mentee_row[mentee_id_col]
+        mentee_coord = mentee_coords[mentee_idx]
+        mentee_city = mentee_cities[mentee_idx]
+
+        for mentor_idx, mentor_row in mentors_df.iterrows():
+            mentor_id = mentor_row[mentor_id_col]
+            mentor_coord = mentor_coords[mentor_idx]
+            mentor_city = mentor_cities[mentor_idx]
+
+            score = 0.0
+            if mentee_coord and mentor_coord:
+                cache_key = _cache_key_for_coords(mentee_coord, mentor_coord)
+                dist = _distance_cache.get(cache_key)
+                if dist is not None and math.isfinite(dist):
+                    score = max(0.0, 1.0 - ((dist - min_dist) / dist_range))
+
+            results[(mentee_id, mentor_id)] = {
+                "distance_score": round(score * importance_modifier, 3),
+                "mentee_city": mentee_city or "unknown",
+                "mentor_city": mentor_city or "unknown",
+            }
+
+    print(f"\n✅ Geographic proximity computed for {len(results)} mentor–mentee pairs.")
+    return results

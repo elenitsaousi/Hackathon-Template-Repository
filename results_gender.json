@@ -1,104 +1,604 @@
 {
   "gender": {
-    "1-1": 0.75,
-    "1-2": 0.75,
-    "1-3": 0.75,
-    "1-4": 0.75,
-    "1-5": 0.75,
-    "1-6": 0.75,
-    "1-7": 0.75,
-    "1-8": 0.75,
-    "1-9": 0.75,
-    "1-10": 0.75,
-    "2-1": 0.75,
-    "2-2": 0.75,
-    "2-3": 0.75,
-    "2-4": 0.75,
-    "2-5": 0.75,
-    "2-6": 0.75,
-    "2-7": 0.75,
-    "2-8": 0.75,
-    "2-9": 0.75,
-    "2-10": 0.75,
-    "3-1": 0.75,
-    "3-2": 0.75,
-    "3-3": 0.75,
-    "3-4": 0.75,
-    "3-5": 0.75,
-    "3-6": 0.75,
-    "3-7": 0.75,
-    "3-8": 0.75,
-    "3-9": 0.75,
-    "3-10": 0.75,
-    "4-1": 0.75,
-    "4-2": 0.75,
-    "4-3": 0.75,
-    "4-4": 0.75,
-    "4-5": 0.75,
-    "4-6": 0.75,
-    "4-7": 0.75,
-    "4-8": 0.75,
-    "4-9": 0.75,
-    "4-10": 0.75,
-    "5-1": 0.75,
-    "5-2": 0.75,
-    "5-3": 0.75,
-    "5-4": 0.75,
-    "5-5": 0.75,
-    "5-6": 0.75,
-    "5-7": 0.75,
-    "5-8": 0.75,
-    "5-9": 0.75,
-    "5-10": 0.75,
-    "6-1": 1.0,
-    "6-2": 0.0,
-    "6-3": 0.0,
-    "6-4": 0.0,
-    "6-5": 1.0,
-    "6-6": 0.0,
-    "6-7": 0.0,
-    "6-8": 1.0,
-    "6-9": 0.0,
-    "6-10": 1.0,
-    "7-1": 0.75,
-    "7-2": 0.75,
-    "7-3": 0.75,
-    "7-4": 0.75,
-    "7-5": 0.75,
-    "7-6": 0.75,
-    "7-7": 0.75,
-    "7-8": 0.75,
-    "7-9": 0.75,
-    "7-10": 0.75,
-    "8-1": 0.75,
-    "8-2": 0.75,
-    "8-3": 0.75,
-    "8-4": 0.75,
-    "8-5": 0.75,
-    "8-6": 0.75,
-    "8-7": 0.75,
-    "8-8": 0.75,
-    "8-9": 0.75,
-    "8-10": 0.75,
-    "9-1": 0.75,
-    "9-2": 0.75,
-    "9-3": 0.75,
-    "9-4": 0.75,
-    "9-5": 0.75,
-    "9-6": 0.75,
-    "9-7": 0.75,
-    "9-8": 0.75,
-    "9-9": 0.75,
-    "9-10": 0.75,
-    "10-1": 0.0,
-    "10-2": 1.0,
-    "10-3": 1.0,
-    "10-4": 1.0,
-    "10-5": 0.0,
-    "10-6": 1.0,
-    "10-7": 1.0,
-    "10-8": 0.0,
-    "10-9": 1.0,
-    "10-10": 0.0
+    "1-1": {
+      "gender_score": 0.75,
+      "mentee_gender": "male",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "male"
+    },
+    "1-2": {
+      "gender_score": 0.75,
+      "mentee_gender": "male",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "1-3": {
+      "gender_score": 0.75,
+      "mentee_gender": "male",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "1-4": {
+      "gender_score": 0.75,
+      "mentee_gender": "male",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "1-5": {
+      "gender_score": 0.75,
+      "mentee_gender": "male",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "male"
+    },
+    "1-6": {
+      "gender_score": 0.75,
+      "mentee_gender": "male",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "1-7": {
+      "gender_score": 0.75,
+      "mentee_gender": "male",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "1-8": {
+      "gender_score": 0.75,
+      "mentee_gender": "male",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "male"
+    },
+    "1-9": {
+      "gender_score": 0.75,
+      "mentee_gender": "male",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "1-10": {
+      "gender_score": 0.75,
+      "mentee_gender": "male",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "male"
+    },
+    "2-1": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "male"
+    },
+    "2-2": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "2-3": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "2-4": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "2-5": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "male"
+    },
+    "2-6": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "2-7": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "2-8": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "male"
+    },
+    "2-9": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "2-10": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "male"
+    },
+    "3-1": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "male"
+    },
+    "3-2": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "3-3": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "3-4": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "3-5": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "male"
+    },
+    "3-6": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "3-7": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "3-8": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "male"
+    },
+    "3-9": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "3-10": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "male"
+    },
+    "4-1": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "male"
+    },
+    "4-2": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "4-3": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "4-4": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "4-5": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "male"
+    },
+    "4-6": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "4-7": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "4-8": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "male"
+    },
+    "4-9": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "4-10": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "male"
+    },
+    "5-1": {
+      "gender_score": 0.75,
+      "mentee_gender": "male",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "male"
+    },
+    "5-2": {
+      "gender_score": 0.75,
+      "mentee_gender": "male",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "5-3": {
+      "gender_score": 0.75,
+      "mentee_gender": "male",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "5-4": {
+      "gender_score": 0.75,
+      "mentee_gender": "male",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "5-5": {
+      "gender_score": 0.75,
+      "mentee_gender": "male",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "male"
+    },
+    "5-6": {
+      "gender_score": 0.75,
+      "mentee_gender": "male",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "5-7": {
+      "gender_score": 0.75,
+      "mentee_gender": "male",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "5-8": {
+      "gender_score": 0.75,
+      "mentee_gender": "male",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "male"
+    },
+    "5-9": {
+      "gender_score": 0.75,
+      "mentee_gender": "male",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "5-10": {
+      "gender_score": 0.75,
+      "mentee_gender": "male",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "male"
+    },
+    "6-1": {
+      "gender_score": 1.0,
+      "mentee_gender": "male",
+      "mentee_pref_gender": "male",
+      "mentor_gender": "male"
+    },
+    "6-2": {
+      "gender_score": 0.0,
+      "mentee_gender": "male",
+      "mentee_pref_gender": "male",
+      "mentor_gender": "female"
+    },
+    "6-3": {
+      "gender_score": 0.0,
+      "mentee_gender": "male",
+      "mentee_pref_gender": "male",
+      "mentor_gender": "female"
+    },
+    "6-4": {
+      "gender_score": 0.0,
+      "mentee_gender": "male",
+      "mentee_pref_gender": "male",
+      "mentor_gender": "female"
+    },
+    "6-5": {
+      "gender_score": 1.0,
+      "mentee_gender": "male",
+      "mentee_pref_gender": "male",
+      "mentor_gender": "male"
+    },
+    "6-6": {
+      "gender_score": 0.0,
+      "mentee_gender": "male",
+      "mentee_pref_gender": "male",
+      "mentor_gender": "female"
+    },
+    "6-7": {
+      "gender_score": 0.0,
+      "mentee_gender": "male",
+      "mentee_pref_gender": "male",
+      "mentor_gender": "female"
+    },
+    "6-8": {
+      "gender_score": 1.0,
+      "mentee_gender": "male",
+      "mentee_pref_gender": "male",
+      "mentor_gender": "male"
+    },
+    "6-9": {
+      "gender_score": 0.0,
+      "mentee_gender": "male",
+      "mentee_pref_gender": "male",
+      "mentor_gender": "female"
+    },
+    "6-10": {
+      "gender_score": 1.0,
+      "mentee_gender": "male",
+      "mentee_pref_gender": "male",
+      "mentor_gender": "male"
+    },
+    "7-1": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "male"
+    },
+    "7-2": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "7-3": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "7-4": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "7-5": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "male"
+    },
+    "7-6": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "7-7": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "7-8": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "male"
+    },
+    "7-9": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "7-10": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "male"
+    },
+    "8-1": {
+      "gender_score": 0.75,
+      "mentee_gender": "male",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "male"
+    },
+    "8-2": {
+      "gender_score": 0.75,
+      "mentee_gender": "male",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "8-3": {
+      "gender_score": 0.75,
+      "mentee_gender": "male",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "8-4": {
+      "gender_score": 0.75,
+      "mentee_gender": "male",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "8-5": {
+      "gender_score": 0.75,
+      "mentee_gender": "male",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "male"
+    },
+    "8-6": {
+      "gender_score": 0.75,
+      "mentee_gender": "male",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "8-7": {
+      "gender_score": 0.75,
+      "mentee_gender": "male",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "8-8": {
+      "gender_score": 0.75,
+      "mentee_gender": "male",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "male"
+    },
+    "8-9": {
+      "gender_score": 0.75,
+      "mentee_gender": "male",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "8-10": {
+      "gender_score": 0.75,
+      "mentee_gender": "male",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "male"
+    },
+    "9-1": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "male"
+    },
+    "9-2": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "9-3": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "9-4": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "9-5": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "male"
+    },
+    "9-6": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "9-7": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "9-8": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "male"
+    },
+    "9-9": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "female"
+    },
+    "9-10": {
+      "gender_score": 0.75,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "any",
+      "mentor_gender": "male"
+    },
+    "10-1": {
+      "gender_score": 0.0,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "female",
+      "mentor_gender": "male"
+    },
+    "10-2": {
+      "gender_score": 1.0,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "female",
+      "mentor_gender": "female"
+    },
+    "10-3": {
+      "gender_score": 1.0,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "female",
+      "mentor_gender": "female"
+    },
+    "10-4": {
+      "gender_score": 1.0,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "female",
+      "mentor_gender": "female"
+    },
+    "10-5": {
+      "gender_score": 0.0,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "female",
+      "mentor_gender": "male"
+    },
+    "10-6": {
+      "gender_score": 1.0,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "female",
+      "mentor_gender": "female"
+    },
+    "10-7": {
+      "gender_score": 1.0,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "female",
+      "mentor_gender": "female"
+    },
+    "10-8": {
+      "gender_score": 0.0,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "female",
+      "mentor_gender": "male"
+    },
+    "10-9": {
+      "gender_score": 1.0,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "female",
+      "mentor_gender": "female"
+    },
+    "10-10": {
+      "gender_score": 0.0,
+      "mentee_gender": "female",
+      "mentee_pref_gender": "female",
+      "mentor_gender": "male"
+    }
   }
 }

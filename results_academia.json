@@ -1,104 +1,1704 @@
 {
   "academia": {
-    "1-1": 0.469,
-    "1-2": 0.526,
-    "1-3": 0.411,
-    "1-4": 0.628,
-    "1-5": 0.328,
-    "1-6": 0.528,
-    "1-7": 0.334,
-    "1-8": 0.506,
-    "1-9": 0.445,
-    "1-10": 0.321,
-    "2-1": 0.385,
-    "2-2": 0.095,
-    "2-3": 0.404,
-    "2-4": 0.236,
-    "2-5": 0.511,
-    "2-6": 0.576,
-    "2-7": 0.623,
-    "2-8": 0.537,
-    "2-9": 0.456,
-    "2-10": 0.389,
-    "3-1": 0.441,
-    "3-2": 0.574,
-    "3-3": 0.458,
-    "3-4": 0.53,
-    "3-5": 0.478,
-    "3-6": 0.594,
-    "3-7": 0.576,
-    "3-8": 0.554,
-    "3-9": 0.5,
-    "3-10": 0.393,
-    "4-1": 0.431,
-    "4-2": 0.127,
-    "4-3": 0.386,
-    "4-4": 0.505,
-    "4-5": 0.31,
-    "4-6": 0.432,
-    "4-7": 0.305,
-    "4-8": 0.373,
-    "4-9": 0.443,
-    "4-10": 0.334,
-    "5-1": 0.539,
-    "5-2": 0.249,
-    "5-3": 0.575,
-    "5-4": 0.509,
-    "5-5": 0.536,
-    "5-6": 0.671,
-    "5-7": 0.516,
-    "5-8": 0.471,
-    "5-9": 0.682,
-    "5-10": 0.619,
-    "6-1": 0.424,
-    "6-2": 0.354,
-    "6-3": 0.305,
-    "6-4": 0.501,
-    "6-5": 0.22,
-    "6-6": 0.323,
-    "6-7": 0.255,
-    "6-8": 0.3,
-    "6-9": 0.383,
-    "6-10": 0.221,
-    "7-1": 0.479,
-    "7-2": 0.0,
-    "7-3": 0.453,
-    "7-4": 0.319,
-    "7-5": 0.302,
-    "7-6": 0.43,
-    "7-7": 0.31,
-    "7-8": 0.384,
-    "7-9": 0.496,
-    "7-10": 0.351,
-    "8-1": 0.461,
-    "8-2": 0.446,
-    "8-3": 0.542,
-    "8-4": 0.473,
-    "8-5": 0.343,
-    "8-6": 0.451,
-    "8-7": 0.391,
-    "8-8": 0.412,
-    "8-9": 0.453,
-    "8-10": 0.361,
-    "9-1": 0.408,
-    "9-2": 0.082,
-    "9-3": 0.387,
-    "9-4": 0.458,
-    "9-5": 0.313,
-    "9-6": 0.391,
-    "9-7": 0.319,
-    "9-8": 0.413,
-    "9-9": 0.432,
-    "9-10": 0.325,
-    "10-1": 0.419,
-    "10-2": 0.043,
-    "10-3": 0.51,
-    "10-4": 0.457,
-    "10-5": 0.309,
-    "10-6": 0.395,
-    "10-7": 0.331,
-    "10-8": 0.371,
-    "10-9": 0.396,
-    "10-10": 0.302
+    "1-1": {
+      "academic_score": 0.515,
+      "mentee_academics": {
+        "desired_field": "Heilpädagogischen Schule, Sonderpädagogik",
+        "background_field": "Psychologische, Beratung, Betreuung, Universtät, Adana, Türkei",
+        "level": "Unknown"
+      },
+      "mentor_academics": {
+        "field": "Science, Civil Engineering",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "no"
+      }
+    },
+    "1-2": {
+      "academic_score": 0.61,
+      "mentee_academics": {
+        "desired_field": "Heilpädagogischen Schule, Sonderpädagogik",
+        "background_field": "Psychologische, Beratung, Betreuung, Universtät, Adana, Türkei",
+        "level": "Unknown"
+      },
+      "mentor_academics": {
+        "field": "Wissenschaftliche Mitarbeiterin",
+        "level": "Unknown"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "no"
+      }
+    },
+    "1-3": {
+      "academic_score": 0.473,
+      "mentee_academics": {
+        "desired_field": "Heilpädagogischen Schule, Sonderpädagogik",
+        "background_field": "Psychologische, Beratung, Betreuung, Universtät, Adana, Türkei",
+        "level": "Unknown"
+      },
+      "mentor_academics": {
+        "field": "Neural, Systems, Computation, University, Zurich",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "no"
+      }
+    },
+    "1-4": {
+      "academic_score": 0.637,
+      "mentee_academics": {
+        "desired_field": "Heilpädagogischen Schule, Sonderpädagogik",
+        "background_field": "Psychologische, Beratung, Betreuung, Universtät, Adana, Türkei",
+        "level": "Unknown"
+      },
+      "mentor_academics": {
+        "field": "Zeit, Bachelor, Gesundheitsförderung, Prävention",
+        "level": "Bachelor"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "no"
+      }
+    },
+    "1-5": {
+      "academic_score": 0.407,
+      "mentee_academics": {
+        "desired_field": "Heilpädagogischen Schule, Sonderpädagogik",
+        "background_field": "Psychologische, Beratung, Betreuung, Universtät, Adana, Türkei",
+        "level": "Unknown"
+      },
+      "mentor_academics": {
+        "field": "Zellbiologie ETH",
+        "level": "PhD"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "no"
+      }
+    },
+    "1-6": {
+      "academic_score": 0.548,
+      "mentee_academics": {
+        "desired_field": "Heilpädagogischen Schule, Sonderpädagogik",
+        "background_field": "Psychologische, Beratung, Betreuung, Universtät, Adana, Türkei",
+        "level": "Unknown"
+      },
+      "mentor_academics": {
+        "field": "Biomedical Engineering",
+        "level": "PhD"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "no",
+        "bonus_applied": "no"
+      }
+    },
+    "1-7": {
+      "academic_score": 0.435,
+      "mentee_academics": {
+        "desired_field": "Heilpädagogischen Schule, Sonderpädagogik",
+        "background_field": "Psychologische, Beratung, Betreuung, Universtät, Adana, Türkei",
+        "level": "Unknown"
+      },
+      "mentor_academics": {
+        "field": "MSc Umweltnaturwissenschaften ETHZ, Biogeochemie",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "no"
+      }
+    },
+    "1-8": {
+      "academic_score": 0.528,
+      "mentee_academics": {
+        "desired_field": "Heilpädagogischen Schule, Sonderpädagogik",
+        "background_field": "Psychologische, Beratung, Betreuung, Universtät, Adana, Türkei",
+        "level": "Unknown"
+      },
+      "mentor_academics": {
+        "field": "PhD Neuroscience",
+        "level": "PhD"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "no",
+        "bonus_applied": "no"
+      }
+    },
+    "1-9": {
+      "academic_score": 0.542,
+      "mentee_academics": {
+        "desired_field": "Heilpädagogischen Schule, Sonderpädagogik",
+        "background_field": "Psychologische, Beratung, Betreuung, Universtät, Adana, Türkei",
+        "level": "Unknown"
+      },
+      "mentor_academics": {
+        "field": "Science",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "no",
+        "bonus_applied": "no"
+      }
+    },
+    "1-10": {
+      "academic_score": 0.374,
+      "mentee_academics": {
+        "desired_field": "Heilpädagogischen Schule, Sonderpädagogik",
+        "background_field": "Psychologische, Beratung, Betreuung, Universtät, Adana, Türkei",
+        "level": "Unknown"
+      },
+      "mentor_academics": {
+        "field": "Elektrotechnik",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "no",
+        "bonus_applied": "no"
+      }
+    },
+    "2-1": {
+      "academic_score": 0.571,
+      "mentee_academics": {
+        "desired_field": "Biothechnology, Chemie",
+        "background_field": "Master, Bachelor, Technology, Manufacturing, Pharmaceutical, Products, Ukraine",
+        "level": "Master"
+      },
+      "mentor_academics": {
+        "field": "Science, Civil Engineering",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "yes"
+      }
+    },
+    "2-2": {
+      "academic_score": 0.253,
+      "mentee_academics": {
+        "desired_field": "Biothechnology, Chemie",
+        "background_field": "Master, Bachelor, Technology, Manufacturing, Pharmaceutical, Products, Ukraine",
+        "level": "Master"
+      },
+      "mentor_academics": {
+        "field": "Wissenschaftliche Mitarbeiterin",
+        "level": "Unknown"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "yes"
+      }
+    },
+    "2-3": {
+      "academic_score": 0.591,
+      "mentee_academics": {
+        "desired_field": "Biothechnology, Chemie",
+        "background_field": "Master, Bachelor, Technology, Manufacturing, Pharmaceutical, Products, Ukraine",
+        "level": "Master"
+      },
+      "mentor_academics": {
+        "field": "Neural, Systems, Computation, University, Zurich",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "yes"
+      }
+    },
+    "2-4": {
+      "academic_score": 0.298,
+      "mentee_academics": {
+        "desired_field": "Biothechnology, Chemie",
+        "background_field": "Master, Bachelor, Technology, Manufacturing, Pharmaceutical, Products, Ukraine",
+        "level": "Master"
+      },
+      "mentor_academics": {
+        "field": "Zeit, Bachelor, Gesundheitsförderung, Prävention",
+        "level": "Bachelor"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "yes"
+      }
+    },
+    "2-5": {
+      "academic_score": 0.64,
+      "mentee_academics": {
+        "desired_field": "Biothechnology, Chemie",
+        "background_field": "Master, Bachelor, Technology, Manufacturing, Pharmaceutical, Products, Ukraine",
+        "level": "Master"
+      },
+      "mentor_academics": {
+        "field": "Zellbiologie ETH",
+        "level": "PhD"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "yes"
+      }
+    },
+    "2-6": {
+      "academic_score": 0.597,
+      "mentee_academics": {
+        "desired_field": "Biothechnology, Chemie",
+        "background_field": "Master, Bachelor, Technology, Manufacturing, Pharmaceutical, Products, Ukraine",
+        "level": "Master"
+      },
+      "mentor_academics": {
+        "field": "Biomedical Engineering",
+        "level": "PhD"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "no",
+        "bonus_applied": "no"
+      }
+    },
+    "2-7": {
+      "academic_score": 0.784,
+      "mentee_academics": {
+        "desired_field": "Biothechnology, Chemie",
+        "background_field": "Master, Bachelor, Technology, Manufacturing, Pharmaceutical, Products, Ukraine",
+        "level": "Master"
+      },
+      "mentor_academics": {
+        "field": "MSc Umweltnaturwissenschaften ETHZ, Biogeochemie",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "yes"
+      }
+    },
+    "2-8": {
+      "academic_score": 0.555,
+      "mentee_academics": {
+        "desired_field": "Biothechnology, Chemie",
+        "background_field": "Master, Bachelor, Technology, Manufacturing, Pharmaceutical, Products, Ukraine",
+        "level": "Master"
+      },
+      "mentor_academics": {
+        "field": "PhD Neuroscience",
+        "level": "PhD"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "no",
+        "bonus_applied": "no"
+      }
+    },
+    "2-9": {
+      "academic_score": 0.614,
+      "mentee_academics": {
+        "desired_field": "Biothechnology, Chemie",
+        "background_field": "Master, Bachelor, Technology, Manufacturing, Pharmaceutical, Products, Ukraine",
+        "level": "Master"
+      },
+      "mentor_academics": {
+        "field": "Science",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "no",
+        "bonus_applied": "no"
+      }
+    },
+    "2-10": {
+      "academic_score": 0.366,
+      "mentee_academics": {
+        "desired_field": "Biothechnology, Chemie",
+        "background_field": "Master, Bachelor, Technology, Manufacturing, Pharmaceutical, Products, Ukraine",
+        "level": "Master"
+      },
+      "mentor_academics": {
+        "field": "Elektrotechnik",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "no",
+        "bonus_applied": "no"
+      }
+    },
+    "3-1": {
+      "academic_score": 0.66,
+      "mentee_academics": {
+        "desired_field": "Chemie, Biologie, Data Science",
+        "background_field": "Gymnasiale, Abschluss, Saudi-, Arabien, Riad, Detailhandelsfachfrau, Schweiz, Zürich, Dolmetsch, Ausbildung, Diplom",
+        "level": "Unknown"
+      },
+      "mentor_academics": {
+        "field": "Science, Civil Engineering",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "yes"
+      }
+    },
+    "3-2": {
+      "academic_score": 0.726,
+      "mentee_academics": {
+        "desired_field": "Chemie, Biologie, Data Science",
+        "background_field": "Gymnasiale, Abschluss, Saudi-, Arabien, Riad, Detailhandelsfachfrau, Schweiz, Zürich, Dolmetsch, Ausbildung, Diplom",
+        "level": "Unknown"
+      },
+      "mentor_academics": {
+        "field": "Wissenschaftliche Mitarbeiterin",
+        "level": "Unknown"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "yes"
+      }
+    },
+    "3-3": {
+      "academic_score": 0.646,
+      "mentee_academics": {
+        "desired_field": "Chemie, Biologie, Data Science",
+        "background_field": "Gymnasiale, Abschluss, Saudi-, Arabien, Riad, Detailhandelsfachfrau, Schweiz, Zürich, Dolmetsch, Ausbildung, Diplom",
+        "level": "Unknown"
+      },
+      "mentor_academics": {
+        "field": "Neural, Systems, Computation, University, Zurich",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "yes"
+      }
+    },
+    "3-4": {
+      "academic_score": 0.571,
+      "mentee_academics": {
+        "desired_field": "Chemie, Biologie, Data Science",
+        "background_field": "Gymnasiale, Abschluss, Saudi-, Arabien, Riad, Detailhandelsfachfrau, Schweiz, Zürich, Dolmetsch, Ausbildung, Diplom",
+        "level": "Unknown"
+      },
+      "mentor_academics": {
+        "field": "Zeit, Bachelor, Gesundheitsförderung, Prävention",
+        "level": "Bachelor"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "yes"
+      }
+    },
+    "3-5": {
+      "academic_score": 0.581,
+      "mentee_academics": {
+        "desired_field": "Chemie, Biologie, Data Science",
+        "background_field": "Gymnasiale, Abschluss, Saudi-, Arabien, Riad, Detailhandelsfachfrau, Schweiz, Zürich, Dolmetsch, Ausbildung, Diplom",
+        "level": "Unknown"
+      },
+      "mentor_academics": {
+        "field": "Zellbiologie ETH",
+        "level": "PhD"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "yes"
+      }
+    },
+    "3-6": {
+      "academic_score": 0.564,
+      "mentee_academics": {
+        "desired_field": "Chemie, Biologie, Data Science",
+        "background_field": "Gymnasiale, Abschluss, Saudi-, Arabien, Riad, Detailhandelsfachfrau, Schweiz, Zürich, Dolmetsch, Ausbildung, Diplom",
+        "level": "Unknown"
+      },
+      "mentor_academics": {
+        "field": "Biomedical Engineering",
+        "level": "PhD"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "no",
+        "bonus_applied": "no"
+      }
+    },
+    "3-7": {
+      "academic_score": 0.716,
+      "mentee_academics": {
+        "desired_field": "Chemie, Biologie, Data Science",
+        "background_field": "Gymnasiale, Abschluss, Saudi-, Arabien, Riad, Detailhandelsfachfrau, Schweiz, Zürich, Dolmetsch, Ausbildung, Diplom",
+        "level": "Unknown"
+      },
+      "mentor_academics": {
+        "field": "MSc Umweltnaturwissenschaften ETHZ, Biogeochemie",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "yes"
+      }
+    },
+    "3-8": {
+      "academic_score": 0.532,
+      "mentee_academics": {
+        "desired_field": "Chemie, Biologie, Data Science",
+        "background_field": "Gymnasiale, Abschluss, Saudi-, Arabien, Riad, Detailhandelsfachfrau, Schweiz, Zürich, Dolmetsch, Ausbildung, Diplom",
+        "level": "Unknown"
+      },
+      "mentor_academics": {
+        "field": "PhD Neuroscience",
+        "level": "PhD"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "no",
+        "bonus_applied": "no"
+      }
+    },
+    "3-9": {
+      "academic_score": 0.655,
+      "mentee_academics": {
+        "desired_field": "Chemie, Biologie, Data Science",
+        "background_field": "Gymnasiale, Abschluss, Saudi-, Arabien, Riad, Detailhandelsfachfrau, Schweiz, Zürich, Dolmetsch, Ausbildung, Diplom",
+        "level": "Unknown"
+      },
+      "mentor_academics": {
+        "field": "Science",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "no",
+        "bonus_applied": "no"
+      }
+    },
+    "3-10": {
+      "academic_score": 0.435,
+      "mentee_academics": {
+        "desired_field": "Chemie, Biologie, Data Science",
+        "background_field": "Gymnasiale, Abschluss, Saudi-, Arabien, Riad, Detailhandelsfachfrau, Schweiz, Zürich, Dolmetsch, Ausbildung, Diplom",
+        "level": "Unknown"
+      },
+      "mentor_academics": {
+        "field": "Elektrotechnik",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "no",
+        "bonus_applied": "no"
+      }
+    },
+    "4-1": {
+      "academic_score": 0.622,
+      "mentee_academics": {
+        "desired_field": "Cooperative Law",
+        "background_field": "Law\nNational University, Biotechnology",
+        "level": "Other"
+      },
+      "mentor_academics": {
+        "field": "Science, Civil Engineering",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "yes"
+      }
+    },
+    "4-2": {
+      "academic_score": 0.253,
+      "mentee_academics": {
+        "desired_field": "Cooperative Law",
+        "background_field": "Law\nNational University, Biotechnology",
+        "level": "Other"
+      },
+      "mentor_academics": {
+        "field": "Wissenschaftliche Mitarbeiterin",
+        "level": "Unknown"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "yes"
+      }
+    },
+    "4-3": {
+      "academic_score": 0.482,
+      "mentee_academics": {
+        "desired_field": "Cooperative Law",
+        "background_field": "Law\nNational University, Biotechnology",
+        "level": "Other"
+      },
+      "mentor_academics": {
+        "field": "Neural, Systems, Computation, University, Zurich",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "yes"
+      }
+    },
+    "4-4": {
+      "academic_score": 0.459,
+      "mentee_academics": {
+        "desired_field": "Cooperative Law",
+        "background_field": "Law\nNational University, Biotechnology",
+        "level": "Other"
+      },
+      "mentor_academics": {
+        "field": "Zeit, Bachelor, Gesundheitsförderung, Prävention",
+        "level": "Bachelor"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "yes"
+      }
+    },
+    "4-5": {
+      "academic_score": 0.407,
+      "mentee_academics": {
+        "desired_field": "Cooperative Law",
+        "background_field": "Law\nNational University, Biotechnology",
+        "level": "Other"
+      },
+      "mentor_academics": {
+        "field": "Zellbiologie ETH",
+        "level": "PhD"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "yes"
+      }
+    },
+    "4-6": {
+      "academic_score": 0.368,
+      "mentee_academics": {
+        "desired_field": "Cooperative Law",
+        "background_field": "Law\nNational University, Biotechnology",
+        "level": "Other"
+      },
+      "mentor_academics": {
+        "field": "Biomedical Engineering",
+        "level": "PhD"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "no",
+        "bonus_applied": "no"
+      }
+    },
+    "4-7": {
+      "academic_score": 0.437,
+      "mentee_academics": {
+        "desired_field": "Cooperative Law",
+        "background_field": "Law\nNational University, Biotechnology",
+        "level": "Other"
+      },
+      "mentor_academics": {
+        "field": "MSc Umweltnaturwissenschaften ETHZ, Biogeochemie",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "yes"
+      }
+    },
+    "4-8": {
+      "academic_score": 0.364,
+      "mentee_academics": {
+        "desired_field": "Cooperative Law",
+        "background_field": "Law\nNational University, Biotechnology",
+        "level": "Other"
+      },
+      "mentor_academics": {
+        "field": "PhD Neuroscience",
+        "level": "PhD"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "no",
+        "bonus_applied": "no"
+      }
+    },
+    "4-9": {
+      "academic_score": 0.451,
+      "mentee_academics": {
+        "desired_field": "Cooperative Law",
+        "background_field": "Law\nNational University, Biotechnology",
+        "level": "Other"
+      },
+      "mentor_academics": {
+        "field": "Science",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "no",
+        "bonus_applied": "no"
+      }
+    },
+    "4-10": {
+      "academic_score": 0.429,
+      "mentee_academics": {
+        "desired_field": "Cooperative Law",
+        "background_field": "Law\nNational University, Biotechnology",
+        "level": "Other"
+      },
+      "mentor_academics": {
+        "field": "Elektrotechnik",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "no",
+        "bonus_applied": "no"
+      }
+    },
+    "5-1": {
+      "academic_score": 0.528,
+      "mentee_academics": {
+        "desired_field": "Master Rechnergestützte Wissenschaften, Master Pharmazeutische Wissenschaften, Bachelor Rechnergestützte Wissenschaften, Bachelor Pharmazeutische Wissenschaften",
+        "background_field": "Other, Tetiivskyi-, Bildungskomplex, Sekundarschule, Stufen, Naturmathematisches, Lyzeum, Ukraine",
+        "level": "Other"
+      },
+      "mentor_academics": {
+        "field": "Science, Civil Engineering",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "no"
+      }
+    },
+    "5-2": {
+      "academic_score": 0.315,
+      "mentee_academics": {
+        "desired_field": "Master Rechnergestützte Wissenschaften, Master Pharmazeutische Wissenschaften, Bachelor Rechnergestützte Wissenschaften, Bachelor Pharmazeutische Wissenschaften",
+        "background_field": "Other, Tetiivskyi-, Bildungskomplex, Sekundarschule, Stufen, Naturmathematisches, Lyzeum, Ukraine",
+        "level": "Other"
+      },
+      "mentor_academics": {
+        "field": "Wissenschaftliche Mitarbeiterin",
+        "level": "Unknown"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "no"
+      }
+    },
+    "5-3": {
+      "academic_score": 0.544,
+      "mentee_academics": {
+        "desired_field": "Master Rechnergestützte Wissenschaften, Master Pharmazeutische Wissenschaften, Bachelor Rechnergestützte Wissenschaften, Bachelor Pharmazeutische Wissenschaften",
+        "background_field": "Other, Tetiivskyi-, Bildungskomplex, Sekundarschule, Stufen, Naturmathematisches, Lyzeum, Ukraine",
+        "level": "Other"
+      },
+      "mentor_academics": {
+        "field": "Neural, Systems, Computation, University, Zurich",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "no"
+      }
+    },
+    "5-4": {
+      "academic_score": 0.548,
+      "mentee_academics": {
+        "desired_field": "Master Rechnergestützte Wissenschaften, Master Pharmazeutische Wissenschaften, Bachelor Rechnergestützte Wissenschaften, Bachelor Pharmazeutische Wissenschaften",
+        "background_field": "Other, Tetiivskyi-, Bildungskomplex, Sekundarschule, Stufen, Naturmathematisches, Lyzeum, Ukraine",
+        "level": "Other"
+      },
+      "mentor_academics": {
+        "field": "Zeit, Bachelor, Gesundheitsförderung, Prävention",
+        "level": "Bachelor"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "no"
+      }
+    },
+    "5-5": {
+      "academic_score": 0.429,
+      "mentee_academics": {
+        "desired_field": "Master Rechnergestützte Wissenschaften, Master Pharmazeutische Wissenschaften, Bachelor Rechnergestützte Wissenschaften, Bachelor Pharmazeutische Wissenschaften",
+        "background_field": "Other, Tetiivskyi-, Bildungskomplex, Sekundarschule, Stufen, Naturmathematisches, Lyzeum, Ukraine",
+        "level": "Other"
+      },
+      "mentor_academics": {
+        "field": "Zellbiologie ETH",
+        "level": "PhD"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "no"
+      }
+    },
+    "5-6": {
+      "academic_score": 0.547,
+      "mentee_academics": {
+        "desired_field": "Master Rechnergestützte Wissenschaften, Master Pharmazeutische Wissenschaften, Bachelor Rechnergestützte Wissenschaften, Bachelor Pharmazeutische Wissenschaften",
+        "background_field": "Other, Tetiivskyi-, Bildungskomplex, Sekundarschule, Stufen, Naturmathematisches, Lyzeum, Ukraine",
+        "level": "Other"
+      },
+      "mentor_academics": {
+        "field": "Biomedical Engineering",
+        "level": "PhD"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "no",
+        "bonus_applied": "no"
+      }
+    },
+    "5-7": {
+      "academic_score": 0.526,
+      "mentee_academics": {
+        "desired_field": "Master Rechnergestützte Wissenschaften, Master Pharmazeutische Wissenschaften, Bachelor Rechnergestützte Wissenschaften, Bachelor Pharmazeutische Wissenschaften",
+        "background_field": "Other, Tetiivskyi-, Bildungskomplex, Sekundarschule, Stufen, Naturmathematisches, Lyzeum, Ukraine",
+        "level": "Other"
+      },
+      "mentor_academics": {
+        "field": "MSc Umweltnaturwissenschaften ETHZ, Biogeochemie",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "no"
+      }
+    },
+    "5-8": {
+      "academic_score": 0.548,
+      "mentee_academics": {
+        "desired_field": "Master Rechnergestützte Wissenschaften, Master Pharmazeutische Wissenschaften, Bachelor Rechnergestützte Wissenschaften, Bachelor Pharmazeutische Wissenschaften",
+        "background_field": "Other, Tetiivskyi-, Bildungskomplex, Sekundarschule, Stufen, Naturmathematisches, Lyzeum, Ukraine",
+        "level": "Other"
+      },
+      "mentor_academics": {
+        "field": "PhD Neuroscience",
+        "level": "PhD"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "no",
+        "bonus_applied": "no"
+      }
+    },
+    "5-9": {
+      "academic_score": 0.538,
+      "mentee_academics": {
+        "desired_field": "Master Rechnergestützte Wissenschaften, Master Pharmazeutische Wissenschaften, Bachelor Rechnergestützte Wissenschaften, Bachelor Pharmazeutische Wissenschaften",
+        "background_field": "Other, Tetiivskyi-, Bildungskomplex, Sekundarschule, Stufen, Naturmathematisches, Lyzeum, Ukraine",
+        "level": "Other"
+      },
+      "mentor_academics": {
+        "field": "Science",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "no",
+        "bonus_applied": "no"
+      }
+    },
+    "5-10": {
+      "academic_score": 0.405,
+      "mentee_academics": {
+        "desired_field": "Master Rechnergestützte Wissenschaften, Master Pharmazeutische Wissenschaften, Bachelor Rechnergestützte Wissenschaften, Bachelor Pharmazeutische Wissenschaften",
+        "background_field": "Other, Tetiivskyi-, Bildungskomplex, Sekundarschule, Stufen, Naturmathematisches, Lyzeum, Ukraine",
+        "level": "Other"
+      },
+      "mentor_academics": {
+        "field": "Elektrotechnik",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "no",
+        "bonus_applied": "no"
+      }
+    },
+    "6-1": {
+      "academic_score": 0.619,
+      "mentee_academics": {
+        "desired_field": "Rechtswissenschaft",
+        "background_field": "Rechtswissenschaft, Versicherungswesen",
+        "level": "Unknown"
+      },
+      "mentor_academics": {
+        "field": "Science, Civil Engineering",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "yes"
+      }
+    },
+    "6-2": {
+      "academic_score": 0.579,
+      "mentee_academics": {
+        "desired_field": "Rechtswissenschaft",
+        "background_field": "Rechtswissenschaft, Versicherungswesen",
+        "level": "Unknown"
+      },
+      "mentor_academics": {
+        "field": "Wissenschaftliche Mitarbeiterin",
+        "level": "Unknown"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "yes"
+      }
+    },
+    "6-3": {
+      "academic_score": 0.436,
+      "mentee_academics": {
+        "desired_field": "Rechtswissenschaft",
+        "background_field": "Rechtswissenschaft, Versicherungswesen",
+        "level": "Unknown"
+      },
+      "mentor_academics": {
+        "field": "Neural, Systems, Computation, University, Zurich",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "yes"
+      }
+    },
+    "6-4": {
+      "academic_score": 0.541,
+      "mentee_academics": {
+        "desired_field": "Rechtswissenschaft",
+        "background_field": "Rechtswissenschaft, Versicherungswesen",
+        "level": "Unknown"
+      },
+      "mentor_academics": {
+        "field": "Zeit, Bachelor, Gesundheitsförderung, Prävention",
+        "level": "Bachelor"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "yes"
+      }
+    },
+    "6-5": {
+      "academic_score": 0.434,
+      "mentee_academics": {
+        "desired_field": "Rechtswissenschaft",
+        "background_field": "Rechtswissenschaft, Versicherungswesen",
+        "level": "Unknown"
+      },
+      "mentor_academics": {
+        "field": "Zellbiologie ETH",
+        "level": "PhD"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "yes"
+      }
+    },
+    "6-6": {
+      "academic_score": 0.399,
+      "mentee_academics": {
+        "desired_field": "Rechtswissenschaft",
+        "background_field": "Rechtswissenschaft, Versicherungswesen",
+        "level": "Unknown"
+      },
+      "mentor_academics": {
+        "field": "Biomedical Engineering",
+        "level": "PhD"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "no",
+        "bonus_applied": "no"
+      }
+    },
+    "6-7": {
+      "academic_score": 0.422,
+      "mentee_academics": {
+        "desired_field": "Rechtswissenschaft",
+        "background_field": "Rechtswissenschaft, Versicherungswesen",
+        "level": "Unknown"
+      },
+      "mentor_academics": {
+        "field": "MSc Umweltnaturwissenschaften ETHZ, Biogeochemie",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "yes"
+      }
+    },
+    "6-8": {
+      "academic_score": 0.394,
+      "mentee_academics": {
+        "desired_field": "Rechtswissenschaft",
+        "background_field": "Rechtswissenschaft, Versicherungswesen",
+        "level": "Unknown"
+      },
+      "mentor_academics": {
+        "field": "PhD Neuroscience",
+        "level": "PhD"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "no",
+        "bonus_applied": "no"
+      }
+    },
+    "6-9": {
+      "academic_score": 0.484,
+      "mentee_academics": {
+        "desired_field": "Rechtswissenschaft",
+        "background_field": "Rechtswissenschaft, Versicherungswesen",
+        "level": "Unknown"
+      },
+      "mentor_academics": {
+        "field": "Science",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "no",
+        "bonus_applied": "no"
+      }
+    },
+    "6-10": {
+      "academic_score": 0.417,
+      "mentee_academics": {
+        "desired_field": "Rechtswissenschaft",
+        "background_field": "Rechtswissenschaft, Versicherungswesen",
+        "level": "Unknown"
+      },
+      "mentor_academics": {
+        "field": "Elektrotechnik",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "no",
+        "bonus_applied": "no"
+      }
+    },
+    "7-1": {
+      "academic_score": 0.476,
+      "mentee_academics": {
+        "desired_field": "Fachhochschule, Nordwestschweiz, Weiterbildung, Wirtschaft, Finanzmanagement, Marketing, Kommunikation",
+        "background_field": "Master, Ukraine",
+        "level": "Master"
+      },
+      "mentor_academics": {
+        "field": "Science, Civil Engineering",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "no"
+      }
+    },
+    "7-2": {
+      "academic_score": 0.0,
+      "mentee_academics": {
+        "desired_field": "Fachhochschule, Nordwestschweiz, Weiterbildung, Wirtschaft, Finanzmanagement, Marketing, Kommunikation",
+        "background_field": "Master, Ukraine",
+        "level": "Master"
+      },
+      "mentor_academics": {
+        "field": "Wissenschaftliche Mitarbeiterin",
+        "level": "Unknown"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "no"
+      }
+    },
+    "7-3": {
+      "academic_score": 0.529,
+      "mentee_academics": {
+        "desired_field": "Fachhochschule, Nordwestschweiz, Weiterbildung, Wirtschaft, Finanzmanagement, Marketing, Kommunikation",
+        "background_field": "Master, Ukraine",
+        "level": "Master"
+      },
+      "mentor_academics": {
+        "field": "Neural, Systems, Computation, University, Zurich",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "no"
+      }
+    },
+    "7-4": {
+      "academic_score": 0.348,
+      "mentee_academics": {
+        "desired_field": "Fachhochschule, Nordwestschweiz, Weiterbildung, Wirtschaft, Finanzmanagement, Marketing, Kommunikation",
+        "background_field": "Master, Ukraine",
+        "level": "Master"
+      },
+      "mentor_academics": {
+        "field": "Zeit, Bachelor, Gesundheitsförderung, Prävention",
+        "level": "Bachelor"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "no"
+      }
+    },
+    "7-5": {
+      "academic_score": 0.32,
+      "mentee_academics": {
+        "desired_field": "Fachhochschule, Nordwestschweiz, Weiterbildung, Wirtschaft, Finanzmanagement, Marketing, Kommunikation",
+        "background_field": "Master, Ukraine",
+        "level": "Master"
+      },
+      "mentor_academics": {
+        "field": "Zellbiologie ETH",
+        "level": "PhD"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "no"
+      }
+    },
+    "7-6": {
+      "academic_score": 0.344,
+      "mentee_academics": {
+        "desired_field": "Fachhochschule, Nordwestschweiz, Weiterbildung, Wirtschaft, Finanzmanagement, Marketing, Kommunikation",
+        "background_field": "Master, Ukraine",
+        "level": "Master"
+      },
+      "mentor_academics": {
+        "field": "Biomedical Engineering",
+        "level": "PhD"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "no",
+        "bonus_applied": "no"
+      }
+    },
+    "7-7": {
+      "academic_score": 0.362,
+      "mentee_academics": {
+        "desired_field": "Fachhochschule, Nordwestschweiz, Weiterbildung, Wirtschaft, Finanzmanagement, Marketing, Kommunikation",
+        "background_field": "Master, Ukraine",
+        "level": "Master"
+      },
+      "mentor_academics": {
+        "field": "MSc Umweltnaturwissenschaften ETHZ, Biogeochemie",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "no"
+      }
+    },
+    "7-8": {
+      "academic_score": 0.353,
+      "mentee_academics": {
+        "desired_field": "Fachhochschule, Nordwestschweiz, Weiterbildung, Wirtschaft, Finanzmanagement, Marketing, Kommunikation",
+        "background_field": "Master, Ukraine",
+        "level": "Master"
+      },
+      "mentor_academics": {
+        "field": "PhD Neuroscience",
+        "level": "PhD"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "no",
+        "bonus_applied": "no"
+      }
+    },
+    "7-9": {
+      "academic_score": 0.404,
+      "mentee_academics": {
+        "desired_field": "Fachhochschule, Nordwestschweiz, Weiterbildung, Wirtschaft, Finanzmanagement, Marketing, Kommunikation",
+        "background_field": "Master, Ukraine",
+        "level": "Master"
+      },
+      "mentor_academics": {
+        "field": "Science",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "no",
+        "bonus_applied": "no"
+      }
+    },
+    "7-10": {
+      "academic_score": 0.359,
+      "mentee_academics": {
+        "desired_field": "Fachhochschule, Nordwestschweiz, Weiterbildung, Wirtschaft, Finanzmanagement, Marketing, Kommunikation",
+        "background_field": "Master, Ukraine",
+        "level": "Master"
+      },
+      "mentor_academics": {
+        "field": "Elektrotechnik",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "no",
+        "bonus_applied": "no"
+      }
+    },
+    "8-1": {
+      "academic_score": 0.605,
+      "mentee_academics": {
+        "desired_field": "Studium, Universität, Zürich, Bereich, Wirtschaft, Betriebswirtschaft, Bacherloch-, Niveau",
+        "background_field": "Volketswill, Schweiz",
+        "level": "Unknown"
+      },
+      "mentor_academics": {
+        "field": "Science, Civil Engineering",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "yes"
+      }
+    },
+    "8-2": {
+      "academic_score": 0.637,
+      "mentee_academics": {
+        "desired_field": "Studium, Universität, Zürich, Bereich, Wirtschaft, Betriebswirtschaft, Bacherloch-, Niveau",
+        "background_field": "Volketswill, Schweiz",
+        "level": "Unknown"
+      },
+      "mentor_academics": {
+        "field": "Wissenschaftliche Mitarbeiterin",
+        "level": "Unknown"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "yes"
+      }
+    },
+    "8-3": {
+      "academic_score": 0.732,
+      "mentee_academics": {
+        "desired_field": "Studium, Universität, Zürich, Bereich, Wirtschaft, Betriebswirtschaft, Bacherloch-, Niveau",
+        "background_field": "Volketswill, Schweiz",
+        "level": "Unknown"
+      },
+      "mentor_academics": {
+        "field": "Neural, Systems, Computation, University, Zurich",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "yes"
+      }
+    },
+    "8-4": {
+      "academic_score": 0.652,
+      "mentee_academics": {
+        "desired_field": "Studium, Universität, Zürich, Bereich, Wirtschaft, Betriebswirtschaft, Bacherloch-, Niveau",
+        "background_field": "Volketswill, Schweiz",
+        "level": "Unknown"
+      },
+      "mentor_academics": {
+        "field": "Zeit, Bachelor, Gesundheitsförderung, Prävention",
+        "level": "Bachelor"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "yes"
+      }
+    },
+    "8-5": {
+      "academic_score": 0.487,
+      "mentee_academics": {
+        "desired_field": "Studium, Universität, Zürich, Bereich, Wirtschaft, Betriebswirtschaft, Bacherloch-, Niveau",
+        "background_field": "Volketswill, Schweiz",
+        "level": "Unknown"
+      },
+      "mentor_academics": {
+        "field": "Zellbiologie ETH",
+        "level": "PhD"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "yes"
+      }
+    },
+    "8-6": {
+      "academic_score": 0.396,
+      "mentee_academics": {
+        "desired_field": "Studium, Universität, Zürich, Bereich, Wirtschaft, Betriebswirtschaft, Bacherloch-, Niveau",
+        "background_field": "Volketswill, Schweiz",
+        "level": "Unknown"
+      },
+      "mentor_academics": {
+        "field": "Biomedical Engineering",
+        "level": "PhD"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "no",
+        "bonus_applied": "no"
+      }
+    },
+    "8-7": {
+      "academic_score": 0.571,
+      "mentee_academics": {
+        "desired_field": "Studium, Universität, Zürich, Bereich, Wirtschaft, Betriebswirtschaft, Bacherloch-, Niveau",
+        "background_field": "Volketswill, Schweiz",
+        "level": "Unknown"
+      },
+      "mentor_academics": {
+        "field": "MSc Umweltnaturwissenschaften ETHZ, Biogeochemie",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "yes"
+      }
+    },
+    "8-8": {
+      "academic_score": 0.436,
+      "mentee_academics": {
+        "desired_field": "Studium, Universität, Zürich, Bereich, Wirtschaft, Betriebswirtschaft, Bacherloch-, Niveau",
+        "background_field": "Volketswill, Schweiz",
+        "level": "Unknown"
+      },
+      "mentor_academics": {
+        "field": "PhD Neuroscience",
+        "level": "PhD"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "no",
+        "bonus_applied": "no"
+      }
+    },
+    "8-9": {
+      "academic_score": 0.48,
+      "mentee_academics": {
+        "desired_field": "Studium, Universität, Zürich, Bereich, Wirtschaft, Betriebswirtschaft, Bacherloch-, Niveau",
+        "background_field": "Volketswill, Schweiz",
+        "level": "Unknown"
+      },
+      "mentor_academics": {
+        "field": "Science",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "no",
+        "bonus_applied": "no"
+      }
+    },
+    "8-10": {
+      "academic_score": 0.386,
+      "mentee_academics": {
+        "desired_field": "Studium, Universität, Zürich, Bereich, Wirtschaft, Betriebswirtschaft, Bacherloch-, Niveau",
+        "background_field": "Volketswill, Schweiz",
+        "level": "Unknown"
+      },
+      "mentor_academics": {
+        "field": "Elektrotechnik",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "yes",
+        "mentor_swiss_experience": "no",
+        "bonus_applied": "no"
+      }
+    },
+    "9-1": {
+      "academic_score": 0.538,
+      "mentee_academics": {
+        "desired_field": "University",
+        "background_field": "Bachelor, Journalism, Bechlor",
+        "level": "Bachelor"
+      },
+      "mentor_academics": {
+        "field": "Science, Civil Engineering",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "no"
+      }
+    },
+    "9-2": {
+      "academic_score": 0.26,
+      "mentee_academics": {
+        "desired_field": "University",
+        "background_field": "Bachelor, Journalism, Bechlor",
+        "level": "Bachelor"
+      },
+      "mentor_academics": {
+        "field": "Wissenschaftliche Mitarbeiterin",
+        "level": "Unknown"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "no"
+      }
+    },
+    "9-3": {
+      "academic_score": 0.453,
+      "mentee_academics": {
+        "desired_field": "University",
+        "background_field": "Bachelor, Journalism, Bechlor",
+        "level": "Bachelor"
+      },
+      "mentor_academics": {
+        "field": "Neural, Systems, Computation, University, Zurich",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "no"
+      }
+    },
+    "9-4": {
+      "academic_score": 0.566,
+      "mentee_academics": {
+        "desired_field": "University",
+        "background_field": "Bachelor, Journalism, Bechlor",
+        "level": "Bachelor"
+      },
+      "mentor_academics": {
+        "field": "Zeit, Bachelor, Gesundheitsförderung, Prävention",
+        "level": "Bachelor"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "no"
+      }
+    },
+    "9-5": {
+      "academic_score": 0.384,
+      "mentee_academics": {
+        "desired_field": "University",
+        "background_field": "Bachelor, Journalism, Bechlor",
+        "level": "Bachelor"
+      },
+      "mentor_academics": {
+        "field": "Zellbiologie ETH",
+        "level": "PhD"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "no"
+      }
+    },
+    "9-6": {
+      "academic_score": 0.503,
+      "mentee_academics": {
+        "desired_field": "University",
+        "background_field": "Bachelor, Journalism, Bechlor",
+        "level": "Bachelor"
+      },
+      "mentor_academics": {
+        "field": "Biomedical Engineering",
+        "level": "PhD"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "no",
+        "bonus_applied": "no"
+      }
+    },
+    "9-7": {
+      "academic_score": 0.426,
+      "mentee_academics": {
+        "desired_field": "University",
+        "background_field": "Bachelor, Journalism, Bechlor",
+        "level": "Bachelor"
+      },
+      "mentor_academics": {
+        "field": "MSc Umweltnaturwissenschaften ETHZ, Biogeochemie",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "no"
+      }
+    },
+    "9-8": {
+      "academic_score": 0.556,
+      "mentee_academics": {
+        "desired_field": "University",
+        "background_field": "Bachelor, Journalism, Bechlor",
+        "level": "Bachelor"
+      },
+      "mentor_academics": {
+        "field": "PhD Neuroscience",
+        "level": "PhD"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "no",
+        "bonus_applied": "no"
+      }
+    },
+    "9-9": {
+      "academic_score": 0.569,
+      "mentee_academics": {
+        "desired_field": "University",
+        "background_field": "Bachelor, Journalism, Bechlor",
+        "level": "Bachelor"
+      },
+      "mentor_academics": {
+        "field": "Science",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "no",
+        "bonus_applied": "no"
+      }
+    },
+    "9-10": {
+      "academic_score": 0.43,
+      "mentee_academics": {
+        "desired_field": "University",
+        "background_field": "Bachelor, Journalism, Bechlor",
+        "level": "Bachelor"
+      },
+      "mentor_academics": {
+        "field": "Elektrotechnik",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "no",
+        "bonus_applied": "no"
+      }
+    },
+    "10-1": {
+      "academic_score": 0.488,
+      "mentee_academics": {
+        "desired_field": "Pädagogische Hochschule Zürich",
+        "background_field": "Bachelor, Matura-, Abschluss, Gymnasium, Ukraine",
+        "level": "Bachelor"
+      },
+      "mentor_academics": {
+        "field": "Science, Civil Engineering",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "no"
+      }
+    },
+    "10-2": {
+      "academic_score": 0.2,
+      "mentee_academics": {
+        "desired_field": "Pädagogische Hochschule Zürich",
+        "background_field": "Bachelor, Matura-, Abschluss, Gymnasium, Ukraine",
+        "level": "Bachelor"
+      },
+      "mentor_academics": {
+        "field": "Wissenschaftliche Mitarbeiterin",
+        "level": "Unknown"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "no"
+      }
+    },
+    "10-3": {
+      "academic_score": 0.609,
+      "mentee_academics": {
+        "desired_field": "Pädagogische Hochschule Zürich",
+        "background_field": "Bachelor, Matura-, Abschluss, Gymnasium, Ukraine",
+        "level": "Bachelor"
+      },
+      "mentor_academics": {
+        "field": "Neural, Systems, Computation, University, Zurich",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "no"
+      }
+    },
+    "10-4": {
+      "academic_score": 0.529,
+      "mentee_academics": {
+        "desired_field": "Pädagogische Hochschule Zürich",
+        "background_field": "Bachelor, Matura-, Abschluss, Gymnasium, Ukraine",
+        "level": "Bachelor"
+      },
+      "mentor_academics": {
+        "field": "Zeit, Bachelor, Gesundheitsförderung, Prävention",
+        "level": "Bachelor"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "no"
+      }
+    },
+    "10-5": {
+      "academic_score": 0.379,
+      "mentee_academics": {
+        "desired_field": "Pädagogische Hochschule Zürich",
+        "background_field": "Bachelor, Matura-, Abschluss, Gymnasium, Ukraine",
+        "level": "Bachelor"
+      },
+      "mentor_academics": {
+        "field": "Zellbiologie ETH",
+        "level": "PhD"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "no"
+      }
+    },
+    "10-6": {
+      "academic_score": 0.417,
+      "mentee_academics": {
+        "desired_field": "Pädagogische Hochschule Zürich",
+        "background_field": "Bachelor, Matura-, Abschluss, Gymnasium, Ukraine",
+        "level": "Bachelor"
+      },
+      "mentor_academics": {
+        "field": "Biomedical Engineering",
+        "level": "PhD"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "no",
+        "bonus_applied": "no"
+      }
+    },
+    "10-7": {
+      "academic_score": 0.432,
+      "mentee_academics": {
+        "desired_field": "Pädagogische Hochschule Zürich",
+        "background_field": "Bachelor, Matura-, Abschluss, Gymnasium, Ukraine",
+        "level": "Bachelor"
+      },
+      "mentor_academics": {
+        "field": "MSc Umweltnaturwissenschaften ETHZ, Biogeochemie",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "yes",
+        "bonus_applied": "no"
+      }
+    },
+    "10-8": {
+      "academic_score": 0.477,
+      "mentee_academics": {
+        "desired_field": "Pädagogische Hochschule Zürich",
+        "background_field": "Bachelor, Matura-, Abschluss, Gymnasium, Ukraine",
+        "level": "Bachelor"
+      },
+      "mentor_academics": {
+        "field": "PhD Neuroscience",
+        "level": "PhD"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "no",
+        "bonus_applied": "no"
+      }
+    },
+    "10-9": {
+      "academic_score": 0.481,
+      "mentee_academics": {
+        "desired_field": "Pädagogische Hochschule Zürich",
+        "background_field": "Bachelor, Matura-, Abschluss, Gymnasium, Ukraine",
+        "level": "Bachelor"
+      },
+      "mentor_academics": {
+        "field": "Science",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "no",
+        "bonus_applied": "no"
+      }
+    },
+    "10-10": {
+      "academic_score": 0.379,
+      "mentee_academics": {
+        "desired_field": "Pädagogische Hochschule Zürich",
+        "background_field": "Bachelor, Matura-, Abschluss, Gymnasium, Ukraine",
+        "level": "Bachelor"
+      },
+      "mentor_academics": {
+        "field": "Elektrotechnik",
+        "level": "Master"
+      },
+      "mentoring_synergy": {
+        "mentee_uncertainty": "no",
+        "mentor_swiss_experience": "no",
+        "bonus_applied": "no"
+      }
+    }
   }
 }

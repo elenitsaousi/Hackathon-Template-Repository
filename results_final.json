@@ -1,102 +1,74 @@
-[
-    {
-        "mentor_id": "3",
-        "mentee_id": "6",
-        "gender_score": 0.75,
-        "language_score": 0.742,
-        "academia_score": 0.594,
-        "geo_score": 1.0,
-        "age_score": 0.9047619047619048,
-        "final_score": 0.7158
-    },
-    {
-        "mentor_id": "2",
-        "mentee_id": "7",
-        "gender_score": 0.75,
-        "language_score": 0.787,
-        "academia_score": 0.623,
-        "geo_score": 0.7437839974463112,
-        "age_score": 0.7619047619047619,
-        "final_score": 0.6592351992338934
-    },
-    {
-        "mentor_id": "5",
-        "mentee_id": "9",
-        "gender_score": 0.75,
-        "language_score": 0.405,
-        "academia_score": 0.682,
-        "geo_score": 0.6028074324829489,
-        "age_score": 0.9761904761904762,
-        "final_score": 0.6582422297448847
-    },
-    {
-        "mentor_id": "10",
-        "mentee_id": "3",
-        "gender_score": 1.0,
-        "language_score": 0.405,
-        "academia_score": 0.51,
-        "geo_score": 1.0,
-        "age_score": 0.8333333333333334,
-        "final_score": 0.657
-    },
-    {
-        "mentor_id": "1",
-        "mentee_id": "2",
-        "gender_score": 0.75,
-        "language_score": 0.731,
-        "academia_score": 0.526,
-        "geo_score": 0.8394124305098212,
-        "age_score": 0.9047619047619048,
-        "final_score": 0.6200237291529462
-    },
-    {
-        "mentor_id": "8",
-        "mentee_id": "1",
-        "gender_score": 0.75,
-        "language_score": 0.371,
-        "academia_score": 0.461,
-        "geo_score": 0.9149536428749284,
-        "age_score": 0.8095238095238095,
-        "final_score": 0.5971860928624785
-    },
-    {
-        "mentor_id": "9",
-        "mentee_id": "10",
-        "gender_score": 0.75,
-        "language_score": 0.72,
-        "academia_score": 0.325,
-        "geo_score": 0.9271850845844437,
-        "age_score": 0.8095238095238095,
-        "final_score": 0.5056555253753331
-    },
-    {
-        "mentor_id": "4",
-        "mentee_id": "4",
-        "gender_score": 0.75,
-        "language_score": 0.731,
-        "academia_score": 0.505,
-        "geo_score": 0.41533656618559633,
-        "age_score": 0.7142857142857143,
-        "final_score": 0.47810096985567885
-    },
-    {
-        "mentor_id": "6",
-        "mentee_id": "5",
-        "gender_score": 1.0,
-        "language_score": 0.405,
-        "academia_score": 0.22,
-        "geo_score": 0.9196605440111509,
-        "age_score": 0.4285714285714286,
-        "final_score": 0.4298981632033453
-    },
-    {
-        "mentor_id": "7",
-        "mentee_id": "8",
-        "gender_score": 0.75,
-        "language_score": 0.338,
-        "academia_score": 0.384,
-        "geo_score": 0.31421750694170403,
-        "age_score": 0.8571428571428572,
-        "final_score": 0.36306525208251117
-    }
-]
+{
+  "3-7": {
+    "total_score": 0.74,
+    "academic_score": 0.716,
+    "birthday_score": 0.967,
+    "gender_score": 0.75,
+    "language_score": 0.427,
+    "distance_score": 1.0
+  },
+  "8-3": {
+    "total_score": 0.714,
+    "academic_score": 0.732,
+    "birthday_score": 0.867,
+    "gender_score": 0.75,
+    "language_score": 0.371,
+    "distance_score": 0.915
+  },
+  "10-4": {
+    "total_score": 0.685,
+    "academic_score": 0.529,
+    "birthday_score": 0.933,
+    "gender_score": 1.0,
+    "language_score": 0.427,
+    "distance_score": 0.565
+  },
+  "1-2": {
+    "total_score": 0.659,
+    "academic_score": 0.61,
+    "birthday_score": 0.867,
+    "gender_score": 0.75,
+    "language_score": 0.371,
+    "distance_score": 0.839
+  },
+  "6-1": {
+    "total_score": 0.656,
+    "academic_score": 0.619,
+    "birthday_score": 0.667,
+    "gender_score": 1.0,
+    "language_score": 0.405,
+    "distance_score": 0.92
+  },
+  "2-6": {
+    "total_score": 0.64,
+    "academic_score": 0.597,
+    "birthday_score": 0.833,
+    "gender_score": 0.75,
+    "language_score": 0.338,
+    "distance_score": 0.744
+  },
+  "5-8": {
+    "total_score": 0.625,
+    "academic_score": 0.548,
+    "birthday_score": 0.9,
+    "gender_score": 0.75,
+    "language_score": 0.27,
+    "distance_score": 0.031
+  },
+  "9-10": {
+    "total_score": 0.543,
+    "academic_score": 0.43,
+    "birthday_score": 0.733,
+    "gender_score": 0.75,
+    "language_score": 0.36,
+    "distance_score": 0.927
+  },
+  "4-5": {
+    "total_score": 0.426,
+    "academic_score": 0.407,
+    "birthday_score": 0.3,
+    "gender_score": 0.75,
+    "language_score": 0.371,
+    "distance_score": 0.838
+  }
+}
