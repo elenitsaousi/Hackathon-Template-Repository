@@ -1,19 +1,18 @@
 """
-Scoring reasoning for geographic_proximity:
+Scoring logic for geographic_proximity
 
-The goal is to assess how geographically close a mentee and mentor are to each other, using travel distance (or optionally straight-line distance) as the primary factor. The file typically relies on precomputed distances (in kilometers) between cities or address locations, loaded from files such as 'location_mappings.json' and 'distances.json'. Each mentee's and mentor's home location is mapped to coordinates, and the distance between the pair is found via lookup or, if needed, calculated via routing APIs like OpenRouteService.
+This module scores how geographically close each mentee-mentor pair is, based on precomputed travel distances (in kilometers) between their home locations. Locations are mapped to coordinates using 'location_mappings.json', and distances between all relevant pairs are loaded from 'distances.json'. For each mentee and mentor, their location is looked up in the mappings, and the distance between their coordinates is found via the precomputed distance matrix.
 
-Scoring Principle:
-- Minimum distance (mentees and mentors in the same city or very nearby): maximum score (1.0).
-- Moderate distances: score decreases as distance increases.
-- Long distances: minimum score (0.0), with optional thresholds so that above a certain distance (e.g. 200km+) the score "bottoms out".
+Scoring principle:
+- If the distance between a mentee and mentor is zero (same coordinates), the pair receives the maximum score of 1.0.
+- For larger distances, the score decreases linearly according to the formula:
+    score = max(0.0, 1.0 - (distance_km / max_reasonable_distance))
+  where max_reasonable_distance is typically set at 200 km; distances at or above this threshold receive the minimum score of 0.0.
+- If a location is unmapped or a distance is missing, the score defaults to 0.0 for that pair.
+- All scores are multiplied by an optional importance_modifier (default 1.0) and fall in the range [0, 1].
+- The result is a dictionary mapping (mentee_id, mentor_id) to float scores.
 
-The score function is generally monotonic and can be linear, piecewise, or exponential decay:
-- Example linear: score = max(0.0, 1.0 - (distance_km / max_reasonable_distance))
-- Example piecewise: 0.9+ if <20km, 0.7 if <50km, etc.
-The final result is a dictionary mapping (mentee_id, mentor_id) to a float in [0,1], possibly multiplied by an importance_modifier weight.
-
-The underlying reasoning: geographic proximity enables easier in-person meetings and thus is a relevant, though often flexible, matching criterion. The closer two people are, the greater the assumed convenience and feasibility for meeting.
+Rationale: smaller distances produce higher compatibility scores, prioritizing pairs who can more easily meet in person. The scoring logic is strictly monotonic and strictly based on precomputed travel distances; no API calls or runtime geocoding are performed as part of scoring.
 """
 
 
