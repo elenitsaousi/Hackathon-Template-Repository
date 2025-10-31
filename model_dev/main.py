@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Any, Dict
 import pandas as pd
+import json
 
 try:
     from model_dev.categories import gender, academia, languages, age_difference, geographic_proximity
@@ -33,8 +34,6 @@ def run_all_categories(
 
     print(mentees_df.columns)
     print(mentors_df.columns)
-    print(mentees_df["Gender"].head(2))
-    print(mentors_df["Geschlecht / Gender"].head(2))
 
     # Importance modifiers
     importance_modifiers = {
