@@ -5,6 +5,7 @@ import { ParameterControls } from './ParameterControls';
 import { MatchingGraph } from './MatchingGraph';
 import { DetailPanel } from './DetailPanel';
 import { MatchScorePanel } from './MatchScorePanel';
+import { FinalMatchesDisplay } from './FinalMatchesDisplay';
 import { Settings } from 'lucide-react';
 import { parseMenteeData, parseMentorData, parseCSV } from '../utils/csvParser';
 import { createMergedData } from '../utils/csvMerger';
@@ -42,11 +43,46 @@ export function MatchingDashboard({ uploadedFiles }: MatchingDashboardProps) {
   const [manualMatches, setManualMatches] = useState<Set<string>>(new Set());
   const [manualNonMatches, setManualNonMatches] = useState<Set<string>>(new Set());
   const [categoryScores, setCategoryScores] = useState<any>(null);
+  const [finalMatches, setFinalMatches] = useState<any[]>([]);
   const [lastMatchedParameters, setLastMatchedParameters] = useState<MatchingParameters | null>(null);
+  const [lastProcessedFiles, setLastProcessedFiles] = useState<string>('');
 
+  // Auto-trigger matching when files are loaded (either from defaults or uploaded)
   useEffect(() => {
-    loadDataAndFetchScores();
-  }, []);
+    // Create a unique identifier for the current file set
+    // Use file names and sizes to detect changes (file objects may be recreated)
+    const fileIdentifier = [
+      uploadedFiles.mentorApplication?.name || 'none',
+      uploadedFiles.mentorApplication?.size || 0,
+      uploadedFiles.mentorInterview?.name || 'none',
+      uploadedFiles.mentorInterview?.size || 0,
+      uploadedFiles.menteeApplication?.name || 'none',
+      uploadedFiles.menteeApplication?.size || 0,
+      uploadedFiles.menteeInterview?.name || 'none',
+      uploadedFiles.menteeInterview?.size || 0,
+    ].join('|');
+    
+    // Check if all 4 files are available OR if files have changed
+    const hasAllFiles = uploadedFiles.mentorApplication && uploadedFiles.mentorInterview &&
+                        uploadedFiles.menteeApplication && uploadedFiles.menteeInterview;
+    
+    // Trigger matching if:
+    // 1. All files are uploaded (different from last processed)
+    // 2. This is the first load (lastProcessedFiles is empty)
+    const filesChanged = fileIdentifier !== lastProcessedFiles;
+    
+    if ((hasAllFiles || lastProcessedFiles === '') && filesChanged) {
+      console.log('Files available or changed - triggering automatic matching...');
+      loadDataAndFetchScores();
+      setLastProcessedFiles(fileIdentifier);
+    }
+  }, [
+    uploadedFiles.mentorApplication,
+    uploadedFiles.mentorInterview,
+    uploadedFiles.menteeApplication,
+    uploadedFiles.menteeInterview,
+    lastProcessedFiles,
+  ]);
 
   const loadDataAndFetchScores = async () => {
     setLoading(true);
@@ -158,27 +194,10 @@ export function MatchingDashboard({ uploadedFiles }: MatchingDashboardProps) {
       setMentors(parsedMentors);
       setMentees(parsedMentees);
 
-      // Initialize all mentor-mentee pairs with score 0
-      const initialMatches: Match[] = [];
-      parsedMentors.forEach(mentor => {
-        parsedMentees.forEach(mentee => {
-          initialMatches.push({
-            mentorId: mentor.id,
-            menteeId: mentee.id,
-            globalScore: 0,
-            scores: {
-              gender: 0,
-              academia: 0,
-              languages: 0,
-              ageDifference: 0,
-              geographicProximity: 0,
-            },
-            isImmutableNonMatch: false,
-          });
-        });
-      });
-      setMatches(initialMatches);
-      console.log(`✓ Initialized ${initialMatches.length} pairs with score 0 (${parsedMentors.length} mentors × ${parsedMentees.length} mentees)`);
+      // Don't initialize matches here - wait for backend to return final_matches with total_score
+      // Matches will be set after fetchAndCalculateScores completes
+      setMatches([]);
+      console.log(`✓ Loaded ${parsedMentors.length} mentors and ${parsedMentees.length} mentees - waiting for backend to return matches with total_score`);
 
       // Fetch scores from API - pass files to backend
       await fetchAndCalculateScores(
@@ -221,18 +240,27 @@ export function MatchingDashboard({ uploadedFiles }: MatchingDashboardProps) {
         menteeIntFile,
         params
       );
-      setCategoryScores(apiResponse);
+      // Store category scores from new API response structure
+      const categoryScores = apiResponse.category_scores || apiResponse;
+      setCategoryScores(categoryScores);
 
-      // Calculate aggregate matches from category scores
-      // Only create matches if we have scores from the backend
-      const calculatedMatches = calculateAggregateMatches(
-        mentorData,
-        menteeData,
-        apiResponse,
-        params
-      );
-
-      setMatches(calculatedMatches);
+      // For initial fetch, if no final_matches are available, don't create matches
+      // We only create matches from backend final_matches which have total_score
+      if (apiResponse.final_matches && Array.isArray(apiResponse.final_matches) && apiResponse.final_matches.length > 0) {
+        const calculatedMatches = calculateAggregateMatches(
+          mentorData,
+          menteeData,
+          categoryScores,
+          params,
+          apiResponse.final_matches // Use final_matches from backend
+        );
+        setMatches(calculatedMatches);
+        setFinalMatches(apiResponse.final_matches);
+      } else {
+        console.log('No final_matches from backend during initial fetch - setting empty matches');
+        setMatches([]);
+        setFinalMatches([]);
+      }
     } catch (error) {
       console.error('Error fetching scores:', error);
       // Don't create matches if API fails - connections only come from backend
@@ -245,79 +273,110 @@ export function MatchingDashboard({ uploadedFiles }: MatchingDashboardProps) {
     mentorData: Mentor[],
     menteeData: Mentee[],
     scores: any,
-    params: MatchingParameters
+    params: MatchingParameters,
+    finalMatches: any[] // Required - get total_score from backend
   ): Match[] => {
     const matches: Match[] = [];
 
-    // Only create matches if we have scores from the backend API
-    // If scores are empty, don't create any matches
-    if (!scores || !scores.gender || Object.keys(scores.gender).length === 0) {
+    // Only use total_score from backend - do not calculate anything
+    // Only create matches for pairs that have total_score from backend final_matches
+    if (!finalMatches || finalMatches.length === 0) {
+      console.log('No final_matches from backend - cannot create matches without total_score');
       return matches;
     }
 
-    mentorData.forEach(mentor => {
-      menteeData.forEach(mentee => {
-        const key = `${mentor.id}-${mentee.id}`;
+    // Get category scores for individual category display
+    const getScoreValue = (scoreData: any): number | undefined => {
+      if (scoreData === undefined || scoreData === null) return undefined;
+      if (typeof scoreData === 'number') return scoreData;
+      if (typeof scoreData === 'object') {
+        // Try common score keys
+        return scoreData.gender_score ?? scoreData.academic_score ?? 
+               scoreData.score ?? scoreData.birthday_score ?? 
+               scoreData.distance_score ?? undefined;
+      }
+      return undefined;
+    };
 
-        // Get category scores from API response - only use if they exist
-        const genderScore = scores.gender?.[key];
-        const academiaScore = scores.academia?.[key];
-        const languagesScore = scores.languages?.[key];
-        const ageDifferenceScore = scores.age_difference?.[key];
-        const geographicScore = scores.geographic_proximity?.[key];
+    // Create matches only from final_matches that have total_score from backend
+    finalMatches.forEach((fm: any) => {
+      const mentorIdStr = String(fm.mentor_id || fm.mentorId);
+      const menteeIdStr = String(fm.mentee_id || fm.menteeId);
+      const matchKey = `${mentorIdStr}-${menteeIdStr}`;
 
-        // Only create match if at least one score exists
-        if (genderScore === undefined && academiaScore === undefined && 
-            languagesScore === undefined && ageDifferenceScore === undefined && 
-            geographicScore === undefined) {
-          return; // Skip this pair - no connection from backend
-        }
+      const mentor = mentorData.find(m => m.id === mentorIdStr);
+      const mentee = menteeData.find(m => m.id === menteeIdStr);
 
-        // Check if any score is -Infinity (immutable non-match)
-        const isImmutableNonMatch = 
-          genderScore !== undefined && (!isFinite(genderScore) && genderScore !== 0) ||
-          academiaScore !== undefined && (!isFinite(academiaScore) && academiaScore !== 0) ||
-          languagesScore !== undefined && (!isFinite(languagesScore) && languagesScore !== 0) ||
-          ageDifferenceScore !== undefined && (!isFinite(ageDifferenceScore) && ageDifferenceScore !== 0) ||
-          geographicScore !== undefined && (!isFinite(geographicScore) && geographicScore !== 0);
+      if (!mentor || !mentee) {
+        console.warn(`Could not find mentor ${mentorIdStr} or mentee ${menteeIdStr} for match from backend`);
+        return;
+      }
 
-        // Use default values if scores don't exist
-        const finalGenderScore = genderScore !== undefined ? genderScore : 0;
-        const finalAcademiaScore = academiaScore !== undefined ? academiaScore : 0;
-        const finalLanguagesScore = languagesScore !== undefined ? languagesScore : 0;
-        const finalAgeDifferenceScore = ageDifferenceScore !== undefined ? ageDifferenceScore : 0;
-        const finalGeographicScore = geographicScore !== undefined ? geographicScore : 0;
+      // Get total_score from backend - this is the only source of truth
+      let globalScore: number;
+      if (fm.total_score === 'Infinity' || fm.total_score === Infinity || 
+          fm.total_score === 'inf' || fm.total_score === '+inf') {
+        globalScore = Infinity;
+      } else if (fm.total_score === '-Infinity' || fm.total_score === -Infinity || 
+                 fm.total_score === '-inf' || fm.total_score === '-inf') {
+        globalScore = -Infinity;
+      } else if (typeof fm.total_score === 'number' && isFinite(fm.total_score)) {
+        globalScore = fm.total_score;
+      } else if (typeof fm.total_score === 'number' && !isFinite(fm.total_score)) {
+        globalScore = fm.total_score; // Already infinity
+      } else {
+        console.warn(`Invalid total_score for ${matchKey} from backend:`, fm.total_score);
+        return; // Skip this match if total_score is invalid
+      }
 
-        // Calculate weighted aggregate
-        const totalWeight =
-          params.genderWeight +
-          params.academiaWeight +
-          params.languagesWeight +
-          params.ageDifferenceWeight +
-          params.geographicProximityWeight;
+      // Get individual category scores from category_scores if available, otherwise from final_match
+      // Category scores keys are in "mentee_id-mentor_id" format (from backend tuple conversion)
+      // matchKey is in "mentor_id-mentee_id" format (frontend standard)
+      const categoryScoreKey = `${menteeIdStr}-${mentorIdStr}`;
+      
+      const genderScore = scores?.gender ? (
+        // Try categoryScoreKey first (correct format), then matchKey as fallback
+        getScoreValue(scores.gender[categoryScoreKey]) ?? getScoreValue(scores.gender[matchKey])
+      ) : (typeof fm.gender_score === 'number' ? fm.gender_score : 0);
+      
+      const academiaScore = scores?.academia ? (
+        getScoreValue(scores.academia[categoryScoreKey]) ?? getScoreValue(scores.academia[matchKey])
+      ) : (typeof fm.academic_score === 'number' ? fm.academic_score : 0);
+      
+      const languagesScore = scores?.languages ? (
+        getScoreValue(scores.languages[categoryScoreKey]) ?? getScoreValue(scores.languages[matchKey])
+      ) : (typeof fm.language_score === 'number' ? fm.language_score : 0);
+      
+      const ageDifferenceScore = scores?.age_difference ? (
+        getScoreValue(scores.age_difference[categoryScoreKey]) ?? getScoreValue(scores.age_difference[matchKey])
+      ) : (typeof fm.age_difference_score === 'number' ? fm.age_difference_score : 0);
+      
+      const geographicScore = scores?.geographic_proximity ? (
+        getScoreValue(scores.geographic_proximity[categoryScoreKey]) ?? getScoreValue(scores.geographic_proximity[matchKey])
+      ) : (typeof fm.distance_score === 'number' ? fm.distance_score : 0);
 
-        const weightedSum =
-          (isFinite(finalGenderScore) ? finalGenderScore : 0) * params.genderWeight +
-          (isFinite(finalAcademiaScore) ? finalAcademiaScore : 0) * params.academiaWeight +
-          (isFinite(finalLanguagesScore) ? finalLanguagesScore : 0) * params.languagesWeight +
-          (isFinite(finalAgeDifferenceScore) ? finalAgeDifferenceScore : 0) * params.ageDifferenceWeight +
-          (isFinite(finalGeographicScore) ? finalGeographicScore : 0) * params.geographicProximityWeight;
+      // Check if any score is -Infinity (immutable non-match)
+      const isImmutableNonMatch = 
+        (!isFinite(genderScore) && genderScore !== 0 && genderScore < 0) ||
+        (!isFinite(academiaScore) && academiaScore !== 0 && academiaScore < 0) ||
+        (!isFinite(languagesScore) && languagesScore !== 0 && languagesScore < 0) ||
+        (!isFinite(ageDifferenceScore) && ageDifferenceScore !== 0 && ageDifferenceScore < 0) ||
+        (!isFinite(geographicScore) && geographicScore !== 0 && geographicScore < 0);
 
-        const globalScore = isImmutableNonMatch ? 0 : weightedSum / totalWeight;
-
-        matches.push({
-          mentorId: mentor.id,
-          menteeId: mentee.id,
-          globalScore: Math.round(globalScore * 100) / 100,
-          scores: {
-            gender: isFinite(finalGenderScore) ? Math.round(finalGenderScore * 100) / 100 : 0,
-            academia: isFinite(finalAcademiaScore) ? Math.round(finalAcademiaScore * 100) / 100 : 0,
-            languages: isFinite(finalLanguagesScore) ? Math.round(finalLanguagesScore * 100) / 100 : 0,
-            ageDifference: isFinite(finalAgeDifferenceScore) ? Math.round(finalAgeDifferenceScore * 100) / 100 : 0,
-            geographicProximity: isFinite(finalGeographicScore) ? Math.round(finalGeographicScore * 100) / 100 : 0,
-          },
-          isImmutableNonMatch,
-        });
+      matches.push({
+        mentorId: mentorIdStr,
+        menteeId: menteeIdStr,
+        globalScore: (typeof globalScore === 'number' && isFinite(globalScore)) 
+          ? Math.round(globalScore * 100) / 100 
+          : globalScore, // Keep Infinity/-Infinity as-is
+        scores: {
+          gender: isFinite(genderScore) ? Math.round(genderScore * 100) / 100 : 0,
+          academia: isFinite(academiaScore) ? Math.round(academiaScore * 100) / 100 : 0,
+          languages: isFinite(languagesScore) ? Math.round(languagesScore * 100) / 100 : 0,
+          ageDifference: isFinite(ageDifferenceScore) ? Math.round(ageDifferenceScore * 100) / 100 : 0,
+          geographicProximity: isFinite(geographicScore) ? Math.round(geographicScore * 100) / 100 : 0,
+        },
+        isImmutableNonMatch,
       });
     });
 
@@ -333,6 +392,7 @@ export function MatchingDashboard({ uploadedFiles }: MatchingDashboardProps) {
   };
   
   // Check if current parameters differ from the parameters used for current matches
+  // Used to change button color (orange when changed, green when up to date)
   const parametersChanged = lastMatchedParameters !== null && 
     JSON.stringify(parameters) !== JSON.stringify(lastMatchedParameters);
 
@@ -550,20 +610,59 @@ export function MatchingDashboard({ uploadedFiles }: MatchingDashboardProps) {
         manualNonMatchesArray
       );
 
-      setCategoryScores(apiResponse);
-
-      // Use final_matches from backend if available
+      // Store category scores from new API response structure
+      setCategoryScores(apiResponse.category_scores);
+      
+      // Store final matches from backend
+      // Backend now returns ALL pairs (not just matched ones) - each has total_score
       if (apiResponse.final_matches && Array.isArray(apiResponse.final_matches)) {
-        console.log('Using final_matches from backend:', apiResponse.final_matches.length, 'matches');
-        console.log('Sample final_match:', apiResponse.final_matches[0]);
+        // Filter for pairs that are in the final 1-to-1 matching (is_matched = true)
+        const actualFinalMatches = apiResponse.final_matches.filter((fm: any) => fm.is_matched === true);
+        setFinalMatches(actualFinalMatches);
         
-        // Convert backend final_matches to frontend Match format
+        // Use all pairs from backend (includes both matched and unmatched pairs)
+        // This should match results_final.json structure: all 100 pairs (10 mentors × 10 mentees)
+        console.log('Using final_matches from backend:', apiResponse.final_matches.length, 'total pairs');
+        console.log('  - Expected: ~100 pairs (all mentor-mentee combinations)');
+        console.log('  - Matched pairs (is_matched=true):', actualFinalMatches.length);
+        console.log('  - Unmatched pairs:', apiResponse.final_matches.length - actualFinalMatches.length);
+        if (apiResponse.final_matches.length > 0) {
+          const sample = apiResponse.final_matches[0];
+          console.log('Sample pair from backend:', {
+            mentor_id: sample.mentor_id,
+            mentee_id: sample.mentee_id,
+            total_score: sample.total_score,
+            is_matched: sample.is_matched,
+            // Show format conversion
+            matchKey: `${sample.mentor_id}-${sample.mentee_id}`,
+            categoryScoreKey: `${sample.mentee_id}-${sample.mentor_id}`,
+          });
+          // Verify category_scores format
+          if (apiResponse.category_scores?.gender) {
+            const genderKeys = Object.keys(apiResponse.category_scores.gender).slice(0, 3);
+            console.log('Category scores key format (sample):', genderKeys, '(should be "mentee_id-mentor_id")');
+          }
+        }
+        
+        // Convert ALL backend pairs to frontend Match format (both matched and unmatched)
+        // This allows frontend to calculate recommendations using all pairs with total_score
         const backendMatchesMap = new Map<string, Match>();
         
         apiResponse.final_matches.forEach((fm: any) => {
-          const mentorIdStr = String(fm.mentor_id);
-          const menteeIdStr = String(fm.mentee_id);
+          // Backend sends: { mentor_id: int, mentee_id: int, ... }
+          // Handle both formats: mentor_id/mentorId, mentee_id/menteeId
+          const mentorIdStr = String(fm.mentor_id ?? fm.mentorId ?? '');
+          const menteeIdStr = String(fm.mentee_id ?? fm.menteeId ?? '');
+          
+          if (!mentorIdStr || !menteeIdStr) {
+            console.warn('Missing mentor_id or mentee_id in backend response:', fm);
+            return;
+          }
+          
+          // Frontend uses "mentor_id-mentee_id" format consistently
           const matchKey = `${mentorIdStr}-${menteeIdStr}`;
+          // Category scores use "mentee_id-mentor_id" format (from backend tuple conversion)
+          const categoryScoreKey = `${menteeIdStr}-${mentorIdStr}`;
           
           const mentor = mentors.find(m => m.id === mentorIdStr);
           const mentee = mentees.find(m => m.id === menteeIdStr);
@@ -573,20 +672,20 @@ export function MatchingDashboard({ uploadedFiles }: MatchingDashboardProps) {
             return;
           }
 
-          // Handle Infinity scores properly
-          let finalScore: number;
-          if (fm.final_score === 'Infinity' || fm.final_score === Infinity || fm.final_score === 'inf' || fm.final_score === '+inf') {
-            finalScore = Infinity; // Use Infinity for frontend
-          } else if (fm.final_score === '-Infinity' || fm.final_score === -Infinity || fm.final_score === '-inf' || fm.final_score === '-inf') {
-            finalScore = -Infinity; // Use -Infinity for frontend
-          } else if (typeof fm.final_score === 'number' && isFinite(fm.final_score)) {
-            finalScore = fm.final_score;
-          } else if (typeof fm.final_score === 'number' && !isFinite(fm.final_score)) {
+          // Use total_score from backend - this is the source of truth for globalScore
+          let totalScore: number;
+          if (fm.total_score === 'Infinity' || fm.total_score === Infinity || fm.total_score === 'inf' || fm.total_score === '+inf') {
+            totalScore = Infinity; // Use Infinity for frontend
+          } else if (fm.total_score === '-Infinity' || fm.total_score === -Infinity || fm.total_score === '-inf' || fm.total_score === '-inf') {
+            totalScore = -Infinity; // Use -Infinity for frontend
+          } else if (typeof fm.total_score === 'number' && isFinite(fm.total_score)) {
+            totalScore = fm.total_score;
+          } else if (typeof fm.total_score === 'number' && !isFinite(fm.total_score)) {
             // Already infinity
-            finalScore = fm.final_score;
+            totalScore = fm.total_score;
           } else {
-            console.warn(`Invalid final_score for ${mentorIdStr}-${menteeIdStr}:`, fm.final_score);
-            finalScore = 0;
+            console.warn(`Invalid total_score for ${mentorIdStr}-${menteeIdStr}:`, fm.total_score);
+            totalScore = 0;
           }
 
           // Check if this is a manual match/non-match
@@ -595,25 +694,90 @@ export function MatchingDashboard({ uploadedFiles }: MatchingDashboardProps) {
           
           // Override score based on manual selections (manual selections take precedence)
           if (isManualMatch) {
-            finalScore = Infinity; // Force manual match to +inf
+            totalScore = Infinity; // Force manual match to +inf
             console.log(`Overriding score for manual match ${matchKey} to +inf`);
           } else if (isManualNonMatch) {
-            finalScore = -Infinity; // Force manual non-match to -inf
+            totalScore = -Infinity; // Force manual non-match to -inf
             console.log(`Overriding score for manual non-match ${matchKey} to -inf`);
           }
 
+          // Get scores from category_scores if available (from main.py), otherwise use final_match scores
+          // Category scores keys are in "mentee_id-mentor_id" format (from backend tuple conversion)
+          // matchKey is in "mentor_id-mentee_id" format (frontend standard)
+          // So we always use categoryScoreKey for category_scores lookups
+          
           backendMatchesMap.set(matchKey, {
             mentorId: mentorIdStr,
             menteeId: menteeIdStr,
-            globalScore: (typeof finalScore === 'number' && isFinite(finalScore)) 
-              ? Math.round(finalScore * 100) / 100 
-              : finalScore, // Keep Infinity/-Infinity as-is
+            globalScore: (typeof totalScore === 'number' && isFinite(totalScore)) 
+              ? Math.round(totalScore * 100) / 100 
+              : totalScore, // Keep Infinity/-Infinity as-is
             scores: {
-              gender: typeof fm.gender_score === 'number' ? Math.round(fm.gender_score * 100) / 100 : 0,
-              academia: typeof fm.academia_score === 'number' ? Math.round(fm.academia_score * 100) / 100 : 0,
-              languages: typeof fm.language_score === 'number' ? Math.round(fm.language_score * 100) / 100 : 0,
-              ageDifference: typeof fm.age_score === 'number' ? Math.round(fm.age_score * 100) / 100 : 0,
-              geographicProximity: typeof fm.geo_score === 'number' ? Math.round(fm.geo_score * 100) / 100 : 0,
+              gender: (() => {
+                // Category scores use "mentee_id-mentor_id" format
+                const categoryData = apiResponse.category_scores?.gender?.[categoryScoreKey] ?? 
+                                   apiResponse.category_scores?.gender?.[matchKey]; // Fallback to matchKey format
+                if (categoryData !== undefined) {
+                  if (typeof categoryData === 'number') return Math.round(categoryData * 100) / 100;
+                  if (typeof categoryData === 'object' && 'gender_score' in categoryData) {
+                    return typeof categoryData.gender_score === 'number' 
+                      ? Math.round(categoryData.gender_score * 100) / 100 : 0;
+                  }
+                }
+                return typeof fm.gender_score === 'number' ? Math.round(fm.gender_score * 100) / 100 : 0;
+              })(),
+              academia: (() => {
+                // Category scores use "mentee_id-mentor_id" format
+                const categoryData = apiResponse.category_scores?.academia?.[categoryScoreKey] ?? 
+                                   apiResponse.category_scores?.academia?.[matchKey]; // Fallback
+                if (categoryData !== undefined) {
+                  if (typeof categoryData === 'number') return Math.round(categoryData * 100) / 100;
+                  if (typeof categoryData === 'object' && 'academic_score' in categoryData) {
+                    return typeof categoryData.academic_score === 'number' 
+                      ? Math.round(categoryData.academic_score * 100) / 100 : 0;
+                  }
+                }
+                return typeof fm.academic_score === 'number' ? Math.round(fm.academic_score * 100) / 100 : 0;
+              })(),
+              languages: (() => {
+                // Category scores use "mentee_id-mentor_id" format
+                const categoryData = apiResponse.category_scores?.languages?.[categoryScoreKey] ?? 
+                                   apiResponse.category_scores?.languages?.[matchKey]; // Fallback
+                if (categoryData !== undefined) {
+                  if (typeof categoryData === 'number') return Math.round(categoryData * 100) / 100;
+                  if (typeof categoryData === 'object' && 'score' in categoryData) {
+                    return typeof categoryData.score === 'number' 
+                      ? Math.round(categoryData.score * 100) / 100 : 0;
+                  }
+                }
+                return typeof fm.language_score === 'number' ? Math.round(fm.language_score * 100) / 100 : 0;
+              })(),
+              ageDifference: (() => {
+                // Category scores use "mentee_id-mentor_id" format
+                const categoryData = apiResponse.category_scores?.age_difference?.[categoryScoreKey] ?? 
+                                   apiResponse.category_scores?.age_difference?.[matchKey]; // Fallback
+                if (categoryData !== undefined) {
+                  if (typeof categoryData === 'number') return Math.round(categoryData * 100) / 100;
+                  if (typeof categoryData === 'object' && 'birthday_score' in categoryData) {
+                    return typeof categoryData.birthday_score === 'number' 
+                      ? Math.round(categoryData.birthday_score * 100) / 100 : 0;
+                  }
+                }
+                return typeof fm.age_difference_score === 'number' ? Math.round(fm.age_difference_score * 100) / 100 : 0;
+              })(),
+              geographicProximity: (() => {
+                // Category scores use "mentee_id-mentor_id" format
+                const categoryData = apiResponse.category_scores?.geographic_proximity?.[categoryScoreKey] ?? 
+                                   apiResponse.category_scores?.geographic_proximity?.[matchKey]; // Fallback
+                if (categoryData !== undefined) {
+                  if (typeof categoryData === 'number') return Math.round(categoryData * 100) / 100;
+                  if (typeof categoryData === 'object' && 'distance_score' in categoryData) {
+                    return typeof categoryData.distance_score === 'number' 
+                      ? Math.round(categoryData.distance_score * 100) / 100 : 0;
+                  }
+                }
+                return typeof fm.distance_score === 'number' ? Math.round(fm.distance_score * 100) / 100 : 0;
+              })(),
             },
             isImmutableNonMatch: isManualNonMatch,
           } as Match);
@@ -647,11 +811,22 @@ export function MatchingDashboard({ uploadedFiles }: MatchingDashboardProps) {
 
         const backendMatches = Array.from(backendMatchesMap.values());
 
-        console.log(`✓ Converted ${backendMatches.length} matches from backend final_matches (including manual selections)`);
+        console.log(`✓ Converted ${backendMatches.length} matches from backend pairs (all have total_score from backend)`);
+        console.log(`  - Expected: ~100 pairs (all mentor-mentee combinations, e.g., 10 mentors × 10 mentees)`);
+        console.log(`  - All pairs will be visualized as edges in the graph`);
         if (backendMatches.length > 0) {
-          console.log('Sample converted match:', backendMatches[0]);
+          const sampleMatch = backendMatches[0];
+          console.log('Sample converted match:', {
+            matchKey: `${sampleMatch.mentorId}-${sampleMatch.menteeId}`,
+            globalScore: sampleMatch.globalScore,
+            source: 'backend total_score',
+            hasCategoryScores: !!sampleMatch.scores.gender,
+            willBeVisualized: 'Yes - all edges are shown'
+          });
         }
         
+        // Set matches with all pairs (matched and unmatched) - frontend will visualize ALL edges
+        // This matches results_final.json: all pairs with total_score from backend
         setMatches(backendMatches);
         setLastMatchedParameters({ ...parameters }); // Save current parameters as the ones used for this match
         console.log(`✓ Loaded ${backendMatches.length} matches - manual selections preserved and applied`);
@@ -667,71 +842,10 @@ export function MatchingDashboard({ uploadedFiles }: MatchingDashboardProps) {
           console.log(`✓ Restored selected mentee: ${previouslySelectedMentee}`);
         }
       } else {
-        // Fallback to calculating matches from category scores
-        console.log('No final_matches from backend, calculating from category scores');
-        const calculatedMatches = calculateAggregateMatches(
-          mentors,
-          mentees,
-          apiResponse,
-          parameters
-        );
-        
-        // Apply manual selections to calculated matches (manual selections take precedence)
-        const matchesWithManualOverrides = calculatedMatches.map((match) => {
-          const matchKey = `${match.mentorId}-${match.menteeId}`;
-          const isManualMatch = manualMatches.has(matchKey);
-          const isManualNonMatch = manualNonMatches.has(matchKey);
-          
-          if (isManualMatch) {
-            return {
-              ...match,
-              globalScore: Infinity, // Override to +inf for manual match
-            };
-          } else if (isManualNonMatch) {
-            return {
-              ...match,
-              globalScore: -Infinity, // Override to -inf for manual non-match
-              isImmutableNonMatch: true,
-            };
-          }
-          return match;
-        });
-        
-        // Add manual matches that might not be in calculated matches
-        const calculatedMatchesMap = new Map<string, Match>();
-        matchesWithManualOverrides.forEach(m => {
-          calculatedMatchesMap.set(`${m.mentorId}-${m.menteeId}`, m);
-        });
-        
-        manualMatches.forEach((matchKey) => {
-          if (!calculatedMatchesMap.has(matchKey)) {
-            const [mentorIdStr, menteeIdStr] = matchKey.split('-');
-            const mentor = mentors.find(m => m.id === mentorIdStr);
-            const mentee = mentees.find(m => m.id === menteeIdStr);
-            
-            if (mentor && mentee) {
-              console.log(`Adding manual match not in calculated results: ${matchKey}`);
-              calculatedMatchesMap.set(matchKey, {
-                mentorId: mentorIdStr,
-                menteeId: menteeIdStr,
-                globalScore: Infinity, // Manual match = +inf
-                scores: {
-                  gender: 0,
-                  academia: 0,
-                  languages: 0,
-                  ageDifference: 0,
-                  geographicProximity: 0,
-                },
-                isImmutableNonMatch: false,
-              } as Match);
-            }
-          }
-        });
-        
-        const finalMatches = Array.from(calculatedMatchesMap.values());
-        setMatches(finalMatches);
-        setLastMatchedParameters({ ...parameters }); // Save current parameters
-        console.log(`✓ Applied manual selections to ${finalMatches.length} calculated matches`);
+        // No final_matches from backend - cannot create matches without total_score
+        console.warn('No final_matches from backend - cannot create matches without total_score');
+        setFinalMatches([]);
+        setMatches([]);
         
         // Restore previously selected mentor and mentee
         if (previouslySelectedMentor && mentors.find(m => m.id === previouslySelectedMentor)) {
@@ -796,21 +910,16 @@ export function MatchingDashboard({ uploadedFiles }: MatchingDashboardProps) {
       <div className="container mx-auto px-6 py-6">
         <div className="space-y-6">
           <Card className="p-4">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <Settings className="w-5 h-5 text-gray-600" />
-                <h2 className="text-gray-900">Parameters</h2>
-              </div>
-              <div className="flex items-center gap-4">
-                {parametersChanged && (
-                  <div className="p-2 bg-yellow-50 rounded text-sm text-yellow-800">
-                    ⚠️ Graph shows matches from previous parameters. Click "Match" to update.
-                  </div>
-                )}
+            <div className="mb-4">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <Settings className="w-5 h-5 text-gray-600" />
+                  <h2 className="text-gray-900">Parameters</h2>
+                </div>
                 <Button
                   onClick={handleMatch}
                   disabled={loading}
-                  className={`${parametersChanged ? 'bg-orange-600 hover:bg-orange-700' : 'bg-green-600 hover:bg-green-700'} text-white`}
+                  className={`${parametersChanged ? 'bg-orange-600 hover:bg-orange-700' : 'bg-green-600 hover:bg-green-700'} text-white flex-shrink-0 whitespace-nowrap`}
                 >
                   {loading ? 'Matching...' : 'Match'}
                 </Button>
@@ -835,6 +944,7 @@ export function MatchingDashboard({ uploadedFiles }: MatchingDashboardProps) {
                 onSelectMentee={setSelectedMentee}
                 getMatchStatus={getMatchStatus}
                 isRecommendedPair={isRecommendedPair}
+                finalMatches={finalMatches}
               />
             </Card>
           </div>
@@ -861,10 +971,10 @@ export function MatchingDashboard({ uploadedFiles }: MatchingDashboardProps) {
             </div>
           </div>
 
-          {/* Mentor and Mentee panels side by side - each takes half width */}
-          <div className="flex gap-6 items-start">
-            {/* Left half - Mentor */}
-            <div className="w-1/2 flex-shrink-0 overflow-hidden">
+          {/* Mentor and Mentee panels side by side - each takes equal width */}
+          <div className="flex gap-6 items-start w-full">
+            {/* Left half - Mentor - equal width */}
+            <div className="flex-1 min-w-0 overflow-hidden">
               {selectedMentor ? (
                 <DetailPanel
                   person={mentors.find(m => m.id === selectedMentor)!}
@@ -880,8 +990,8 @@ export function MatchingDashboard({ uploadedFiles }: MatchingDashboardProps) {
               )}
             </div>
 
-            {/* Right half - Mentee */}
-            <div className="w-1/2 flex-shrink-0 overflow-hidden">
+            {/* Right half - Mentee - equal width */}
+            <div className="flex-1 min-w-0 overflow-hidden">
               {selectedMentee ? (
                 <DetailPanel
                   person={mentees.find(m => m.id === selectedMentee)!}
@@ -898,6 +1008,19 @@ export function MatchingDashboard({ uploadedFiles }: MatchingDashboardProps) {
             </div>
           </div>
           
+          {/* Final Matches Display */}
+          {finalMatches.length > 0 && (
+            <div className="mt-6">
+              <FinalMatchesDisplay
+                finalMatches={finalMatches}
+                mentors={mentors}
+                mentees={mentees}
+                onSelectMentor={setSelectedMentor}
+                onSelectMentee={setSelectedMentee}
+              />
+            </div>
+          )}
+
           {/* Show manual matches count for debugging */}
           {(manualMatches.size > 0 || manualNonMatches.size > 0) && (
             <div className="text-center text-sm text-gray-600 mt-4">

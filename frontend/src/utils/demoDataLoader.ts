@@ -78,10 +78,10 @@ export async function loadDemoCSVFiles(): Promise<{
   console.log('Loading demo CSV files from backend...');
   
   const fileNames = {
-    mentorApplication: 'mentor_application.csv',
-    mentorInterview: 'mentor_interview.csv',
-    menteeApplication: 'mentee_application.csv',
-    menteeInterview: 'mentee_interview.csv',
+    mentorApplication: 'GaaP Data - Backup - Mentors Application.csv',
+    mentorInterview: 'GaaP Data - Backup - Mentors Interview.csv',
+    menteeApplication: 'GaaP Data - Backup - Mentee Application.csv',
+    menteeInterview: 'GaaP Data - Backup - Mentee Interview.csv',
   };
   
   try {

@@ -5,14 +5,15 @@ import pandas as pd
 import tempfile
 import os
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
+import json
 
 # Add parent directory to path to import model_dev
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
-from model_dev.main import run_all_categories_with_params, _load_csv
+from model_dev.main import run_all_categories_from_data
 from model_dev.final_match import compute_final_matches_from_data
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,10 +25,10 @@ if not DATA_DIR.exists():
 
 # Validate required CSV files exist
 REQUIRED_FILES = [
-    "mentor_application.csv",
-    "mentor_interview.csv",
-    "mentee_application.csv",
-    "mentee_interview.csv",
+    "GaaP Data - Backup - Mentors Application.csv",
+    "GaaP Data - Backup - Mentors Interview.csv",
+    "GaaP Data - Backup - Mentee Application.csv",
+    "GaaP Data - Backup - Mentee Interview.csv",
 ]
 
 for filename in REQUIRED_FILES:
@@ -61,26 +62,26 @@ class ImportanceModifiers(BaseModel):
 
 
 class MatchingRequest(BaseModel):
-    """Request model for matching endpoint"""
+    """Request model for matching endpoint (legacy - for file path based requests)"""
     mentees_application_csv: Optional[str] = Field(
         None,
         description="Path to mentees application CSV file (relative to data directory or absolute path). "
-                    "Defaults to 'mentee_application.csv'"
+                    "Defaults to 'GaaP Data - Backup - Mentee Application.csv'"
     )
     mentees_interview_csv: Optional[str] = Field(
         None,
         description="Path to mentees interview CSV file (relative to data directory or absolute path). "
-                    "Defaults to 'mentee_interview.csv'"
+                    "Defaults to 'GaaP Data - Backup - Mentee Interview.csv'"
     )
     mentors_application_csv: Optional[str] = Field(
         None,
         description="Path to mentors application CSV file (relative to data directory or absolute path). "
-                    "Defaults to 'mentor_application.csv'"
+                    "Defaults to 'GaaP Data - Backup - Mentors Application.csv'"
     )
     mentors_interview_csv: Optional[str] = Field(
         None,
         description="Path to mentors interview CSV file (relative to data directory or absolute path). "
-                    "Defaults to 'mentor_interview.csv'"
+                    "Defaults to 'GaaP Data - Backup - Mentors Interview.csv'"
     )
     importance_modifiers: Optional[ImportanceModifiers] = Field(
         None,
@@ -177,10 +178,10 @@ def _create_merged_csvs(
         Tuple of (merged_mentees_path, merged_mentors_path)
     """
     # Load all CSVs
-    mentees_app_df = _load_csv(mentees_app_path)
-    mentees_int_df = _load_csv(mentees_int_path)
-    mentors_app_df = _load_csv(mentors_app_path)
-    mentors_int_df = _load_csv(mentors_int_path)
+    mentees_app_df = pd.read_csv(mentees_app_path)
+    mentees_int_df = pd.read_csv(mentees_int_path)
+    mentors_app_df = pd.read_csv(mentors_app_path)
+    mentors_int_df = pd.read_csv(mentors_int_path)
     
     # Merge mentees application + interview
     merged_mentees = _merge_application_and_interview(
@@ -232,10 +233,10 @@ async def get_demo_csv(filename: str = Query(..., description="Name of the CSV f
     """
     Serve CSV files from the data directory for demo purposes.
     All 4 files are required:
-    - mentor_application.csv
-    - mentor_interview.csv
-    - mentee_application.csv
-    - mentee_interview.csv
+    - GaaP Data - Backup - Mentors Application.csv
+    - GaaP Data - Backup - Mentors Interview.csv
+    - GaaP Data - Backup - Mentee Application.csv
+    - GaaP Data - Backup - Mentee Interview.csv
     
     Args:
         filename: Name of the CSV file in the data directory (URL encoded if contains spaces)
@@ -309,95 +310,114 @@ async def get_demo_csv(filename: str = Query(..., description="Name of the CSV f
 
 
 @app.post("/matching")
-async def compute_matching(request: MatchingRequest) -> Dict[str, Any]:
+async def compute_matching(
+    mentor_application_file: Optional[UploadFile] = File(None),
+    mentor_interview_file: Optional[UploadFile] = File(None),
+    mentee_application_file: Optional[UploadFile] = File(None),
+    mentee_interview_file: Optional[UploadFile] = File(None),
+    importance_modifiers_json: Optional[str] = Form(None),
+    age_max_difference: Optional[int] = Form(None),
+    geographic_max_distance: Optional[int] = Form(None),
+    manual_matches_json: Optional[str] = Form(None),
+    manual_non_matches_json: Optional[str] = Form(None),
+) -> Dict[str, Any]:
     """
-    Compute mentor-mentee matching scores across all categories.
+    Compute mentor-mentee matching scores across all categories using uploaded CSV files.
     
-    This endpoint accepts optional parameters for:
-    - Data file paths (4 CSV files: mentees application, mentees interview, 
-                       mentors application, mentors interview)
-    - Importance modifiers for each category
-    - Maximum age difference (pairs exceeding this receive -inf score)
-    - Maximum geographic distance (pairs exceeding this receive -inf score)
+    This endpoint accepts:
+    - 4 CSV files as file uploads (mentors application, mentors interview, 
+                                  mentees application, mentees interview)
+    - Optional parameters as form data:
+      - importance_modifiers: JSON string with importance modifiers for each category
+      - age_max_difference: Maximum allowed age difference in years (default: 30)
+      - geographic_max_distance: Maximum allowed geographic distance in km (default: 200)
+      - manual_matches: JSON array of pairs to force as matches (format: ["mentor_id-mentee_id"])
+      - manual_non_matches: JSON array of pairs to exclude (format: ["mentor_id-mentee_id"])
     
     The application and interview CSVs are automatically merged on their ID columns
     (Mentee Number / Mentor Number) before running the matching algorithm.
     
-    Returns a dictionary with matching results for:
-    - gender
-    - academia
-    - languages
-    - age_difference
-    - geographic_proximity
-    - final_matches: List of final matched pairs with scores
+    Returns a dictionary with:
+    - category_scores: Dictionary containing scores for each category:
+      - gender: Dict[str, Dict] - gender scores for each pair
+      - academia: Dict[str, Dict] - academic scores for each pair
+      - languages: Dict[str, Dict] - language scores for each pair
+      - age_difference: Dict[str, Dict] - age difference scores for each pair
+      - geographic_proximity: Dict[str, Dict] - geographic proximity scores for each pair
+    - final_matches: List of final matched pairs with all scores and metadata
     
-    Each category's results are formatted with string keys (e.g., "0-1") instead of tuple keys
-    for JSON compatibility.
+    Each category's results use string keys (e.g., "1-2") for JSON compatibility.
     """
-    mentees_temp = None
-    mentors_temp = None
-    
     try:
-        # Resolve all file paths
-        mentees_app_path = _resolve_path(
-            request.mentees_application_csv,
-            "mentee_application.csv"
-        )
-        mentees_int_path = _resolve_path(
-            request.mentees_interview_csv,
-            "mentee_interview.csv"
-        )
-        mentors_app_path = _resolve_path(
-            request.mentors_application_csv,
-            "mentor_application.csv"
-        )
-        mentors_int_path = _resolve_path(
-            request.mentors_interview_csv,
-            "mentor_interview.csv"
-        )
+        # If files not provided, try to use default files from data directory
+        if not all([mentor_application_file, mentor_interview_file, mentee_application_file, mentee_interview_file]):
+            # Fallback to default file paths
+            mentees_app_path = DATA_DIR / "GaaP Data - Backup - Mentee Application.csv"
+            mentees_int_path = DATA_DIR / "GaaP Data - Backup - Mentee Interview.csv"
+            mentors_app_path = DATA_DIR / "GaaP Data - Backup - Mentors Application.csv"
+            mentors_int_path = DATA_DIR / "GaaP Data - Backup - Mentors Interview.csv"
+            
+            if not all([mentees_app_path.exists(), mentees_int_path.exists(), 
+                       mentors_app_path.exists(), mentors_int_path.exists()]):
+                raise HTTPException(
+                    status_code=400, 
+                    detail="Either provide all 4 CSV files as uploads, or ensure default files exist in data directory"
+                )
+            
+            # Use file paths for run_all_categories_from_data
+            mentee_app_data = mentees_app_path
+            mentee_int_data = mentees_int_path
+            mentor_app_data = mentors_app_path
+            mentor_int_data = mentors_int_path
+        else:
+            # Use uploaded files - read file contents
+            mentee_app_data = await mentee_application_file.read() if mentee_application_file else None
+            mentee_int_data = await mentee_interview_file.read() if mentee_interview_file else None
+            mentor_app_data = await mentor_application_file.read() if mentor_application_file else None
+            mentor_int_data = await mentor_interview_file.read() if mentor_interview_file else None
+            
+            if not all([mentee_app_data, mentee_int_data, mentor_app_data, mentor_int_data]):
+                raise HTTPException(status_code=400, detail="All 4 CSV files are required")
         
-        # Verify all files exist
-        for path, name in [
-            (mentees_app_path, "mentees_application_csv"),
-            (mentees_int_path, "mentees_interview_csv"),
-            (mentors_app_path, "mentors_application_csv"),
-            (mentors_int_path, "mentors_interview_csv"),
-        ]:
-            if not path.exists():
-                raise FileNotFoundError(f"CSV file not found: {path} ({name})")
-        
-        # Merge application and interview data
-        mentees_temp, mentors_temp = _create_merged_csvs(
-            mentees_app_path,
-            mentees_int_path,
-            mentors_app_path,
-            mentors_int_path,
-        )
-        
-        # Prepare importance modifiers
+        # Parse importance modifiers from JSON
         importance_modifiers = None
-        if request.importance_modifiers:
-            # Filter out None values and convert to dict
-            modifiers_dict = request.importance_modifiers.model_dump(exclude_none=True)
-            if modifiers_dict:
-                importance_modifiers = modifiers_dict
+        if importance_modifiers_json:
+            try:
+                modifiers_dict = json.loads(importance_modifiers_json)
+                if modifiers_dict:
+                    importance_modifiers = modifiers_dict
+            except json.JSONDecodeError:
+                raise HTTPException(status_code=400, detail="Invalid JSON format for importance_modifiers")
         
         # Get age_max_difference and geographic_max_distance (use defaults if None)
-        age_max_diff = request.age_max_difference if request.age_max_difference is not None else 30
-        geo_max_dist = request.geographic_max_distance if request.geographic_max_distance is not None else 200
+        age_max_diff = age_max_difference if age_max_difference is not None else 30
+        geo_max_dist = geographic_max_distance if geographic_max_distance is not None else 200
         
-        # Run matching with merged CSVs
-        results = run_all_categories_with_params(
-            mentees_csv=mentees_temp,
-            mentors_csv=mentors_temp,
+        # Parse manual matches and non-matches from JSON
+        manual_matches = []
+        if manual_matches_json:
+            try:
+                manual_matches = json.loads(manual_matches_json)
+            except json.JSONDecodeError:
+                raise HTTPException(status_code=400, detail="Invalid JSON format for manual_matches")
+        
+        manual_non_matches = []
+        if manual_non_matches_json:
+            try:
+                manual_non_matches = json.loads(manual_non_matches_json)
+            except json.JSONDecodeError:
+                raise HTTPException(status_code=400, detail="Invalid JSON format for manual_non_matches")
+        
+        # Run matching with uploaded CSV data using run_all_categories_from_data
+        results = run_all_categories_from_data(
+            mentee_app_csv=mentee_app_data,
+            mentee_int_csv=mentee_int_data,
+            mentor_app_csv=mentor_app_data,
+            mentor_int_csv=mentor_int_data,
             importance_modifiers=importance_modifiers,
             age_max_difference=age_max_diff,
             geographic_max_distance=geo_max_dist,
         )
-        
-        # Parse manual matches and non-matches from request
-        manual_matches = request.manual_matches or []
-        manual_non_matches = request.manual_non_matches or []
         
         # Compute final matches from the category results
         final_matches = compute_final_matches_from_data(
@@ -411,12 +431,11 @@ async def compute_matching(request: MatchingRequest) -> Dict[str, Any]:
         for category, category_results in results.items():
             converted_results[category] = _convert_tuple_keys_to_strings(category_results)
         
-        # Add final matches to the response
-        converted_results["final_matches"] = final_matches
-        
-        # FastAPI's JSONResponse handles inf/-inf by converting to "Infinity"/"-Infinity" strings
-        # This is standard JSON behavior and the frontend can handle these string values
-        return converted_results
+        # Return both category scores and final matches
+        return {
+            "category_scores": converted_results,
+            "final_matches": final_matches,
+        }
     
     except FileNotFoundError as e:
         raise HTTPException(status_code=404, detail=str(e))
@@ -424,18 +443,6 @@ async def compute_matching(request: MatchingRequest) -> Dict[str, Any]:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
-    finally:
-        # Clean up temporary files
-        if mentees_temp and mentees_temp.exists():
-            try:
-                mentees_temp.unlink()
-            except Exception:
-                pass
-        if mentors_temp and mentors_temp.exists():
-            try:
-                mentors_temp.unlink()
-            except Exception:
-                pass
 
 
 if __name__ == "__main__":

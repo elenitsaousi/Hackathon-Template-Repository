@@ -557,11 +557,22 @@ def geographic_proximity_results(
     mentees_df: pd.DataFrame,
     mentors_df: pd.DataFrame,
     importance_modifier: float = 1.0,
+    geographic_max_distance: Optional[int] = 200,
     ors_api_key: Optional[str] = None,
 ) -> Dict[Tuple[int, int], Dict[str, Any]]:
     """
     Compute geographic proximity between mentees and mentors.
     Returns a structured dictionary with score, cities, and fallback handling.
+    
+    Scoring principle:
+    - If the distance between a mentee and mentor is zero (same coordinates), the pair receives the maximum score of 1.0.
+    - For larger distances, the score decreases linearly according to the formula:
+        score = max(0.0, 1.0 - (distance_km / max_reasonable_distance))
+      where max_reasonable_distance is geographic_max_distance (default 200 km); 
+      distances at or above this threshold receive the minimum score of 0.0.
+    - If a location is unmapped or a distance is missing, the score defaults to 0.0 for that pair.
+    - All scores are multiplied by importance_modifier (default 1.0) and fall in the range [0, 1].
+    - The result is a dictionary mapping (mentee_id, mentor_id) to float scores.
     """
 
     mentee_id_col = "Mentee Number"
@@ -628,15 +639,24 @@ def geographic_proximity_results(
             if dist is not None and math.isfinite(dist):
                 all_distances.append(dist)
 
+    # Use geographic_max_distance if provided, otherwise default to 200 km
+    max_distance = geographic_max_distance if geographic_max_distance is not None else 200
+    
+    if max_distance <= 0:
+        print("⚠️ Warning: geographic_max_distance must be positive, using default 200 km")
+        max_distance = 200
+    
+    print(f"\nUsing maximum distance threshold: {max_distance} km")
+    
     if not all_distances:
         print("⚠️ No valid distances found.")
         return {}
 
+    # Print distance statistics for reference
     min_dist, max_dist = min(all_distances), max(all_distances)
-    dist_range = max(max_dist - min_dist, 1e-6)
-    print(f"\nDistance range: min={min_dist:.2f} km, max={max_dist:.2f} km, range={dist_range:.2f} km")
+    print(f"Distance statistics: min={min_dist:.2f} km, max={max_dist:.2f} km")
 
-    # --- Compute normalized scores ---
+    # --- Compute scores using geographic_max_distance ---
     results: Dict[Tuple[int, int], Dict[str, Any]] = {}
     for mentee_idx, mentee_row in mentees_df.iterrows():
         mentee_id = mentee_row[mentee_id_col]
@@ -653,7 +673,11 @@ def geographic_proximity_results(
                 cache_key = _cache_key_for_coords(mentee_coord, mentor_coord)
                 dist = _distance_cache.get(cache_key)
                 if dist is not None and math.isfinite(dist):
-                    score = max(0.0, 1.0 - ((dist - min_dist) / dist_range))
+                    # Score formula: max(0.0, 1.0 - (distance_km / max_reasonable_distance))
+                    # distance = 0 -> score = 1.0
+                    # distance = max_distance -> score = 0.0
+                    # distance > max_distance -> score = 0.0 (from max())
+                    score = max(0.0, 1.0 - (dist / max_distance))
 
             results[(mentee_id, mentor_id)] = {
                 "distance_score": round(score * importance_modifier, 3),

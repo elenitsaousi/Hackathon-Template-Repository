@@ -3,15 +3,20 @@ import type { MatchingParameters } from '../types';
 const API_BASE_URL = 'http://localhost:8000';
 
 interface CategoryScores {
-  [mentorMenteeKey: string]: number;
+  [mentorMenteeKey: string]: any; // Can be number or object with detailed scores
 }
 
-interface APIResponse {
+interface CategoryScoresResponse {
   gender: CategoryScores;
   academia: CategoryScores;
   languages: CategoryScores;
   age_difference: CategoryScores;
   geographic_proximity: CategoryScores;
+}
+
+interface APIResponse {
+  category_scores: CategoryScoresResponse;
+  final_matches: any[];
 }
 
 export async function fetchMatchingScores(
@@ -22,65 +27,74 @@ export async function fetchMatchingScores(
   parameters: MatchingParameters,
   manualMatches?: string[],
   manualNonMatches?: string[]
-): Promise<APIResponse & { final_matches?: any[] }> {
+): Promise<APIResponse> {
   try {
-    // Build request body with file names and parameters
-    const requestBody: any = {};
+    // Build FormData for multipart/form-data request
+    const formData = new FormData();
     
-    // Send file names - backend expects paths relative to data directory
-    // Note: Files should be uploaded to the backend data directory first
-    // For now, we use the file names assuming they're in the data directory
-    if (menteeApplicationFile) {
-      requestBody.mentees_application_csv = menteeApplicationFile.name;
-    }
-    if (menteeInterviewFile) {
-      requestBody.mentees_interview_csv = menteeInterviewFile.name;
-    }
+    // Add files to form data
     if (mentorApplicationFile) {
-      requestBody.mentors_application_csv = mentorApplicationFile.name;
+      formData.append('mentor_application_file', mentorApplicationFile);
     }
     if (mentorInterviewFile) {
-      requestBody.mentors_interview_csv = mentorInterviewFile.name;
+      formData.append('mentor_interview_file', mentorInterviewFile);
+    }
+    if (menteeApplicationFile) {
+      formData.append('mentee_application_file', menteeApplicationFile);
+    }
+    if (menteeInterviewFile) {
+      formData.append('mentee_interview_file', menteeInterviewFile);
     }
 
     // Add importance modifiers if any are different from default
-    if (parameters.genderWeight !== 1.0 || 
-        parameters.academiaWeight !== 1.0 ||
-        parameters.languagesWeight !== 1.0 ||
-        parameters.ageDifferenceWeight !== 1.0 ||
-        parameters.geographicProximityWeight !== 1.0) {
-      requestBody.importance_modifiers = {
-        gender: parameters.genderWeight,
-        academia: parameters.academiaWeight,
-        languages: parameters.languagesWeight,
-        age_difference: parameters.ageDifferenceWeight,
-        geographic_proximity: parameters.geographicProximityWeight,
-      };
+    const importanceModifiers: any = {};
+    let hasNonDefaultModifiers = false;
+    
+    if (parameters.genderWeight !== 1.0) {
+      importanceModifiers.gender = parameters.genderWeight;
+      hasNonDefaultModifiers = true;
+    }
+    if (parameters.academiaWeight !== 1.0) {
+      importanceModifiers.academia = parameters.academiaWeight;
+      hasNonDefaultModifiers = true;
+    }
+    if (parameters.languagesWeight !== 1.0) {
+      importanceModifiers.languages = parameters.languagesWeight;
+      hasNonDefaultModifiers = true;
+    }
+    if (parameters.ageDifferenceWeight !== 1.0) {
+      importanceModifiers.age_difference = parameters.ageDifferenceWeight;
+      hasNonDefaultModifiers = true;
+    }
+    if (parameters.geographicProximityWeight !== 1.0) {
+      importanceModifiers.geographic_proximity = parameters.geographicProximityWeight;
+      hasNonDefaultModifiers = true;
+    }
+
+    if (hasNonDefaultModifiers) {
+      formData.append('importance_modifiers_json', JSON.stringify(importanceModifiers));
     }
 
     // Add max constraints if different from defaults
     if (parameters.maxAgeDifference !== 30) {
-      requestBody.age_max_difference = parameters.maxAgeDifference;
+      formData.append('age_max_difference', parameters.maxAgeDifference.toString());
     }
 
     if (parameters.maxDistance && parameters.maxDistance !== 200) {
-      requestBody.geographic_max_distance = parameters.maxDistance;
+      formData.append('geographic_max_distance', parameters.maxDistance.toString());
     }
 
     // Add manual matches and non-matches if provided
     if (manualMatches && manualMatches.length > 0) {
-      requestBody.manual_matches = manualMatches;
+      formData.append('manual_matches_json', JSON.stringify(manualMatches));
     }
     if (manualNonMatches && manualNonMatches.length > 0) {
-      requestBody.manual_non_matches = manualNonMatches;
+      formData.append('manual_non_matches_json', JSON.stringify(manualNonMatches));
     }
 
     const response = await fetch(`${API_BASE_URL}/matching`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(requestBody),
+      body: formData, // FormData will set Content-Type header with boundary
     });
 
     if (!response.ok) {
@@ -91,21 +105,29 @@ export async function fetchMatchingScores(
     const data = await response.json();
     
     // Validate response structure
-    if (!data.gender || !data.academia || !data.languages || 
-        !data.age_difference || !data.geographic_proximity) {
-      throw new Error('Invalid API response structure');
+    if (!data.category_scores || !data.final_matches) {
+      throw new Error('Invalid API response structure: missing category_scores or final_matches');
+    }
+    
+    if (!data.category_scores.gender || !data.category_scores.academia || 
+        !data.category_scores.languages || !data.category_scores.age_difference || 
+        !data.category_scores.geographic_proximity) {
+      throw new Error('Invalid API response structure: missing category scores');
     }
 
     return data;
   } catch (error) {
     console.error('Error fetching matching scores:', error);
-    // Return empty scores if API fails - no connections will be made
+    // Return empty response if API fails
     return {
-      gender: {},
-      academia: {},
-      languages: {},
-      age_difference: {},
-      geographic_proximity: {},
+      category_scores: {
+        gender: {},
+        academia: {},
+        languages: {},
+        age_difference: {},
+        geographic_proximity: {},
+      },
+      final_matches: [],
     };
   }
 }

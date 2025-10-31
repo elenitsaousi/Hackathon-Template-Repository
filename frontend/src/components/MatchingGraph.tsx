@@ -12,6 +12,7 @@ interface MatchingGraphProps {
   onSelectMentor: (mentorId: string | null) => void;
   onSelectMentee: (menteeId: string | null) => void;
   getMatchStatus: (mentorId: string, menteeId: string) => 'manual-match' | 'manual-non-match' | 'auto';
+  finalMatches?: any[]; // Optional final matches from backend
 }
 
 interface Node {
@@ -33,6 +34,7 @@ export function MatchingGraph({
   onSelectMentee,
   getMatchStatus,
   isRecommendedPair,
+  finalMatches = [],
 }: MatchingGraphProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [nodes, setNodes] = useState<Node[]>([]);
@@ -72,7 +74,18 @@ export function MatchingGraph({
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Draw connections
+    // Find all nodes that have manual matches (green edges)
+    // These nodes should only show their manual match edge, all other edges should be hidden
+    const nodesWithManualMatches = new Set<string>();
+    matches.forEach(match => {
+      const status = getMatchStatus(match.mentorId, match.menteeId);
+      if (status === 'manual-match') {
+        nodesWithManualMatches.add(`mentor-${match.mentorId}`);
+        nodesWithManualMatches.add(`mentee-${match.menteeId}`);
+      }
+    });
+
+    // Draw ALL connections - show all edges, not just recommended ones
     let drawnConnections = 0;
     matches.forEach(match => {
       const mentorNode = nodes.find(n => n.id === match.mentorId && n.type === 'mentor');
@@ -81,9 +94,25 @@ export function MatchingGraph({
       if (!mentorNode || !menteeNode) return;
 
       const status = getMatchStatus(match.mentorId, match.menteeId);
+      
+      // Check if this edge should be hidden because one of its nodes has a manual match
+      // But show it if this edge itself is the manual match
+      const mentorHasManualMatch = nodesWithManualMatches.has(`mentor-${match.mentorId}`);
+      const menteeHasManualMatch = nodesWithManualMatches.has(`mentee-${match.menteeId}`);
+      const shouldHideEdge = (mentorHasManualMatch || menteeHasManualMatch) && status !== 'manual-match';
+      
+      // Skip drawing this edge if it should be hidden
+      if (shouldHideEdge) {
+        return;
+      }
       const isSelected = (selectedMentor === match.mentorId && selectedMentee === match.menteeId) ||
         selectedMentor === match.mentorId ||
         selectedMentee === match.menteeId;
+      
+      // Check if either node is selected (for making edges bold)
+      const isMentorSelected = selectedMentor === match.mentorId;
+      const isMenteeSelected = selectedMentee === match.menteeId;
+      const hasSelectedNode = isMentorSelected || isMenteeSelected;
       
       // Check if this is a recommended pair (optimal matching)
       const isRecommended = isRecommendedPair(match.mentorId, match.menteeId);
@@ -104,15 +133,27 @@ export function MatchingGraph({
         match.scores.ageDifference === 0 && 
         match.scores.geographicProximity === 0;
 
-      // Priority order: recommended pairs > initial matches (gray) > manual selections > score-based colors
-      // If a recommended pair is also manually matched, show it as green (manual match takes precedence)
-      if (isRecommended && status === 'manual-match') {
-        // Recommended pair that is manually matched - green solid line
+      // Priority order: manual selections > score = 0 (red) > recommended pairs > score-based colors
+      // Manual matches/non-matches take highest priority
+      if (status === 'manual-match') {
         strokeStyle = '#10b981'; // green-500 (manual match = inf)
         lineWidth = 3;
         lineDash = undefined; // Solid line
+      } else if (status === 'manual-non-match') {
+        strokeStyle = '#ef4444'; // red-500 (manual non-match = -inf)
+        lineWidth = 2;
+      } else if (match.globalScore === Infinity || match.globalScore === 1000 || match.globalScore === 'Infinity' || match.globalScore === 'inf') {
+        strokeStyle = '#10b981'; // green-500 (inf)
+        lineWidth = 3;
+      } else if (match.globalScore === -Infinity || match.globalScore === '-Infinity' || match.globalScore === '-inf' || (typeof match.globalScore === 'number' && !isFinite(match.globalScore) && match.globalScore < 0)) {
+        strokeStyle = '#ef4444'; // red-500 (-inf)
+        lineWidth = 2;
+      } else if (match.globalScore === 0 || (typeof match.globalScore === 'number' && Math.abs(match.globalScore) < 0.001)) {
+        // Score = 0 should be red, even if recommended
+        strokeStyle = '#ef4444'; // red-500 (score = 0)
+        lineWidth = 1;
       } else if (isRecommended) {
-        // Recommended pair (optimal matching) - purple dashed line
+        // Recommended pair (optimal matching) - purple dashed line (only if score > 0)
         strokeStyle = '#9333ea'; // purple-600
         lineWidth = 3;
         lineDash = [5, 5]; // Dashed line
@@ -128,25 +169,10 @@ export function MatchingGraph({
           strokeStyle = '#10b981'; // green-500 (manual match = inf)
           lineWidth = 3;
         } else {
-          // Initial match with no manual selection - always light gray
-          strokeStyle = '#e5e7eb'; // light gray-200
+          // Initial match with no manual selection - show as red (score = 0)
+          strokeStyle = '#ef4444'; // red-500 (score = 0)
           lineWidth = 1;
         }
-      } else if (status === 'manual-match') {
-        strokeStyle = '#10b981'; // green-500 (manual match = inf)
-        lineWidth = 3;
-      } else if (status === 'manual-non-match') {
-        strokeStyle = '#ef4444'; // red-500 (manual non-match = -inf)
-        lineWidth = 2;
-      } else if (match.globalScore === Infinity || match.globalScore === 1000 || match.globalScore === 'Infinity' || match.globalScore === 'inf') {
-        strokeStyle = '#10b981'; // green-500 (inf)
-        lineWidth = 3;
-      } else if (match.globalScore === -Infinity || match.globalScore === '-Infinity' || match.globalScore === '-inf' || (typeof match.globalScore === 'number' && !isFinite(match.globalScore) && match.globalScore < 0)) {
-        strokeStyle = '#ef4444'; // red-500 (-inf)
-        lineWidth = 2;
-      } else if (match.globalScore === 0 || (typeof match.globalScore === 'number' && Math.abs(match.globalScore) < 0.001)) {
-        strokeStyle = '#e5e7eb'; // completely light gray-200 (score = 0)
-        lineWidth = 1;
       } else if (match.globalScore === 1 || (typeof match.globalScore === 'number' && Math.abs(match.globalScore - 1) < 0.001)) {
         strokeStyle = '#3b82f6'; // blue-500 (score = 1)
         lineWidth = 2;
@@ -185,6 +211,12 @@ export function MatchingGraph({
         }
       }
 
+      // Make edges bold if connected to selected nodes
+      // Increase lineWidth by 2 for edges connected to selected mentor or mentee
+      if (hasSelectedNode) {
+        lineWidth = lineWidth + 2;
+      }
+
       ctx.beginPath();
       ctx.moveTo(mentorNode.x + 60, mentorNode.y + 20);
       ctx.lineTo(menteeNode.x, menteeNode.y + 20);
@@ -201,32 +233,7 @@ export function MatchingGraph({
     });
     
     console.log(`[MatchingGraph] Drew ${drawnConnections} connections from ${matches.length} matches`);
-
-    // Draw score label for selected or high-score matches
-    matches.forEach(match => {
-      const mentorNode = nodes.find(n => n.id === match.mentorId && n.type === 'mentor');
-      const menteeNode = nodes.find(n => n.id === match.menteeId && n.type === 'mentee');
-      if (!mentorNode || !menteeNode) return;
-      
-      const isSelected = (selectedMentor === match.mentorId && selectedMentee === match.menteeId) ||
-        selectedMentor === match.mentorId ||
-        selectedMentee === match.menteeId;
-      
-      if (isSelected || match.globalScore > 0.7) {
-        const midX = (mentorNode.x + menteeNode.x) / 2;
-        const midY = (mentorNode.y + menteeNode.y) / 2;
-        
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(midX - 20, midY - 10, 40, 20);
-        
-        ctx.fillStyle = '#1f2937';
-        ctx.font = '12px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(match.globalScore.toFixed(2), midX, midY);
-      }
-    });
-  }, [nodes, matches, selectedMentor, selectedMentee, getMatchStatus, isRecommendedPair]);
+  }, [nodes, matches, selectedMentor, selectedMentee, getMatchStatus, isRecommendedPair, finalMatches]);
 
   const handleCanvasClick = (event: MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
@@ -351,15 +358,15 @@ export function MatchingGraph({
         </div>
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 rounded-full bg-blue-500"></div>
-          <span className="text-sm text-gray-600">High Match ({'>'}0.7)</span>
+          <span className="text-sm text-gray-600">High connection ({'>'}0.7)</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 rounded-full bg-green-500"></div>
-          <span className="text-sm text-gray-600">Manual Match</span>
+          <span className="text-sm text-gray-600">Match</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 rounded-full bg-red-500"></div>
-          <span className="text-sm text-gray-600">Manual Non-Match</span>
+          <span className="text-sm text-gray-600">Non-Match</span>
         </div>
       </div>
 
