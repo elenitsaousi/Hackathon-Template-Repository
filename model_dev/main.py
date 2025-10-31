@@ -278,7 +278,7 @@ def run_all_categories_from_data(
         mentors_df=mentors_df,
         importance_modifier=importance_modifiers["gender"],
     )
-    
+
     # ------------------ Category 2: Academia ------------------
     print("⚙️ Running Academia Matching...")
     academia_results_data = academia.academia_results(
@@ -286,7 +286,7 @@ def run_all_categories_from_data(
         mentors_df=mentors_df,
         importance_modifier=importance_modifiers["academia"],
     )
-    
+
     # ------------------ Category 3: Languages ------------------
     print("⚙️ Running Language Matching...")
     languages_results = languages.languages_results(
@@ -303,7 +303,7 @@ def run_all_categories_from_data(
         importance_modifier=importance_modifiers["age_difference"],
         age_max_difference=age_max_difference,
     )
-    
+
     # ------------------ Category 5: Geographic Proximity ------------------
     print("⚙️ Running Geographic Proximity Matching...")
     geo_results = geographic_proximity.geographic_proximity_results(
@@ -314,7 +314,7 @@ def run_all_categories_from_data(
     )
     
     print("\n✅ All matching categories completed successfully.\n")
-    
+
     return {
         "gender": gender_results,
         "academia": academia_results_data,
