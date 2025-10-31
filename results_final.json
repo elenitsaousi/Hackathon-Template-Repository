@@ -70,24 +70,24 @@
         "final_score": 0.5056555253753331
     },
     {
-        "mentor_id": "4",
+        "mentor_id": "6",
         "mentee_id": "4",
-        "gender_score": 0.75,
-        "language_score": 0.731,
-        "academia_score": 0.505,
-        "geo_score": 0.41533656618559633,
-        "age_score": 0.7142857142857143,
-        "final_score": 0.47810096985567885
+        "gender_score": -Infinity,
+        "language_score": 0.427,
+        "academia_score": 0.501,
+        "geo_score": 0.49721096603944837,
+        "age_score": 0.7857142857142857,
+        "final_score": 0.4998632898118345
     },
     {
-        "mentor_id": "6",
+        "mentor_id": "4",
         "mentee_id": "5",
-        "gender_score": 1.0,
-        "language_score": 0.405,
-        "academia_score": 0.22,
-        "geo_score": 0.9196605440111509,
-        "age_score": 0.4285714285714286,
-        "final_score": 0.4298981632033453
+        "gender_score": 0.75,
+        "language_score": 0.371,
+        "academia_score": 0.31,
+        "geo_score": 0.8377861441572989,
+        "age_score": 0.5,
+        "final_score": 0.4683358432471897
     },
     {
         "mentor_id": "7",
@@ -95,8 +95,8 @@
         "gender_score": 0.75,
         "language_score": 0.338,
         "academia_score": 0.384,
-        "geo_score": 0.31421750694170403,
+        "geo_score": -Infinity,
         "age_score": 0.8571428571428572,
-        "final_score": 0.36306525208251117
+        "final_score": -Infinity
     }
 ]

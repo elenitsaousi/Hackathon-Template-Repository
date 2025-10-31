@@ -553,12 +553,14 @@ def geographic_proximity_results(
     mentees_df: pd.DataFrame,
     mentors_df: pd.DataFrame,
     importance_modifier: float = 1.0,
+    geographic_max_distance: Optional[int] = 200,
     ors_api_key: Optional[str] = None,
 ) -> Dict[Tuple[int, int], float]:
     """
     Normalized minimize score based on driving distance where:
     - 1.0 when distance is minimum (closest pair)
     - 0.0 when distance is maximum (farthest pair) across all calculated distances
+    - -inf if the pair's distance exceeds the specified maximum distance (geographic_max_distance)
     
     If either location cannot be geocoded or distance cannot be calculated, score is 0.0.
     
@@ -566,6 +568,7 @@ def geographic_proximity_results(
         mentees_df: DataFrame with mentee data
         mentors_df: DataFrame with mentor data
         importance_modifier: Weight multiplier for scores
+        geographic_max_distance: maximum allowed distance in km (default: 200)
         ors_api_key: OpenRouteService API key. If None, tries to load from OPEN_ROUTE_SERVICE env var
     """
     
@@ -642,6 +645,7 @@ def geographic_proximity_results(
     # Now calculate scores
     print("\n=== CALCULATING SCORES ===")
     results: Dict[Tuple[int, int], float] = {}
+    max_allowed_distance = geographic_max_distance if geographic_max_distance is not None else 200
     
     for mentee_idx, mentee_row in mentees_df.iterrows():
         mentee_id = mentee_row[mentee_id_col]
@@ -657,7 +661,9 @@ def geographic_proximity_results(
                 dist = _distance_cache.get(cache_key_str)
                 
                 if dist is not None:
-                    if dist_range > 0:
+                    if max_allowed_distance is not None and dist > max_allowed_distance:
+                        score = float('-inf')
+                    elif dist_range > 0:
                         # Normalized minimize: 1.0 for min distance, 0.0 for max distance
                         score = max(0.0, 1.0 - ((dist - min_dist) / dist_range))
                     else:

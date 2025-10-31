@@ -9,9 +9,10 @@ Implementation details:
 - The score for each pair is calculated using a simple decay formula:
     - score = max(0, 1 - (abs(mentee_age - mentor_age) / 30.0))
     - This gives a score of 1 if ages are identical, and decreases linearly down to 0 as the age gap approaches or exceeds 30 years.
-- Scores are always in the range [0, 1]. If input ages are invalid or missing, the score is set to 0 for that pair.
+    - If the absolute age difference exceeds the allowed maximum (age_max_difference), the score is set to -inf.
+- Scores are always in the range [0, 1], or -inf for disallowed pairs. If input ages are invalid or missing, the score is set to 0 for that pair.
 - The final score is scaled by `importance_modifier` if provided.
-- The result is a dictionary mapping (mentee_id, mentor_id) pairs to float scores in [0, 1].
+- The result is a dictionary mapping (mentee_id, mentor_id) pairs to float scores in [0, 1] or -inf.
 
 This setup prioritizes mentor-mentee pairs with age gaps under ~15 years (score ≥ 0.5) while not rewarding large age differences.
 """
@@ -66,11 +67,13 @@ def age_difference_results(
     mentors_df: pd.DataFrame,
     importance_modifier: float = 1.0,
     reference_date: Optional[pd.Timestamp] = None,
+    age_max_difference: Optional[int] = 30,
 ) -> Dict[Tuple[int, int], float]:
     """
     Normalized minimize score based on absolute age difference where:
     - 1.0 when ages are equal (difference == 0)
     - 0.0 when difference equals the range (max_age - min_age) across both datasets
+    - -inf when abs(mentee_age - mentor_age) > age_max_difference
 
     If either value is missing/unparseable, score is 0.0.
     """
@@ -107,13 +110,15 @@ def age_difference_results(
             score = 0.0
             if mentee_age is not None and mentor_age is not None:
                 diff = abs(mentee_age - mentor_age)
-                if age_range > 0:
-                    score = max(0.0, 1.0 - (diff / age_range))
+                if age_max_difference is not None and diff > age_max_difference:
+                    score = float('-inf')
                 else:
-                    score = 1.0
+                    if age_range > 0:
+                        score = max(0.0, 1.0 - (diff / age_range))
+                    else:
+                        score = 1.0
 
-            results[(mentee_id, mentor_id)] = score * importance_modifier
+            results[(mentee_id, mentor_id)] = score * importance_modifier if score != float('-inf') else float('-inf')
 
     return results
-
 

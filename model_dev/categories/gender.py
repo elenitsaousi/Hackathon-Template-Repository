@@ -9,7 +9,7 @@ def _normalize_gender(value: Any) -> str:
         return "female"
     if any(tok in text for tok in ["männlich / male", "identify as male", "male"]):
         return "male"
-    if any(tok in text for tok in ["doesn't matter", "doesn't matter", "any", "egal"]):
+    if any(tok in text for tok in ["doesn't matter", "any", "egal"]):
         return "any"
     return "unknown"
 
@@ -21,7 +21,9 @@ def gender_results(
     """
     Binary gender matching:
     - 1.0 when mentee's desired gender exactly matches mentor's gender
-    - 0.0 otherwise (including 'doesn't matter' or mismatch)
+    - 0.75 if mentee does not care (e.g., “doesn't matter” etc)
+    - -inf if mentee preference does NOT match mentor's gender (e.g., mentee wants female but mentor is male)
+    - 0.0 for unknowns or no information
     """
 
     mentee_id_col = "Mentee Number"
@@ -40,17 +42,17 @@ def gender_results(
             mentor_gender = _normalize_gender(mentor_row.get(mentor_gender_col, None))
 
             # Default: no match
-            score = 0.0
+            score: float = 0.0
 
             # Explicit gender preference
             if mentee_pref in ["male", "female"]:
                 if mentee_pref == mentor_gender:
                     score = 1.0
-
+                else:
+                    score = float('-inf')
             # If mentee says “doesn't matter / any / egal” → give medium weight (0.75)
             elif mentee_pref == "any":
                 score = 0.75
-
             # Else (unknown or mismatch) stays 0.0
 
             results[(mentee_id, mentor_id)] = score * importance_modifier
