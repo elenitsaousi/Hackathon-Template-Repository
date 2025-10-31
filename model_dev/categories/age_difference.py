@@ -1,3 +1,22 @@
+"""
+Scoring Logic for Age Difference
+
+The goal of this function is to evaluate pairs of mentees and mentors based on the difference in their ages,
+under the assumption that closer ages may facilitate easier communication and relatable experiences,
+but that some level of age difference may also be desired (e.g., mentors being moderately older).
+
+Typical scoring approaches include:
+- Assigning the highest score to pairs whose age difference is within an "ideal" range (e.g., 3-15 years).
+- Gradually lowering the score as the age difference is either too small (peers) or too large.
+- Using a decay (e.g., exponential, Gaussian, or piecewise-linear function) so that very large age gaps receive low (but nonzero) scores.
+
+Final scores are normalized to [0, 1] and can optionally be scaled by `importance_modifier`.
+The logic aims to incentivize mentor candidates who are not too close nor too distant in age from their mentee.
+
+Returned: A dict mapping (mentee_id, mentor_id) tuples to float scores, one per pair.
+"""
+
+
 from datetime import datetime
 from typing import Any, Dict, Iterable, Optional, Tuple
 
