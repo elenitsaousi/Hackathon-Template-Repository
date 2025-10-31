@@ -1,114 +1,94 @@
-"""
--------------------------------------------------------------
-FINAL MATCHING SCRIPT (SEET Hackathon)
-Author: Eleni Tsaousi
--------------------------------------------------------------
-
-🔍 Purpose:
-Generate final one-to-one mentor–mentee matches combining all criteria.
-Hard constraints: gender & language must match. 
-Soft optimization: academic, birthday, and distance scores.
-
--------------------------------------------------------------
-🏗️ Weights & Logic
--------------------------------------------------------------
-Weights (normalized sum):
-- academic_score: 0.45
-- birthday_score: 0.25
-- gender_score: 0.15
-- language_score: 0.15
-
-Hard constraints:
-- gender_score == 0 → heavy penalty (effectively invalid)
-- language_score == 0 → heavy penalty (effectively invalid)
-
--------------------------------------------------------------
-"""
-
 import json
 import os
 
 
+# -------------------------------------------------------------
+# Utility functions
+# -------------------------------------------------------------
 def load_json(path):
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
 
 
+# -------------------------------------------------------------
+# Combine partial scores into one dictionary
+# -------------------------------------------------------------
 def combine_scores(results_dir):
-    """Combine all partial result JSONs into a unified dictionary of pair → total_score."""
-
+    """Combine all result JSONs into a unified dictionary of pair → scores."""
     gender = load_json(os.path.join(results_dir, "results_gender.json"))["gender"]
     languages = load_json(os.path.join(results_dir, "results_languages.json"))["languages"]
     academia = load_json(os.path.join(results_dir, "results_academia.json"))["academia"]
-    birthday = load_json(os.path.join(results_dir, "results_age_difference.json"))["age_difference"]
     geo = load_json(os.path.join(results_dir, "results_geographic_proximity.json"))["geographic_proximity"]
 
-    # Take intersection — only pairs existing in all results
-    all_pairs = set(gender.keys()) & set(languages.keys()) & set(academia.keys()) & set(birthday.keys()) & set(geo.keys())
+    all_pairs = set(gender.keys()) & set(languages.keys()) & set(academia.keys()) & set(geo.keys())
 
     combined = {}
     for pair in all_pairs:
         g = gender[pair]["gender_score"]
         l = languages[pair]["score"]
         a = academia[pair]["academic_score"]
-        b = birthday[pair]["birthday_score"]
         d = geo[pair]["distance_score"]
 
-        # ⚠️ Hard constraints: skip pairs with invalid gender/language
-        if g == 0 or l == 0:
-            continue
-
-        total_score = (
-            0.45 * a +
-            0.25 * b +
-            0.15 * g +
-            0.15 * l
-        )
+        # even if invalid, keep pair but mark it
+        valid = (g > 0 and l > 0)
+        total_score = 0.7 * a + 0.3 * d if valid else 0.0
 
         combined[pair] = {
             "total_score": round(float(total_score), 3),
-            "academic_score": a,
-            "birthday_score": b,
-            "gender_score": g,
-            "language_score": l,
-            "distance_score": d,
+            "academic_score": round(float(a), 3),
+            "gender_score": round(float(g), 3),
+            "language_score": round(float(l), 3),
+            "distance_score": round(float(d), 3),
+            "valid": valid,
         }
 
-    print(f"✅ Combined {len(combined)} valid pairs (after gender/language filtering).")
+    print(f"📊 Total pairs loaded: {len(combined)} (including invalid)")
+    valid_count = sum(1 for v in combined.values() if v["valid"])
+    print(f"✅ Valid pairs (gender>0 & language>0): {valid_count}")
 
-    valid_mentees = sorted({int(p.split('-')[0]) for p in combined})
-    valid_mentors = sorted({int(p.split('-')[1]) for p in combined})
-    print(f"Mentees remaining: {valid_mentees}")
-    print(f"Mentors remaining: {valid_mentors}")
+    mentees = sorted({int(p.split('-')[0]) for p in combined})
+    mentors = sorted({int(p.split('-')[1]) for p in combined})
+    print(f"Mentees: {mentees}")
+    print(f"Mentors: {mentors}")
+
+    # Optional preview
+    print("\n📋 Preview of all mentor–mentee pairs:")
+    for p, v in list(combined.items())[:15]:
+        m, n = p.split('-')
+        tag = "⭐" if v["valid"] else "❌"
+        print(f"{tag} Mentee {m} – Mentor {n} | Total={v['total_score']}")
 
     return combined
 
 
+# -------------------------------------------------------------
+# Perform 1–1 matching (unique mentor & mentee)
+# -------------------------------------------------------------
 def perform_matching(combined):
-    """Greedy one-to-one matching — ensures full coverage."""
-    # Sort all pairs by total_score descending
-    sorted_pairs = sorted(
-        [(int(p.split('-')[0]), int(p.split('-')[1]), data["total_score"])
-         for p, data in combined.items()],
-        key=lambda x: x[2],
-        reverse=True
-    )
+    """Greedy 1–1 matching ensuring all mentees and mentors get paired."""
+    valid_pairs = [
+        (int(p.split('-')[0]), int(p.split('-')[1]), p, data["total_score"])
+        for p, data in combined.items() if data["valid"]
+    ]
+
+    # Sort valid pairs by total_score
+    sorted_pairs = sorted(valid_pairs, key=lambda x: x[3], reverse=True)
 
     matched_mentees = set()
     matched_mentors = set()
-    matches = []
+    selected_pairs = []
 
-    # Greedy pass: pick highest scores first
-    for mentee, mentor, score in sorted_pairs:
+    # First pass: match valid pairs greedily
+    for mentee, mentor, pair_key, score in sorted_pairs:
         if mentee not in matched_mentees and mentor not in matched_mentors:
-            matches.append((mentee, mentor, score))
+            selected_pairs.append(pair_key)
             matched_mentees.add(mentee)
             matched_mentors.add(mentor)
 
-    # Fill unmatched mentees
     all_mentees = {int(p.split('-')[0]) for p in combined}
     all_mentors = {int(p.split('-')[1]) for p in combined}
 
+    # Second pass: handle unmatched mentees
     for mentee in all_mentees - matched_mentees:
         best_pair = None
         best_score = -1
@@ -116,14 +96,14 @@ def perform_matching(combined):
             m, n = map(int, p.split('-'))
             if m == mentee and n not in matched_mentors:
                 if data["total_score"] > best_score:
+                    best_pair = p
                     best_score = data["total_score"]
-                    best_pair = (m, n, data["total_score"])
         if best_pair:
-            matches.append(best_pair)
-            matched_mentees.add(best_pair[0])
-            matched_mentors.add(best_pair[1])
+            selected_pairs.append(best_pair)
+            matched_mentees.add(mentee)
+            matched_mentors.add(int(best_pair.split('-')[1]))
 
-    # Fill unmatched mentors
+    # Third pass: handle unmatched mentors (symmetry)
     for mentor in all_mentors - matched_mentors:
         best_pair = None
         best_score = -1
@@ -131,51 +111,59 @@ def perform_matching(combined):
             m, n = map(int, p.split('-'))
             if n == mentor and m not in matched_mentees:
                 if data["total_score"] > best_score:
+                    best_pair = p
                     best_score = data["total_score"]
-                    best_pair = (m, n, data["total_score"])
         if best_pair:
-            matches.append(best_pair)
-            matched_mentees.add(best_pair[0])
-            matched_mentors.add(best_pair[1])
+            selected_pairs.append(best_pair)
+            matched_mentees.add(int(best_pair.split('-')[0]))
+            matched_mentors.add(mentor)
 
-    print(f"✅ Greedy matching completed: {len(matches)} total pairs.")
-    return matches
+    print(f"\n🎯 Final 1–1 matches: {len(selected_pairs)} total.")
+    return selected_pairs
 
 
-def save_results(matches, combined, output_path):
+
+# -------------------------------------------------------------
+# Save all pairs (100 total), highlighting the chosen ones
+# -------------------------------------------------------------
+def save_results(selected_pairs, combined, output_path):
+    """Save all pairs with 'selected' flag for matched ones."""
     result = {}
-    for mentee_id, mentor_id, score in matches:
-        pair = f"{mentee_id}-{mentor_id}"
-        if pair in combined:
-            result[pair] = combined[pair]
-        else:
-            # In case a fallback match was added (ensure consistent output)
-            result[pair] = {"total_score": 0.0}
+    for pair, data in combined.items():
+        result[pair] = {
+            **data,
+            "selected": pair in selected_pairs,
+        }
 
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(result, f, indent=2, ensure_ascii=False)
 
-    print(f"\n💾 Results saved to {output_path}\n")
+    print(f"\n💾 Results saved to {output_path}")
 
-    top5 = sorted(matches, key=lambda x: x[2], reverse=True)[:5]
-    print("🏆 Top 5 matches:")
-    for m in top5:
-        print(f"  Mentee {m[0]} → Mentor {m[1]} (Score {m[2]:.3f})")
+    print("\n🏆 Final matches:")
+    for p in selected_pairs:
+        m, n = p.split('-')
+        print(f"  Mentee {m} → Mentor {n} | Score: {combined[p]['total_score']:.3f}")
 
 
+# -------------------------------------------------------------
+# Main
+# -------------------------------------------------------------
 def main():
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    results_dir = os.path.join(base_dir, "..")  # parent dir with JSONs
+    results_dir = os.path.join(base_dir, "..")  # JSON folder path
+    output_path = os.path.join(base_dir, "..", "results_final.json")
 
     combined = combine_scores(results_dir)
-    matches = perform_matching(combined)
-
-    output_path = os.path.join(base_dir, "..", "results_final.json")
-    save_results(matches, combined, output_path)
+    selected_pairs = perform_matching(combined)
+    save_results(selected_pairs, combined, output_path)
 
 
 if __name__ == "__main__":
     main()
+
+
+
 # -------------------------------------------------------------
 # Assumptions and Matching Logic
 # -------------------------------------------------------------
