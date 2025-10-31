@@ -1,16 +1,14 @@
-import json
 from pathlib import Path
 from typing import Any, Dict
 import pandas as pd
 
 try:
-    from model_dev.categories import gender, academia, languages
+    from model_dev.categories import gender, academia, languages, age_difference
 except ModuleNotFoundError:
     # Allow running this file directly: python model_dev/main.py
     import sys
     sys.path.append(str(Path(__file__).resolve().parent.parent))
-    from model_dev.categories import gender, academia, languages
-
+import pandas as pd
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_DIR = BASE_DIR / "data"
@@ -42,6 +40,7 @@ def run_all_categories(
         "gender": 1.0,
         "academia": 1.0,
         "languages": 1.0,
+        "age_difference": 1.0,
     }
 
     # --- Category 1: Gender ---
@@ -64,11 +63,18 @@ def run_all_categories(
         mentors_df=mentors_df,
         importance_modifier=importance_modifiers["languages"],
     )
+     # Age Difference (minimize)
+    age_results = age_difference.age_difference_results(
+        mentees_df=mentees_df,
+        mentors_df=mentors_df,
+        importance_modifier=importance_modifiers["age_difference"],
+    )
 
     return {
         "gender": gender_results,
         "academia": academia_results,
         "languages": languages_results,
+        "age_difference": age_results
     }
 
 
