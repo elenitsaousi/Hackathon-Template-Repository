@@ -1,5 +1,6 @@
 import json
 import os
+from typing import Dict, Any, List, Optional
 
 
 # -------------------------------------------------------------
@@ -25,19 +26,19 @@ def combine_scores(results_dir):
     combined = {}
     for pair in all_pairs:
         g = gender[pair]["gender_score"]
-        l = languages[pair]["score"]
+        lang = languages[pair]["score"]
         a = academia[pair]["academic_score"]
         d = geo[pair]["distance_score"]
 
         # even if invalid, keep pair but mark it
-        valid = (g > 0 and l > 0)
+        valid = (g > 0 and lang > 0)
         total_score = 0.7 * a + 0.3 * d if valid else 0.0
 
         combined[pair] = {
             "total_score": round(float(total_score), 3),
             "academic_score": round(float(a), 3),
             "gender_score": round(float(g), 3),
-            "language_score": round(float(l), 3),
+            "language_score": round(float(lang), 3),
             "distance_score": round(float(d), 3),
             "valid": valid,
         }
@@ -147,9 +148,171 @@ def save_results(selected_pairs, combined, output_path):
 
 
 # -------------------------------------------------------------
-# Main
+# Compute final matches from in-memory data (for backend use)
+# -------------------------------------------------------------
+def compute_final_matches_from_data(
+    results: Dict[str, Any],
+    manual_matches: Optional[List[str]] = None,
+    manual_non_matches: Optional[List[str]] = None,
+) -> List[Dict[str, Any]]:
+    """
+    Compute final matches from results dictionary returned by main.py.
+    
+    This function takes the results from run_all_categories() or run_all_categories_from_data()
+    and computes final matching pairs, returning them as a list instead of saving to file.
+    
+    Args:
+        results: Dictionary with category results from main.py. Expected structure:
+            {
+                "gender": {(mentee_id, mentor_id): {"gender_score": float}, ...},
+                "academia": {(mentee_id, mentor_id): {"academic_score": float}, ...},
+                "languages": {(mentee_id, mentor_id): {"score": float}, ...},
+                "age_difference": {(mentee_id, mentor_id): {"birthday_score": float}, ...},
+                "geographic_proximity": {(mentee_id, mentor_id): {"distance_score": float}, ...},
+            }
+            Note: Keys can be tuples (mentee_id, mentor_id) or strings "mentee_id-mentor_id"
+        manual_matches: Optional list of pairs to force as matches (format: "mentor_id-mentee_id")
+        manual_non_matches: Optional list of pairs to exclude (format: "mentor_id-mentee_id")
+    
+    Returns:
+        List of final matched pairs, each as a dictionary with:
+        {
+            "mentor_id": int,
+            "mentee_id": int,
+            "total_score": float,
+            "academic_score": float,
+            "gender_score": float,
+            "language_score": float,
+            "distance_score": float,
+            "age_difference_score": float,
+        }
+    """
+    # Normalize keys to string format "mentee_id-mentor_id"
+    def normalize_key(key):
+        """Convert tuple key to string key."""
+        if isinstance(key, tuple) and len(key) == 2:
+            return f"{key[0]}-{key[1]}"
+        return str(key)
+    
+    # Convert all results to use string keys
+    normalized_results = {}
+    for category, category_results in results.items():
+        normalized_results[category] = {
+            normalize_key(k): v for k, v in category_results.items()
+        }
+    
+    gender = normalized_results.get("gender", {})
+    languages = normalized_results.get("languages", {})
+    academia = normalized_results.get("academia", {})
+    age_difference = normalized_results.get("age_difference", {})
+    geo = normalized_results.get("geographic_proximity", {})
+    
+    # Get all pairs that exist in all categories
+    all_pairs = set(gender.keys()) & set(languages.keys()) & set(academia.keys()) & set(geo.keys())
+    if age_difference:
+        all_pairs = all_pairs & set(age_difference.keys())
+    
+    # Combine scores for each pair
+    combined = {}
+    for pair in all_pairs:
+        # Extract scores (handle different key names in different categories)
+        g_data = gender.get(pair, {})
+        l_data = languages.get(pair, {})
+        a_data = academia.get(pair, {})
+        d_data = geo.get(pair, {})
+        age_data = age_difference.get(pair, {}) if age_difference else {}
+        
+        # Get scores - handle both dict values and direct values
+        g = g_data.get("gender_score", g_data) if isinstance(g_data, dict) else g_data
+        lang = l_data.get("score", l_data) if isinstance(l_data, dict) else l_data
+        a = a_data.get("academic_score", a_data) if isinstance(a_data, dict) else a_data
+        d = d_data.get("distance_score", d_data) if isinstance(d_data, dict) else d_data
+        age = age_data.get("birthday_score", age_data) if isinstance(age_data, dict) else age_data
+        
+        # Convert to float, handle inf/-inf
+        def to_float(val):
+            if val is None:
+                return 0.0
+            if isinstance(val, str):
+                if val.lower() in ('inf', 'infinity'):
+                    return float('inf')
+                if val.lower() in ('-inf', '-infinity'):
+                    return float('-inf')
+            try:
+                return float(val) if val is not None else 0.0
+            except (ValueError, TypeError):
+                return 0.0
+        
+        g = to_float(g)
+        lang = to_float(lang)
+        a = to_float(a)
+        d = to_float(d)
+        age = to_float(age) if age_data else 0.0
+        
+        # Validate pair (hard constraints: gender > 0 and language > 0)
+        valid = (g > 0 and lang > 0)
+        
+        # Calculate total score: 0.7 * academia + 0.3 * geographic (only for valid pairs)
+        total_score = 0.7 * a + 0.3 * d if valid else 0.0
+        
+        # Handle manual matches/non-matches
+        # Note: pair is in "mentee_id-mentor_id" format, but manual_matches/non_matches
+        # come in "mentor_id-mentee_id" format from frontend, so we need to check both formats
+        mentee_id_str, mentor_id_str = pair.split('-')
+        pair_mentor_mentee_format = f"{mentor_id_str}-{mentee_id_str}"  # Convert to "mentor_id-mentee_id"
+        
+        if manual_matches:
+            # Check both formats
+            if pair in manual_matches or pair_mentor_mentee_format in manual_matches:
+                total_score = float('inf')
+                valid = True
+        
+        if manual_non_matches:
+            # Check both formats
+            if pair in manual_non_matches or pair_mentor_mentee_format in manual_non_matches:
+                total_score = float('-inf')
+                valid = False
+        
+        combined[pair] = {
+            "total_score": round(float(total_score), 3),
+            "academic_score": round(float(a), 3),
+            "gender_score": round(float(g), 3),
+            "language_score": round(float(lang), 3),
+            "distance_score": round(float(d), 3),
+            "age_difference_score": round(float(age), 3),
+            "valid": valid,
+        }
+    
+    print(f"📊 Total pairs combined: {len(combined)} (including invalid)")
+    valid_count = sum(1 for v in combined.values() if v["valid"])
+    print(f"✅ Valid pairs (gender>0 & language>0): {valid_count}")
+    
+    # Perform matching
+    selected_pairs = perform_matching(combined)
+    
+    # Return ALL pairs (not just matched ones) so frontend can calculate recommendations
+    # Each pair includes total_score and all category scores
+    # This matches the structure in results_final.json: all pairs with total_score, valid, and is_matched flag
+    all_pairs = []
+    for pair_key, match_data in combined.items():
+        mentee_id, mentor_id = map(int, pair_key.split('-'))
+        pair_data = match_data.copy()
+        pair_data["mentor_id"] = mentor_id
+        pair_data["mentee_id"] = mentee_id
+        pair_data["is_matched"] = pair_key in selected_pairs  # Flag to indicate if this is in final 1-to-1 matching
+        all_pairs.append(pair_data)
+    
+    print(f"\n🎯 Returning {len(all_pairs)} total pairs (including {len(selected_pairs)} final matched pairs).")
+    print(f"   Structure: Each pair has mentor_id, mentee_id, total_score, and all category scores")
+    print(f"   Sample pair: {all_pairs[0] if all_pairs else 'None'}")
+    return all_pairs
+
+
+# -------------------------------------------------------------
+# Main (file-based processing)
 # -------------------------------------------------------------
 def main():
+    """Main function for file-based processing - calculates results_final and saves to JSON."""
     base_dir = os.path.dirname(os.path.abspath(__file__))
     results_dir = os.path.join(base_dir, "..")  # JSON folder path
     output_path = os.path.join(base_dir, "..", "results_final.json")

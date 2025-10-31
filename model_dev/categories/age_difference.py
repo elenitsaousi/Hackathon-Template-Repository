@@ -7,12 +7,12 @@ Implementation details:
 - For each mentee and mentor, ages are calculated by parsing birth years from various data formats; invalid or missing data are handled gracefully.
 - The absolute difference in ages (in years) between each mentee and mentor is computed.
 - The score for each pair is calculated using a simple decay formula:
-    - score = max(0, 1 - (abs(mentee_age - mentor_age) / 30.0))
-    - This gives a score of 1 if ages are identical, and decreases linearly down to 0 as the age gap approaches or exceeds 30 years.
-    - If the absolute age difference exceeds the allowed maximum (age_max_difference), the score is set to -inf.
-- Scores are always in the range [0, 1], or -inf for disallowed pairs. If input ages are invalid or missing, the score is set to 0 for that pair.
+    - score = max(0, 1 - (abs(mentee_age - mentor_age) / max_age_difference))
+    - This gives a score of 1 if ages are identical, and decreases linearly down to 0 as the age gap approaches or exceeds max_age_difference (default 30 years).
+    - If the age difference exceeds max_age_difference, the score is set to 0 for that pair.
+- Scores are always in the range [0, 1]. If input ages are invalid or missing, the score is set to 0 for that pair.
 - The final score is scaled by `importance_modifier` if provided.
-- The result is a dictionary mapping (mentee_id, mentor_id) pairs to float scores in [0, 1] or -inf.
+- The result is a dictionary mapping (mentee_id, mentor_id) pairs to float scores in [0, 1]
 
 This setup prioritizes mentor-mentee pairs with age gaps under ~15 years (score ≥ 0.5) while not rewarding large age differences.
 """
@@ -77,10 +77,20 @@ def age_difference_results(
     mentees_df: pd.DataFrame,
     mentors_df: pd.DataFrame,
     importance_modifier: float = 1.0,
+    age_max_difference: Optional[int] = 30,
     reference_date: Optional[pd.Timestamp] = None,
 ) -> Dict[Tuple[int, int], Dict[str, Any]]:
     """
     Compute compatibility score based on absolute age difference and return structured info.
+    
+    Scoring principle:
+    - If the age difference is zero (same age), the pair receives the maximum score of 1.0.
+    - For larger age differences, the score decreases linearly according to the formula:
+        score = max(0.0, 1.0 - (age_difference / max_age_difference))
+      where max_age_difference defaults to 30 years.
+    - If the age difference exceeds max_age_difference, the score is set to 0.0 for that pair.
+    - If ages are invalid or missing, the score is set to 0.0 for that pair.
+    - All scores are multiplied by importance_modifier (default 1.0) and fall in the range [0, 1].
     """
     mentee_id_col = "Mentee Number"
     mentor_id_col = "Mentor Number"
@@ -106,9 +116,14 @@ def age_difference_results(
         print(" No valid birth years found.")
         return {}
 
-    min_age = min(all_ages)
-    max_age = max(all_ages)
-    age_range = max_age - min_age if max_age > min_age else 1.0
+    # Use age_max_difference if provided, otherwise default to 30 years
+    max_age_diff = age_max_difference if age_max_difference is not None else 30
+    
+    if max_age_diff <= 0:
+        print("⚠️ Warning: age_max_difference must be positive, using default 30 years")
+        max_age_diff = 30
+    
+    print(f"Using maximum age difference threshold: {max_age_diff} years")
 
     results: Dict[Tuple[int, int], Dict[str, Any]] = {}
 
@@ -126,7 +141,11 @@ def age_difference_results(
             diff_years = None
             if mentee_age is not None and mentor_age is not None:
                 diff_years = abs(mentee_age - mentor_age)
-                score = max(0.0, 1.0 - (diff_years / 30.0))  # Decay formula
+                # Score formula: max(0.0, 1.0 - (age_difference / max_age_difference))
+                # diff_years = 0 -> score = 1.0
+                # diff_years = max_age_diff -> score = 0.0
+                # diff_years > max_age_diff -> score = 0.0 (from max())
+                score = max(0.0, 1.0 - (diff_years / max_age_diff))
 
             results[(mentee_id, mentor_id)] = {
                 "birthday_score": round(score * importance_modifier, 3),
