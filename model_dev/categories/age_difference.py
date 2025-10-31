@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 """
 Scoring logic for Age Difference
 
@@ -20,7 +18,6 @@ This setup prioritizes mentor-mentee pairs with age gaps under ~15 years (score 
 """
 
 
->>>>>>> 12a0c3059d45c3556a79138f2cda3caf8ee6e6c8
 from datetime import datetime
 from typing import Any, Dict, Iterable, Optional, Tuple
 import pandas as pd
@@ -81,21 +78,9 @@ def age_difference_results(
     mentors_df: pd.DataFrame,
     importance_modifier: float = 1.0,
     reference_date: Optional[pd.Timestamp] = None,
-<<<<<<< HEAD
 ) -> Dict[Tuple[int, int], Dict[str, Any]]:
     """
     Compute compatibility score based on absolute age difference and return structured info.
-=======
-    age_max_difference: Optional[int] = 30,
-) -> Dict[Tuple[int, int], float]:
-    """
-    Normalized minimize score based on absolute age difference where:
-    - 1.0 when ages are equal (difference == 0)
-    - 0.0 when difference equals the range (max_age - min_age) across both datasets
-    - -inf when abs(mentee_age - mentor_age) > age_max_difference
-
-    If either value is missing/unparseable, score is 0.0.
->>>>>>> 12a0c3059d45c3556a79138f2cda3caf8ee6e6c8
     """
     mentee_id_col = "Mentee Number"
     mentor_id_col = "Mentor Number"
@@ -140,7 +125,6 @@ def age_difference_results(
             score = 0.0
             diff_years = None
             if mentee_age is not None and mentor_age is not None:
-<<<<<<< HEAD
                 diff_years = abs(mentee_age - mentor_age)
                 score = max(0.0, 1.0 - (diff_years / 30.0))  # Decay formula
 
@@ -150,22 +134,6 @@ def age_difference_results(
                 "mentor_birthday": str(mentor_year) if mentor_year else "unknown",
                 "difference_in_years": int(diff_years) if diff_years is not None else "unknown",
             }
-=======
-                diff = abs(mentee_age - mentor_age)
-                if age_max_difference is not None and diff > age_max_difference:
-                    score = float('-inf')
-                else:
-                    if age_range > 0:
-                        score = max(0.0, 1.0 - (diff / age_range))
-                    else:
-                        score = 1.0
-
-            results[(mentee_id, mentor_id)] = score * importance_modifier if score != float('-inf') else float('-inf')
->>>>>>> 12a0c3059d45c3556a79138f2cda3caf8ee6e6c8
 
     print(f" Age difference computed for {len(results)} mentor–mentee pairs.")
     return results
-<<<<<<< HEAD
-=======
-
->>>>>>> 12a0c3059d45c3556a79138f2cda3caf8ee6e6c8

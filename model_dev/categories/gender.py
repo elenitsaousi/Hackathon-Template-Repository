@@ -18,15 +18,7 @@ def gender_results(
     importance_modifier: float = 1.0,
 ) -> Dict[str, Dict[str, Any]]:
     """
-<<<<<<< HEAD
     Return detailed results for all mentee–mentor pairs including genders and scores.
-=======
-    Binary gender matching:
-    - 1.0 when mentee's desired gender exactly matches mentor's gender
-    - 0.75 if mentee does not care (e.g., “doesn't matter” etc)
-    - -inf if mentee preference does NOT match mentor's gender (e.g., mentee wants female but mentor is male)
-    - 0.0 for unknowns or no information
->>>>>>> 12a0c3059d45c3556a79138f2cda3caf8ee6e6c8
     """
     mentee_id_col = "Mentee Number"
     mentor_id_col = "Mentor Number"
@@ -45,7 +37,6 @@ def gender_results(
             mentor_id = mentor_row[mentor_id_col]
             mentor_gender = _normalize_gender(mentor_row.get(mentor_gender_col, None))
 
-<<<<<<< HEAD
             score = 0.0
             if mentee_pref in ["male", "female"]:
                 if mentee_pref == mentor_gender:
@@ -54,21 +45,6 @@ def gender_results(
                 score = 0.75
 
             final_score = score * importance_modifier
-=======
-            # Default: no match
-            score: float = 0.0
-
-            # Explicit gender preference
-            if mentee_pref in ["male", "female"]:
-                if mentee_pref == mentor_gender:
-                    score = 1.0
-                else:
-                    score = float('-inf')
-            # If mentee says “doesn't matter / any / egal” → give medium weight (0.75)
-            elif mentee_pref == "any":
-                score = 0.75
-            # Else (unknown or mismatch) stays 0.0
->>>>>>> 12a0c3059d45c3556a79138f2cda3caf8ee6e6c8
 
             detailed_results[f"{mentee_id}-{mentor_id}"] = {
                 "gender_score": final_score,
