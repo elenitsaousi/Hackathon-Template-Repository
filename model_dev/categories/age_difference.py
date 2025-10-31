@@ -1,3 +1,26 @@
+<<<<<<< HEAD
+=======
+"""
+Scoring logic for Age Difference
+
+This module computes an age-difference-based compatibility score for each mentee-mentor pair, where the main principle is that smaller absolute age differences are preferable.
+
+Implementation details:
+- For each mentee and mentor, ages are calculated by parsing birth years from various data formats; invalid or missing data are handled gracefully.
+- The absolute difference in ages (in years) between each mentee and mentor is computed.
+- The score for each pair is calculated using a simple decay formula:
+    - score = max(0, 1 - (abs(mentee_age - mentor_age) / 30.0))
+    - This gives a score of 1 if ages are identical, and decreases linearly down to 0 as the age gap approaches or exceeds 30 years.
+    - If the absolute age difference exceeds the allowed maximum (age_max_difference), the score is set to -inf.
+- Scores are always in the range [0, 1], or -inf for disallowed pairs. If input ages are invalid or missing, the score is set to 0 for that pair.
+- The final score is scaled by `importance_modifier` if provided.
+- The result is a dictionary mapping (mentee_id, mentor_id) pairs to float scores in [0, 1] or -inf.
+
+This setup prioritizes mentor-mentee pairs with age gaps under ~15 years (score ≥ 0.5) while not rewarding large age differences.
+"""
+
+
+>>>>>>> 12a0c3059d45c3556a79138f2cda3caf8ee6e6c8
 from datetime import datetime
 from typing import Any, Dict, Iterable, Optional, Tuple
 import pandas as pd
@@ -58,9 +81,21 @@ def age_difference_results(
     mentors_df: pd.DataFrame,
     importance_modifier: float = 1.0,
     reference_date: Optional[pd.Timestamp] = None,
+<<<<<<< HEAD
 ) -> Dict[Tuple[int, int], Dict[str, Any]]:
     """
     Compute compatibility score based on absolute age difference and return structured info.
+=======
+    age_max_difference: Optional[int] = 30,
+) -> Dict[Tuple[int, int], float]:
+    """
+    Normalized minimize score based on absolute age difference where:
+    - 1.0 when ages are equal (difference == 0)
+    - 0.0 when difference equals the range (max_age - min_age) across both datasets
+    - -inf when abs(mentee_age - mentor_age) > age_max_difference
+
+    If either value is missing/unparseable, score is 0.0.
+>>>>>>> 12a0c3059d45c3556a79138f2cda3caf8ee6e6c8
     """
     mentee_id_col = "Mentee Number"
     mentor_id_col = "Mentor Number"
@@ -105,6 +140,7 @@ def age_difference_results(
             score = 0.0
             diff_years = None
             if mentee_age is not None and mentor_age is not None:
+<<<<<<< HEAD
                 diff_years = abs(mentee_age - mentor_age)
                 score = max(0.0, 1.0 - (diff_years / 30.0))  # Decay formula
 
@@ -114,6 +150,22 @@ def age_difference_results(
                 "mentor_birthday": str(mentor_year) if mentor_year else "unknown",
                 "difference_in_years": int(diff_years) if diff_years is not None else "unknown",
             }
+=======
+                diff = abs(mentee_age - mentor_age)
+                if age_max_difference is not None and diff > age_max_difference:
+                    score = float('-inf')
+                else:
+                    if age_range > 0:
+                        score = max(0.0, 1.0 - (diff / age_range))
+                    else:
+                        score = 1.0
+
+            results[(mentee_id, mentor_id)] = score * importance_modifier if score != float('-inf') else float('-inf')
+>>>>>>> 12a0c3059d45c3556a79138f2cda3caf8ee6e6c8
 
     print(f" Age difference computed for {len(results)} mentor–mentee pairs.")
     return results
+<<<<<<< HEAD
+=======
+
+>>>>>>> 12a0c3059d45c3556a79138f2cda3caf8ee6e6c8

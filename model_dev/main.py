@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 import pandas as pd
 import json
 import sys
@@ -17,6 +17,7 @@ try:
     )
 except ModuleNotFoundError:
     sys.path.append(str(Path(__file__).resolve().parent.parent))
+<<<<<<< HEAD
     from model_dev.categories import (
         gender,
         academia,
@@ -24,6 +25,9 @@ except ModuleNotFoundError:
         age_difference,
         geographic_proximity,
     )
+=======
+    from model_dev.categories import gender, academia, languages, age_difference, geographic_proximity
+>>>>>>> 12a0c3059d45c3556a79138f2cda3caf8ee6e6c8
 
 
 # ------------------------------------
@@ -141,9 +145,105 @@ def run_all_categories(
     }
 
 
+<<<<<<< HEAD
 # ------------------------------------
 # Save Results
 # ------------------------------------
+=======
+def run_all_categories_with_params(
+    mentees_csv: Path,
+    mentors_csv: Path,
+    importance_modifiers: Optional[Dict[str, float]] = None,
+    age_max_difference: Optional[int] = 30,
+    geographic_max_distance: Optional[int] = 200,
+) -> Dict[str, Any]:
+    """
+    Run all category matchings with configurable data paths and importance modifiers.
+    
+    Args:
+        mentees_csv: Path to the mentees CSV file
+        mentors_csv: Path to the mentors CSV file
+        importance_modifiers: Dictionary of importance modifiers for each category.
+                             Defaults to 1.0 for all categories if not provided.
+                             Expected keys: "gender", "academia", "languages", 
+                             "age_difference", "geographic_proximity"
+    
+    Returns:
+        Dictionary containing results for all categories
+    """
+    mentees_df = _load_csv(Path(mentees_csv))
+    mentors_df = _load_csv(Path(mentors_csv))
+
+    print(mentees_df.columns)
+    print(mentors_df.columns)
+
+    # Default importance modifiers if not provided
+    if importance_modifiers is None:
+        importance_modifiers = {
+            "gender": 1.0,
+            "academia": 1.0,
+            "languages": 1.0,
+            "age_difference": 1.0,
+            "geographic_proximity": 1.0,
+        }
+    else:
+        # Ensure all required categories are present with defaults
+        default_modifiers = {
+            "gender": 1.0,
+            "academia": 1.0,
+            "languages": 1.0,
+            "age_difference": 1.0,
+            "geographic_proximity": 1.0,
+        }
+        importance_modifiers = {**default_modifiers, **importance_modifiers}
+
+    # --- Category 1: Gender ---
+    gender_results = gender.gender_results(
+        mentees_df=mentees_df,
+        mentors_df=mentors_df,
+        importance_modifier=importance_modifiers["gender"],
+    )
+
+    # --- Category 2: Academia ---
+    academia_results = academia.academia_results(
+        mentees_df=mentees_df,
+        mentors_df=mentors_df,
+        importance_modifier=importance_modifiers["academia"],
+    )
+
+    # --- Category 3: Languages ---
+    languages_results = languages.languages_results(
+        mentees_df=mentees_df,
+        mentors_df=mentors_df,
+        importance_modifier=importance_modifiers["languages"],
+    )
+
+    # --- Category 4: Age Difference (minimize) ---
+    age_results = age_difference.age_difference_results(
+        mentees_df=mentees_df,
+        mentors_df=mentors_df,
+        importance_modifier=importance_modifiers["age_difference"],
+        age_max_difference=age_max_difference,
+    )
+
+    # --- Category 5: Geographic Proximity (minimize) ---
+    geo_results = geographic_proximity.geographic_proximity_results(
+        mentees_df=mentees_df,
+        mentors_df=mentors_df,
+        importance_modifier=importance_modifiers["geographic_proximity"],
+        geographic_max_distance=geographic_max_distance,
+    )
+
+    return {
+        "gender": gender_results,
+        "academia": academia_results,
+        "languages": languages_results,
+        "age_difference": age_results,
+        "geographic_proximity": geo_results,
+    }
+
+
+>>>>>>> 12a0c3059d45c3556a79138f2cda3caf8ee6e6c8
 if __name__ == "__main__":
     output = run_all_categories()
 

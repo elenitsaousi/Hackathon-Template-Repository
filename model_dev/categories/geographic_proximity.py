@@ -557,11 +557,28 @@ def geographic_proximity_results(
     mentees_df: pd.DataFrame,
     mentors_df: pd.DataFrame,
     importance_modifier: float = 1.0,
+    geographic_max_distance: Optional[int] = 200,
     ors_api_key: Optional[str] = None,
 ) -> Dict[Tuple[int, int], Dict[str, Any]]:
     """
+<<<<<<< HEAD
     Compute geographic proximity between mentees and mentors.
     Returns a structured dictionary with score, cities, and fallback handling.
+=======
+    Normalized minimize score based on driving distance where:
+    - 1.0 when distance is minimum (closest pair)
+    - 0.0 when distance is maximum (farthest pair) across all calculated distances
+    - -inf if the pair's distance exceeds the specified maximum distance (geographic_max_distance)
+    
+    If either location cannot be geocoded or distance cannot be calculated, score is 0.0.
+    
+    Args:
+        mentees_df: DataFrame with mentee data
+        mentors_df: DataFrame with mentor data
+        importance_modifier: Weight multiplier for scores
+        geographic_max_distance: maximum allowed distance in km (default: 200)
+        ors_api_key: OpenRouteService API key. If None, tries to load from OPEN_ROUTE_SERVICE env var
+>>>>>>> 12a0c3059d45c3556a79138f2cda3caf8ee6e6c8
     """
 
     mentee_id_col = "Mentee Number"
@@ -605,6 +622,74 @@ def geographic_proximity_results(
     # --- Compute distances ---
     print("\n=== CALCULATING DISTANCES ===")
     all_distances: list[float] = []
+<<<<<<< HEAD
+=======
+    
+    for mentee_idx, mentee_row in mentees_df.iterrows():
+        mentee_id = mentee_row[mentee_id_col]
+        mentee_coord = mentee_coords[mentee_idx]
+        
+        for mentor_idx, mentor_row in mentors_df.iterrows():
+            mentor_id = mentor_row[mentor_id_col]
+            mentor_coord = mentor_coords[mentor_idx]
+            
+            if mentee_coord is not None and mentor_coord is not None:
+                # Use cache key for checking/adding to all_distances
+                cache_key_str = _cache_key_for_coords(mentee_coord, mentor_coord)
+                
+                # Check if already in global cache
+                if cache_key_str in _distance_cache:
+                    dist = _distance_cache[cache_key_str]
+                else:
+                    # This will check cache internally and save new results
+                    dist = _driving_distance_km(
+                        mentee_coord, mentor_coord, ors_client, 
+                        mentee_id=mentee_id, mentor_id=mentor_id
+                    )
+                
+                if dist is not None:
+                    all_distances.append(dist)
+    
+    if not all_distances:
+        return {}
+    
+    min_dist = min(all_distances)
+    max_dist = max(all_distances)
+    dist_range = max_dist - min_dist
+    print(f"\nDistance range: min={min_dist:.2f} km, max={max_dist:.2f} km, range={dist_range:.2f} km")
+    
+    # Now calculate scores
+    print("\n=== CALCULATING SCORES ===")
+    results: Dict[Tuple[int, int], float] = {}
+    max_allowed_distance = geographic_max_distance if geographic_max_distance is not None else 200
+    
+    for mentee_idx, mentee_row in mentees_df.iterrows():
+        mentee_id = mentee_row[mentee_id_col]
+        mentee_coord = mentee_coords[mentee_idx]
+        
+        for mentor_idx, mentor_row in mentors_df.iterrows():
+            mentor_id = mentor_row[mentor_id_col]
+            mentor_coord = mentor_coords[mentor_idx]
+            
+            score = 0.0
+            if mentee_coord is not None and mentor_coord is not None:
+                cache_key_str = _cache_key_for_coords(mentee_coord, mentor_coord)
+                dist = _distance_cache.get(cache_key_str)
+                
+                if dist is not None:
+                    if max_allowed_distance is not None and dist > max_allowed_distance:
+                        score = float('-inf')
+                    elif dist_range > 0:
+                        # Normalized minimize: 1.0 for min distance, 0.0 for max distance
+                        score = max(0.0, 1.0 - ((dist - min_dist) / dist_range))
+                    else:
+                        # All distances are the same
+                        score = 1.0
+            
+            results[(mentee_id, mentor_id)] = score * importance_modifier
+    
+    return results
+>>>>>>> 12a0c3059d45c3556a79138f2cda3caf8ee6e6c8
 
     for mentee_idx, mentee_row in mentees_df.iterrows():
         mentee_coord = mentee_coords[mentee_idx]

@@ -3,4 +3,6 @@ geopy>=2.4.0
 openrouteservice>=2.3.0
 python-dotenv>=1.0.0
 pytest>=7.4.0
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
 
