@@ -13,16 +13,7 @@ export interface Mentor {
   languageLevels: { [key: string]: string };
   availability: string;
   additionalInfo: string;
-  rawData?: {
-    studyLevel?: string;
-    studyCourse?: string;
-    dateOfBirth?: string;
-    gender?: string;
-    postalAddress?: string;
-    germanLanguage?: string;
-    englishLanguage?: string;
-    otherLanguages?: string;
-  };
+  rawData?: Record<string, string>; // All merged columns from application and interview CSVs
 }
 
 export interface Mentee {
@@ -45,19 +36,7 @@ export interface Mentee {
   location?: string;
   languages: string[];
   degree?: string;
-  rawData?: {
-    birthday?: string;
-    desiredStudies?: string;
-    desiredGender?: string;
-    english?: string;
-    furtherLanguageSkills?: string;
-    gender?: string;
-    german?: string;
-    residenceCity?: string;
-    studyReason?: string;
-    previousStudies?: string;
-    degreeNameCountry?: string;
-  };
+  rawData?: Record<string, string>; // All merged columns from application and interview CSVs
 }
 
 export interface Match {

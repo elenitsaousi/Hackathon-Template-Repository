@@ -378,6 +378,32 @@ export function parseMenteeData(
       }
     }
     
+    // Merge ALL columns from both application and interview CSVs into rawData
+    // Start with application data, then merge interview data (interview takes precedence for overlapping keys)
+    const mergedRawData: Record<string, string> = {};
+    const applicationColumns: string[] = [];
+    const interviewColumns: string[] = [];
+    
+    // Add all columns from application CSV
+    for (const [key, value] of Object.entries(appRow)) {
+      if (value !== undefined && value !== null && value !== '') {
+        mergedRawData[key] = String(value);
+        applicationColumns.push(key);
+      }
+    }
+    
+    // Add all columns from interview CSV (overwrites application data for duplicate keys)
+    if (interviewData.length > 0) {
+      for (const [key, value] of Object.entries(interviewRow)) {
+        if (value !== undefined && value !== null && value !== '') {
+          mergedRawData[key] = String(value);
+          if (!applicationColumns.includes(key)) {
+            interviewColumns.push(key);
+          }
+        }
+      }
+    }
+    
     // Create ONE mentee object from merged application and interview data
     // This push adds ONE mentee to the mentees array
     mentees.push({
@@ -398,19 +424,11 @@ export function parseMenteeData(
       conflictResolution: getColumn(interviewData.length > 0 ? interviewRow : appRow, 'Conflict Resolution') || getColumn(appRow, 'Conflict Resolution'),
       eventInterest: getColumn(interviewData.length > 0 ? interviewRow : appRow, 'Event Interest') || getColumn(appRow, 'Event Interest'),
       additionalInfo: getColumn(interviewData.length > 0 ? interviewRow : appRow, 'Additional Info') || getColumn(appRow, 'Additional Info'),
-      // Extract fields from application that will be displayed
-      rawData: {
-        birthday: getColumn(appRow, 'Birthday'),
-        desiredStudies: getColumn(appRow, 'Desired Studies'),
-        desiredGender: getColumn(appRow, 'Desired gender of mentor'),
-        english: getColumn(appRow, 'English'),
-        furtherLanguageSkills: getColumn(appRow, 'Further language skills'),
-        gender: getColumn(appRow, 'Gender'),
-        german: getColumn(appRow, 'German'),
-        residenceCity: getColumn(appRow, 'Residence (city)'),
-        studyReason: getColumn(appRow, 'Do you know if you want to study, and if yes, why? Do you know what you want to study, and if yes, what and why?'),
-        previousStudies: getColumn(appRow, 'Previous studies (level)'),
-        degreeNameCountry: getColumn(appRow, 'Name and country of last degree'),
+      // Store ALL merged columns from both CSVs
+      rawData: mergedRawData,
+      rawDataColumnOrder: {
+        application: applicationColumns,
+        interview: interviewColumns,
       },
       age: undefined,
       gender: getColumn(appRow, 'Gender'),
@@ -559,6 +577,32 @@ export function parseMentorData(
       mentorName = `Mentor ${mentorId}`;
     }
     
+    // Merge ALL columns from both application and interview CSVs into rawData
+    // Start with application data, then merge interview data (interview takes precedence for overlapping keys)
+    const mergedRawData: Record<string, string> = {};
+    const applicationColumns: string[] = [];
+    const interviewColumns: string[] = [];
+    
+    // Add all columns from application CSV
+    for (const [key, value] of Object.entries(appRow)) {
+      if (value !== undefined && value !== null && value !== '') {
+        mergedRawData[key] = String(value);
+        applicationColumns.push(key);
+      }
+    }
+    
+    // Add all columns from interview CSV (overwrites application data for duplicate keys)
+    if (interviewData.length > 0) {
+      for (const [key, value] of Object.entries(interviewRow)) {
+        if (value !== undefined && value !== null && value !== '') {
+          mergedRawData[key] = String(value);
+          if (!applicationColumns.includes(key)) {
+            interviewColumns.push(key);
+          }
+        }
+      }
+    }
+    
     // Create ONE mentor object from merged application and interview data
     // This push adds ONE mentor to the mentors array
     mentors.push({
@@ -582,16 +626,11 @@ export function parseMentorData(
       languageLevels: {},
       availability: getColumn(appRow, 'Availability') || getColumn(interviewData.length > 0 ? interviewRow : appRow, 'Availability'),
       additionalInfo: getColumn(appRow, 'Additional Info') || getColumn(interviewData.length > 0 ? interviewRow : appRow, 'Additional Info'),
-      // Extract fields that will be displayed
-      rawData: {
-        studyLevel: getColumn(appRow, 'Aktuelle oder zuletzt abgeschlossene Studienstufe / Current or most recently completed level of study'),
-        studyCourse: getColumn(appRow, 'Aktueller oder zuletzt abgeschlossener Studiengang / Current or most recently completed course of study'),
-        dateOfBirth: getColumn(appRow, 'Geburtsdatum / Date of birth'),
-        gender: getColumn(appRow, 'Geschlecht / Gender'),
-        postalAddress: getColumn(appRow, 'Postadresse / Postal address'),
-        germanLanguage: getColumn(appRow, 'Sprachkenntnisse Deutsch / Language skills German'),
-        englishLanguage: getColumn(appRow, 'Sprachkenntnisse Englisch / Language skills English'),
-        otherLanguages: getColumn(appRow, 'Weitere Sprachkenntnisse / Other language skills'),
+      // Store ALL merged columns from both CSVs
+      rawData: mergedRawData,
+      rawDataColumnOrder: {
+        application: applicationColumns,
+        interview: interviewColumns,
       },
     });
   }
