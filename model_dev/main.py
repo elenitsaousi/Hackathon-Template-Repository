@@ -109,3 +109,13 @@ if __name__ == "__main__":
     with open(BASE_DIR / "results_languages.json", "w") as f:
         json.dump({"languages": output["languages"]}, f, indent=2)
     print("💾 Saved languages results to results_languages.json")
+
+    # --- Save age difference results ---
+    with open(BASE_DIR / "results_age_difference.json", "w") as f:
+        json.dump({"age_difference": output["age_difference"]}, f, indent=2)
+    print("💾 Saved age difference results to results_age_difference.json")
+
+    # --- Save geographic proximity results ---
+    with open(BASE_DIR / "results_geographic_proximity.json", "w") as f:
+        json.dump({"geographic_proximity": output["geographic_proximity"]}, f, indent=2)
+    print("💾 Saved geographic proximity results to results_geographic_proximity.json")
