@@ -10,6 +10,7 @@ interface MatchScorePanelProps {
   matches: Match[];
   getMatchStatus: (mentorId: string, menteeId: string) => 'manual-match' | 'manual-non-match' | 'auto';
   onManualMatch: (mentorId: string, menteeId: string, isMatch: boolean) => void;
+  hasOtherManualMatch?: (mentorId: string, menteeId: string) => { mentor: boolean; mentee: boolean };
 }
 
 export function MatchScorePanel({
@@ -18,6 +19,7 @@ export function MatchScorePanel({
   matches,
   getMatchStatus,
   onManualMatch,
+  hasOtherManualMatch,
 }: MatchScorePanelProps) {
   const currentMatch = matches.find(
     m => m.mentorId === mentorId && m.menteeId === menteeId
@@ -25,7 +27,15 @@ export function MatchScorePanel({
 
   // Allow panel to show even if match doesn't exist yet (before data is loaded)
   const currentStatus = getMatchStatus(mentorId, menteeId);
-  const isImmutable = currentMatch?.isImmutableNonMatch || false;
+  // Only disable if match exists and is truly immutable (blocked by backend)
+  // Allow manual matching even before data is loaded
+  const isImmutable = currentMatch?.isImmutableNonMatch === true;
+  
+  // Check if mentor or mentee already has another manual match
+  const otherMatchInfo = hasOtherManualMatch ? hasOtherManualMatch(mentorId, menteeId) : { mentor: false, mentee: false };
+  const mentorHasOtherMatch = otherMatchInfo.mentor && currentStatus !== 'manual-match';
+  const menteeHasOtherMatch = otherMatchInfo.mentee && currentStatus !== 'manual-match';
+  const cannotSetMatch = mentorHasOtherMatch || menteeHasOtherMatch;
 
   // Format score for display (handle Infinity)
   const formatScore = (score: number): number => {
@@ -99,10 +109,26 @@ export function MatchScorePanel({
           className={`flex-1 ${
             currentStatus === 'manual-match' 
               ? 'bg-green-600 hover:bg-green-700 text-white' 
-              : ''
+              : 'hover:bg-green-50'
           }`}
-          onClick={() => onManualMatch(mentorId, menteeId, true)}
-          disabled={isImmutable}
+          onClick={() => {
+            console.log(`[MatchScorePanel] Match button clicked for ${mentorId}-${menteeId}`);
+            onManualMatch(mentorId, menteeId, true);
+          }}
+          disabled={isImmutable || cannotSetMatch}
+          title={
+            cannotSetMatch
+              ? mentorHasOtherMatch && menteeHasOtherMatch
+                ? 'Both mentor and mentee already have manual matches. Unset existing matches first.'
+                : mentorHasOtherMatch
+                ? 'This mentor already has a manual match. Unset it first.'
+                : 'This mentee already has a manual match. Unset it first.'
+              : isImmutable
+              ? 'This match is blocked and cannot be changed'
+              : currentStatus === 'manual-match'
+              ? 'Click to unset manual match'
+              : 'Click to set manual match'
+          }
         >
           <Check className="w-4 h-4 mr-2" />
           Match
@@ -111,11 +137,21 @@ export function MatchScorePanel({
           variant={currentStatus === 'manual-non-match' ? 'default' : 'outline'}
           className={`flex-1 ${
             currentStatus === 'manual-non-match' 
-              ? 'bg-red-600 hover:bg-red-700 text-white' 
-              : ''
+              ? '!bg-red-600 hover:!bg-red-700 !text-white !border-red-600' 
+              : 'bg-white hover:bg-red-50 border-red-300 text-red-600'
           }`}
-          onClick={() => onManualMatch(mentorId, menteeId, false)}
+          onClick={() => {
+            console.log(`[MatchScorePanel] Set Not Match button clicked for ${mentorId}-${menteeId}`);
+            onManualMatch(mentorId, menteeId, false);
+          }}
           disabled={isImmutable}
+          title={
+            isImmutable
+              ? 'This match is blocked and cannot be changed'
+              : currentStatus === 'manual-non-match'
+              ? 'Click to unset manual non-match (revert to model prediction)'
+              : 'Click to exclude this match'
+          }
         >
           <Ban className="w-4 h-4 mr-2" />
           Set Not Match

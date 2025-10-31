@@ -234,18 +234,26 @@ def compute_final_matches_from_data(
     final_scores = []
     rejected_hard = 0
     
-    # Use academia_results keys as base (since it should have all pairs)
-    # Note: academia_results keys are (mentee_id, mentor_id) tuples
-    for key in academia_results.keys():
+    # Collect all unique pairs from all result categories
+    all_pairs = set()
+    for category_results in [gender_results, languages_results, academia_results, age_results, geo_results]:
+        all_pairs.update(category_results.keys())
+    
+    # Also add manual matches/non-matches that might not be in any category results
+    for pair_str in list(manual_match_set) + list(manual_non_match_set):
+        if '-' in pair_str:
+            parts = pair_str.split('-')
+            if len(parts) == 2:
+                mentor_id, mentee_id = parts
+                all_pairs.add((mentee_id, mentor_id))  # Add as tuple (mentee_id, mentor_id)
+    
+    # Process all pairs
+    for key in all_pairs:
         mentee_id, mentor_id = key  # Fix order: mentee_id first, mentor_id second
         pair_key = f"{mentor_id}-{mentee_id}"
         
-        # Check for manual non-matches first (exclude these pairs)
-        if pair_key in manual_non_match_set:
-            rejected_hard += 1
-            continue
-        
-        # Extract scores
+        # Extract scores for all pairs (including manual matches/non-matches)
+        # We need to calculate actual scores even for manual selections so frontend can display them
         gender_score = float(gender_results.get(key, 0))
         
         # Handle languages (can be dict with "score" key)
@@ -266,34 +274,53 @@ def compute_final_matches_from_data(
         
         geo_score = float(geo_results.get(key, 0))
         
-        # Check for manual matches (override with +inf score)
+        # Check for manual matches/non-matches (override final_score, but keep calculated scores)
         is_manual_match = pair_key in manual_match_set
+        is_manual_non_match = pair_key in manual_non_match_set
         
+        # Calculate the actual total_score based on computed scores
+        # Include ALL pairs, even with low scores or -inf
+        # Weighted combination (will be 0 or negative if scores are low/-inf)
+        calculated_score = 0.7 * academia_score + 0.3 * geo_score
+        
+        # If any critical score is -inf, set calculated_score to -inf
+        if gender_score == float('-inf') or language_score == float('-inf') or age_score == float('-inf') or geo_score == float('-inf'):
+            calculated_score = float('-inf')
+        elif gender_score == 0 or language_score == 0:
+            # Invalid pair - set to 0 (will be displayed as light gray)
+            calculated_score = 0.0
+        
+        # Override final_score for manual selections, but keep calculated individual scores
         if is_manual_match:
-            # Force match: set final_score to +inf
+            # Force match: set final_score to +inf, but keep calculated scores for display
             total_score = float('inf')
+            rejected_hard += 0  # Manual match is not a rejection
+        elif is_manual_non_match:
+            # Force non-match: set final_score to -inf, but keep calculated scores for display
+            total_score = float('-inf')
+            rejected_hard += 1
         else:
-            # Include ALL pairs, even with low scores or -inf
-            # Don't filter out pairs - let frontend display all combinations
-            # Weighted combination (will be 0 or negative if scores are low/-inf)
-            total_score = 0.7 * academia_score + 0.3 * geo_score
-            
-            # If any critical score is -inf, set final_score to -inf
-            if gender_score == float('-inf') or language_score == float('-inf') or age_score == float('-inf') or geo_score == float('-inf'):
-                total_score = float('-inf')
-            elif gender_score == 0 or language_score == 0:
-                # Invalid pair - set to 0 (will be displayed as light gray)
-                total_score = 0.0
+            # Use calculated score
+            total_score = calculated_score
+        
+        # Ensure inf/-inf are preserved as float('inf')/-inf, not converted to strings
+        def preserve_inf(value):
+            """Preserve Infinity values as float('inf')/-inf"""
+            if value == float('inf'):
+                return float('inf')
+            elif value == float('-inf'):
+                return float('-inf')
+            return float(value) if value is not None else 0.0
         
         final_scores.append({
             "mentor_id": str(mentor_id),
             "mentee_id": str(mentee_id),
-            "gender_score": float(gender_score),
-            "language_score": float(language_score),
-            "academia_score": float(academia_score),
-            "geo_score": float(geo_score),
-            "age_score": float(age_score),
-            "final_score": float(total_score)
+            "gender_score": preserve_inf(gender_score),
+            "language_score": preserve_inf(language_score),
+            "academia_score": preserve_inf(academia_score),
+            "geo_score": preserve_inf(geo_score),
+            "age_score": preserve_inf(age_score),
+            "final_score": preserve_inf(total_score)  # This will be inf for manual match, -inf for manual non-match
         })
     
     # Return ALL pairs (not just one-to-one matches)

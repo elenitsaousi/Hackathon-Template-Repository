@@ -414,6 +414,8 @@ async def compute_matching(request: MatchingRequest) -> Dict[str, Any]:
         # Add final matches to the response
         converted_results["final_matches"] = final_matches
         
+        # FastAPI's JSONResponse handles inf/-inf by converting to "Infinity"/"-Infinity" strings
+        # This is standard JSON behavior and the frontend can handle these string values
         return converted_results
     
     except FileNotFoundError as e:

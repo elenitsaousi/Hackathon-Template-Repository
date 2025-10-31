@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { ParameterControls } from './ParameterControls';
@@ -10,6 +10,7 @@ import { parseMenteeData, parseMentorData, parseCSV } from '../utils/csvParser';
 import { createMergedData } from '../utils/csvMerger';
 import { fetchMatchingScores } from '../utils/apiClient';
 import { loadDemoCSVFiles } from '../utils/demoDataLoader';
+import { calculateOptimalMatching } from '../utils/optimalMatching';
 import type { Mentor, Mentee, Match, MatchingParameters } from '../types';
 
 interface MatchingDashboardProps {
@@ -156,6 +157,28 @@ export function MatchingDashboard({ uploadedFiles }: MatchingDashboardProps) {
 
       setMentors(parsedMentors);
       setMentees(parsedMentees);
+
+      // Initialize all mentor-mentee pairs with score 0
+      const initialMatches: Match[] = [];
+      parsedMentors.forEach(mentor => {
+        parsedMentees.forEach(mentee => {
+          initialMatches.push({
+            mentorId: mentor.id,
+            menteeId: mentee.id,
+            globalScore: 0,
+            scores: {
+              gender: 0,
+              academia: 0,
+              languages: 0,
+              ageDifference: 0,
+              geographicProximity: 0,
+            },
+            isImmutableNonMatch: false,
+          });
+        });
+      });
+      setMatches(initialMatches);
+      console.log(`✓ Initialized ${initialMatches.length} pairs with score 0 (${parsedMentors.length} mentors × ${parsedMentees.length} mentees)`);
 
       // Fetch scores from API - pass files to backend
       await fetchAndCalculateScores(
@@ -335,21 +358,103 @@ export function MatchingDashboard({ uploadedFiles }: MatchingDashboardProps) {
 
   const handleManualMatchToggle = (mentorId: string, menteeId: string, isMatch: boolean) => {
     // Allow manual matching even before matches are loaded
-    // Only check immutability if match exists
+    // Only check immutability if match exists and is truly immutable (blocked by backend)
     const match = matches.find(m => m.mentorId === mentorId && m.menteeId === menteeId);
-    if (match?.isImmutableNonMatch) {
+    if (match?.isImmutableNonMatch === true) {
+      console.warn(`Cannot change immutable non-match: ${mentorId}-${menteeId}`);
       return; // Don't allow changes to immutable non-matches
     }
     
+    const matchKey = `${mentorId}-${menteeId}`;
+    const isCurrentlyManualMatch = manualMatches.has(matchKey);
+    const isCurrentlyManualNonMatch = manualNonMatches.has(matchKey);
+    
     if (isMatch) {
-      handleManualMatch(mentorId, menteeId);
+      // Clicking "Match" button
+      if (isCurrentlyManualMatch) {
+        // Already a manual match - toggle it off (revert to model prediction)
+        setManualMatches(prev => {
+          const next = new Set(prev);
+          next.delete(matchKey);
+          return next;
+        });
+        console.log(`✓ Manual match removed: ${matchKey} (reverting to model prediction)`);
+      } else {
+        // Check if this mentor already has a manual match with another mentee
+        const mentorHasOtherMatch = Array.from(manualMatches).some(key => {
+          const [mId] = key.split('-');
+          return mId === mentorId && key !== matchKey;
+        });
+        
+        // Check if this mentee already has a manual match with another mentor
+        const menteeHasOtherMatch = Array.from(manualMatches).some(key => {
+          const [, meId] = key.split('-');
+          return meId === menteeId && key !== matchKey;
+        });
+        
+        if (mentorHasOtherMatch) {
+          // Find the existing match
+          const existingMatchKey = Array.from(manualMatches).find(key => {
+            const [mId] = key.split('-');
+            return mId === mentorId && key !== matchKey;
+          });
+          alert(`This mentor already has a manual match. Please unset the existing match (${existingMatchKey}) first before setting a new one.`);
+          console.warn(`Cannot set manual match: mentor ${mentorId} already has a match with another mentee`);
+          return;
+        }
+        
+        if (menteeHasOtherMatch) {
+          // Find the existing match
+          const existingMatchKey = Array.from(manualMatches).find(key => {
+            const [, meId] = key.split('-');
+            return meId === menteeId && key !== matchKey;
+          });
+          alert(`This mentee already has a manual match. Please unset the existing match (${existingMatchKey}) first before setting a new one.`);
+          console.warn(`Cannot set manual match: mentee ${menteeId} already has a match with another mentor`);
+          return;
+        }
+        
+        // Not a manual match - set as manual match
+        // First remove from non-matches if it's there
+        setManualNonMatches(prev => {
+          const next = new Set(prev);
+          next.delete(matchKey);
+          return next;
+        });
+        // Then add to matches
+        setManualMatches(prev => new Set(prev).add(matchKey));
+        console.log(`✓ Manual match set: ${matchKey}`);
+      }
     } else {
-      handleManualNonMatch(mentorId, menteeId);
+      // Clicking "Set Not Match" button
+      if (isCurrentlyManualNonMatch) {
+        // Already a manual non-match - toggle it off (revert to model prediction)
+        setManualNonMatches(prev => {
+          const next = new Set(prev);
+          next.delete(matchKey);
+          return next;
+        });
+        console.log(`✓ Manual non-match removed: ${matchKey} (reverting to model prediction)`);
+      } else {
+        // Not a manual non-match - set as manual non-match
+        // First remove from matches if it's there
+        setManualMatches(prev => {
+          const next = new Set(prev);
+          next.delete(matchKey);
+          return next;
+        });
+        // Then add to non-matches
+        // This will trigger optimal matching recalculation, finding new recommendations
+        setManualNonMatches(prev => {
+          const next = new Set(prev).add(matchKey);
+          console.log(`✓ Manual non-match set: ${matchKey} - Optimal matching will recalculate`);
+          return next;
+        });
+      }
     }
     
-    // Log for debugging
-    const matchKey = `${mentorId}-${menteeId}`;
-    console.log(`Manual ${isMatch ? 'match' : 'non-match'} set for ${matchKey}. Total manual matches: ${manualMatches.size + (isMatch ? 1 : 0)}, non-matches: ${manualNonMatches.size + (isMatch ? 0 : 1)}`);
+    // Note: State updates are async, so we log the expected state
+    // The actual state will be updated on the next render
   };
 
   const getMatchStatus = (mentorId: string, menteeId: string): 'manual-match' | 'manual-non-match' | 'auto' => {
@@ -364,8 +469,53 @@ export function MatchingDashboard({ uploadedFiles }: MatchingDashboardProps) {
     return 'auto';
   };
 
+  // Check if mentor or mentee already has another manual match
+  const hasOtherManualMatch = (mentorId: string, menteeId: string): { mentor: boolean; mentee: boolean } => {
+    const matchKey = `${mentorId}-${menteeId}`;
+    
+    // Check if this mentor already has a manual match with another mentee
+    const mentorHasOtherMatch = Array.from(manualMatches).some(key => {
+      const [mId] = key.split('-');
+      return mId === mentorId && key !== matchKey;
+    });
+    
+    // Check if this mentee already has a manual match with another mentor
+    const menteeHasOtherMatch = Array.from(manualMatches).some(key => {
+      const [, meId] = key.split('-');
+      return meId === menteeId && key !== matchKey;
+    });
+    
+    return { mentor: mentorHasOtherMatch, mentee: menteeHasOtherMatch };
+  };
+
+  // Calculate optimal matching (memoized for performance)
+  // Recalculates whenever matches or manual selections change
+  // When a recommended pair is set to "not match", it's excluded and new recommendations are found
+  const optimalMatching = useMemo(() => {
+    if (matches.length === 0) return new Set<string>();
+    
+    const newOptimal = calculateOptimalMatching(matches, manualMatches, manualNonMatches, getMatchStatus);
+    console.log(`[Optimal Matching] Recalculated - ${newOptimal.size} recommended pairs`, {
+      manualMatches: manualMatches.size,
+      manualNonMatches: manualNonMatches.size,
+      recommendedPairs: Array.from(newOptimal)
+    });
+    return newOptimal;
+  }, [matches, manualMatches, manualNonMatches, getMatchStatus]);
+  
+  // Helper function to check if a pair is recommended
+  const isRecommendedPair = useCallback((mentorId: string, menteeId: string): boolean => {
+    const matchKey = `${mentorId}-${menteeId}`;
+    return optimalMatching.has(matchKey);
+  }, [optimalMatching]);
+
   const handleMatch = async () => {
     setLoading(true);
+    
+    // Store current selections to restore after matching
+    const previouslySelectedMentor = selectedMentor;
+    const previouslySelectedMentee = selectedMentee;
+    
     try {
       // Get current file references (from state or uploaded files)
       let mentorAppFile: File | null = uploadedFiles.mentorApplication;
@@ -506,6 +656,16 @@ export function MatchingDashboard({ uploadedFiles }: MatchingDashboardProps) {
         setLastMatchedParameters({ ...parameters }); // Save current parameters as the ones used for this match
         console.log(`✓ Loaded ${backendMatches.length} matches - manual selections preserved and applied`);
         console.log(`✓ Matches state updated - Graph and Table will display these connections`);
+        
+        // Restore previously selected mentor and mentee
+        if (previouslySelectedMentor && mentors.find(m => m.id === previouslySelectedMentor)) {
+          setSelectedMentor(previouslySelectedMentor);
+          console.log(`✓ Restored selected mentor: ${previouslySelectedMentor}`);
+        }
+        if (previouslySelectedMentee && mentees.find(m => m.id === previouslySelectedMentee)) {
+          setSelectedMentee(previouslySelectedMentee);
+          console.log(`✓ Restored selected mentee: ${previouslySelectedMentee}`);
+        }
       } else {
         // Fallback to calculating matches from category scores
         console.log('No final_matches from backend, calculating from category scores');
@@ -572,6 +732,16 @@ export function MatchingDashboard({ uploadedFiles }: MatchingDashboardProps) {
         setMatches(finalMatches);
         setLastMatchedParameters({ ...parameters }); // Save current parameters
         console.log(`✓ Applied manual selections to ${finalMatches.length} calculated matches`);
+        
+        // Restore previously selected mentor and mentee
+        if (previouslySelectedMentor && mentors.find(m => m.id === previouslySelectedMentor)) {
+          setSelectedMentor(previouslySelectedMentor);
+          console.log(`✓ Restored selected mentor: ${previouslySelectedMentor}`);
+        }
+        if (previouslySelectedMentee && mentees.find(m => m.id === previouslySelectedMentee)) {
+          setSelectedMentee(previouslySelectedMentee);
+          console.log(`✓ Restored selected mentee: ${previouslySelectedMentee}`);
+        }
       }
     } catch (error) {
       console.error('Error calling match API:', error);
@@ -652,58 +822,81 @@ export function MatchingDashboard({ uploadedFiles }: MatchingDashboardProps) {
             />
           </Card>
 
-          <div className={`${(selectedMentor || selectedMentee) ? 'flex gap-6' : 'flex justify-center'}`}>
-            {selectedMentor && (
-              <div className="w-80 flex-shrink-0">
-                <DetailPanel
-                  person={mentors.find(m => m.id === selectedMentor)!}
-                  type="mentor"
-                  onClose={() => setSelectedMentor(null)}
-                />
-              </div>
-            )}
-            
-            <div className={`${(selectedMentor || selectedMentee) ? 'flex-1' : 'w-full'}`}>
-              <div className={`flex ${(selectedMentor || selectedMentee) ? '' : 'justify-center'}`}>
-                <Card className="p-6">
-                  <MatchingGraph
-                    mentors={mentors}
-                    mentees={mentees}
-                    matches={matches}
-                    selectedMentor={selectedMentor}
-                    selectedMentee={selectedMentee}
-                    onSelectMentor={setSelectedMentor}
-                    onSelectMentee={setSelectedMentee}
-                    getMatchStatus={getMatchStatus}
-                  />
-                </Card>
-              </div>
-            </div>
-
-            {selectedMentee && (
-              <div className="w-80 flex-shrink-0">
-                <DetailPanel
-                  person={mentees.find(m => m.id === selectedMentee)!}
-                  type="mentee"
-                  onClose={() => setSelectedMentee(null)}
-                />
-              </div>
-            )}
+          {/* Graph at the top - full width */}
+          <div className="flex justify-center">
+            <Card className="p-6 w-full max-w-6xl">
+              <MatchingGraph
+                mentors={mentors}
+                mentees={mentees}
+                matches={matches}
+                selectedMentor={selectedMentor}
+                selectedMentee={selectedMentee}
+                onSelectMentor={setSelectedMentor}
+                onSelectMentee={setSelectedMentee}
+                getMatchStatus={getMatchStatus}
+                isRecommendedPair={isRecommendedPair}
+              />
+            </Card>
           </div>
-          
-          {selectedMentor && selectedMentee && (
-            <div className="flex justify-center">
-              <div className="w-full max-w-6xl">
+
+          {/* Scores panel below graph - show blank when no pair selected */}
+          <div className="flex justify-center">
+            <div className="w-full max-w-6xl">
+              {selectedMentor && selectedMentee ? (
                 <MatchScorePanel
                   mentorId={selectedMentor}
                   menteeId={selectedMentee}
                   matches={matches}
                   getMatchStatus={getMatchStatus}
                   onManualMatch={handleManualMatchToggle}
+                  hasOtherManualMatch={hasOtherManualMatch}
                 />
-              </div>
+              ) : (
+                <Card className="p-4 bg-gray-50 border border-gray-200">
+                  <div className="text-center text-gray-500 text-sm">
+                    Select a mentor and a mentee to view match scores
+                  </div>
+                </Card>
+              )}
             </div>
-          )}
+          </div>
+
+          {/* Mentor and Mentee panels side by side - each takes half width */}
+          <div className="flex gap-6 items-start">
+            {/* Left half - Mentor */}
+            <div className="w-1/2 flex-shrink-0 overflow-hidden">
+              {selectedMentor ? (
+                <DetailPanel
+                  person={mentors.find(m => m.id === selectedMentor)!}
+                  type="mentor"
+                  onClose={() => setSelectedMentor(null)}
+                />
+              ) : (
+                <Card className="border-2 border-dashed border-gray-300 h-[600px] flex items-center justify-center">
+                  <div className="text-center text-gray-400 text-sm">
+                    Select a mentor to view details
+                  </div>
+                </Card>
+              )}
+            </div>
+
+            {/* Right half - Mentee */}
+            <div className="w-1/2 flex-shrink-0 overflow-hidden">
+              {selectedMentee ? (
+                <DetailPanel
+                  person={mentees.find(m => m.id === selectedMentee)!}
+                  type="mentee"
+                  onClose={() => setSelectedMentee(null)}
+                />
+              ) : (
+                <Card className="border-2 border-dashed border-gray-300 h-[600px] flex items-center justify-center">
+                  <div className="text-center text-gray-400 text-sm">
+                    Select a mentee to view details
+                  </div>
+                </Card>
+              )}
+            </div>
+          </div>
           
           {/* Show manual matches count for debugging */}
           {(manualMatches.size > 0 || manualNonMatches.size > 0) && (

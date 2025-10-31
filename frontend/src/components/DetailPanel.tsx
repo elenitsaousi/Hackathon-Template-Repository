@@ -17,9 +17,9 @@ export function DetailPanel({
   onClose,
 }: DetailPanelProps) {
   return (
-    <Card className="border-2 border-blue-500">
-      <div className="p-6">
-        <div className="flex items-start justify-between mb-6">
+    <Card className="border-2 border-blue-500 h-[600px] w-full max-w-full flex flex-col overflow-hidden">
+      <div className="p-6 flex-shrink-0">
+        <div className="flex items-start justify-between">
           <div>
             <div className="flex items-center gap-2 mb-2">
               <Badge variant={type === 'mentor' ? 'default' : 'secondary'}>
@@ -36,19 +36,19 @@ export function DetailPanel({
             <X className="w-5 h-5" />
           </Button>
         </div>
+      </div>
 
-        <div>
-          <h3 className="text-gray-900 mb-3">Details</h3>
-          <ScrollArea className="h-auto max-h-96 pr-4">
-            <div className="space-y-3">
-              {type === 'mentor' ? (
-                <MentorDetails mentor={person as Mentor} />
-              ) : (
-                <MenteeDetails mentee={person as Mentee} />
-              )}
-            </div>
-          </ScrollArea>
-        </div>
+      <div className="flex-1 overflow-hidden flex flex-col px-6 pb-6">
+        <h3 className="text-gray-900 mb-3 flex-shrink-0">Details</h3>
+        <ScrollArea className="flex-1 pr-4">
+          <div className="space-y-3">
+            {type === 'mentor' ? (
+              <MentorDetails mentor={person as Mentor} />
+            ) : (
+              <MenteeDetails mentee={person as Mentee} />
+            )}
+          </div>
+        </ScrollArea>
       </div>
     </Card>
   );
@@ -122,9 +122,9 @@ function MenteeDetails({ mentee }: { mentee: Mentee }) {
 
 function DetailItem({ label, value }: { label: string; value: string }) {
   return (
-    <div>
-      <p className="text-xs text-gray-500 mb-1">{label}</p>
-      <p className="text-sm text-gray-900 break-words">{value || 'N/A'}</p>
+    <div className="w-full overflow-hidden">
+      <p className="text-xs text-gray-500 mb-1 break-words">{label}</p>
+      <p className="text-sm text-gray-900 break-words overflow-wrap-anywhere">{value || 'N/A'}</p>
     </div>
   );
 }

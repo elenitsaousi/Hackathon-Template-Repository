@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import type { MouseEvent } from 'react';
 import type { Mentor, Mentee, Match } from '../types';
 import { Badge } from './ui/badge';
@@ -32,9 +32,9 @@ export function MatchingGraph({
   onSelectMentor,
   onSelectMentee,
   getMatchStatus,
+  isRecommendedPair,
 }: MatchingGraphProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [hoveredNode, setHoveredNode] = useState<Node | null>(null);
   const [nodes, setNodes] = useState<Node[]>([]);
 
   useEffect(() => {
@@ -84,13 +84,55 @@ export function MatchingGraph({
       const isSelected = (selectedMentor === match.mentorId && selectedMentee === match.menteeId) ||
         selectedMentor === match.mentorId ||
         selectedMentee === match.menteeId;
+      
+      // Check if this is a recommended pair (optimal matching)
+      const isRecommended = isRecommendedPair(match.mentorId, match.menteeId);
 
       // Determine line style based on final_score
       // 0: completely light gray, 1: blue, inf: green, -inf: red
+      // Recommended pairs: purple dashed line
       let strokeStyle = '#e5e7eb'; // light gray-200 (for score = 0)
       let lineWidth = 1;
+      let lineDash: number[] | undefined = undefined;
 
-      if (status === 'manual-match') {
+      // Check status only if match actually has scores (not initial 0 scores)
+      // For initial matches with score 0, check if manual selection exists, otherwise show gray
+      const isInitialMatch = match.globalScore === 0 && 
+        match.scores.gender === 0 && 
+        match.scores.academia === 0 && 
+        match.scores.languages === 0 && 
+        match.scores.ageDifference === 0 && 
+        match.scores.geographicProximity === 0;
+
+      // Priority order: recommended pairs > initial matches (gray) > manual selections > score-based colors
+      // If a recommended pair is also manually matched, show it as green (manual match takes precedence)
+      if (isRecommended && status === 'manual-match') {
+        // Recommended pair that is manually matched - green solid line
+        strokeStyle = '#10b981'; // green-500 (manual match = inf)
+        lineWidth = 3;
+        lineDash = undefined; // Solid line
+      } else if (isRecommended) {
+        // Recommended pair (optimal matching) - purple dashed line
+        strokeStyle = '#9333ea'; // purple-600
+        lineWidth = 3;
+        lineDash = [5, 5]; // Dashed line
+      } else if (isInitialMatch) {
+        // Initial matches before matching - always light gray unless manually set
+        // Only check manual status if it's not an initial match
+        if (status === 'manual-non-match') {
+          // Even initial matches can be manually set as non-match
+          strokeStyle = '#ef4444'; // red-500 (manual non-match = -inf)
+          lineWidth = 2;
+        } else if (status === 'manual-match') {
+          // Even initial matches can be manually set as match
+          strokeStyle = '#10b981'; // green-500 (manual match = inf)
+          lineWidth = 3;
+        } else {
+          // Initial match with no manual selection - always light gray
+          strokeStyle = '#e5e7eb'; // light gray-200
+          lineWidth = 1;
+        }
+      } else if (status === 'manual-match') {
         strokeStyle = '#10b981'; // green-500 (manual match = inf)
         lineWidth = 3;
       } else if (status === 'manual-non-match') {
@@ -148,6 +190,11 @@ export function MatchingGraph({
       ctx.lineTo(menteeNode.x, menteeNode.y + 20);
       ctx.strokeStyle = strokeStyle;
       ctx.lineWidth = lineWidth;
+      if (lineDash) {
+        ctx.setLineDash(lineDash);
+      } else {
+        ctx.setLineDash([]);
+      }
       ctx.stroke();
       drawnConnections++;
 
@@ -179,7 +226,7 @@ export function MatchingGraph({
         ctx.fillText(match.globalScore.toFixed(2), midX, midY);
       }
     });
-  }, [nodes, matches, selectedMentor, selectedMentee, getMatchStatus]);
+  }, [nodes, matches, selectedMentor, selectedMentee, getMatchStatus, isRecommendedPair]);
 
   const handleCanvasClick = (event: MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
@@ -213,26 +260,95 @@ export function MatchingGraph({
     }
   };
 
-  const handleCanvasMouseMove = (event: MouseEvent<HTMLCanvasElement>) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const rect = canvas.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-
-    const hoveredNode = nodes.find(node => {
-      const dx = x - node.x - 30;
-      const dy = y - node.y - 20;
-      return Math.sqrt(dx * dx + dy * dy) < 30;
-    });
-
-    setHoveredNode(hoveredNode || null);
-  };
+  // Calculate all recommendations for selected mentor/mentee (memoized)
+  // Top 3 get green badges, rest get gray badges
+  const topMatches = useMemo(() => {
+    const recommendations: Array<{ match: Match; rank: number; nodeId: string; nodeType: 'mentor' | 'mentee' }> = [];
+    
+    if (selectedMentor) {
+      // Find all mentees for selected mentor (not just top 3)
+      const mentorMatches = matches
+        .filter(m => m.mentorId === selectedMentor)
+        .filter(m => {
+          // Exclude manual non-matches and -inf scores
+          const status = getMatchStatus(m.mentorId, m.menteeId);
+          if (status === 'manual-non-match') return false;
+          if (m.globalScore === -Infinity || (typeof m.globalScore === 'number' && !isFinite(m.globalScore) && m.globalScore < 0)) return false;
+          return true;
+        })
+        .sort((a, b) => {
+          // Sort by score descending, prioritizing manual matches
+          const aStatus = getMatchStatus(a.mentorId, a.menteeId);
+          const bStatus = getMatchStatus(b.mentorId, b.menteeId);
+          
+          // Manual matches always come first
+          if (aStatus === 'manual-match' && bStatus !== 'manual-match') return -1;
+          if (bStatus === 'manual-match' && aStatus !== 'manual-match') return 1;
+          
+          // Then sort by score (handle Infinity properly)
+          const aScore = typeof a.globalScore === 'number' && isFinite(a.globalScore) ? a.globalScore : a.globalScore === Infinity ? 1000 : -1000;
+          const bScore = typeof b.globalScore === 'number' && isFinite(b.globalScore) ? b.globalScore : b.globalScore === Infinity ? 1000 : -1000;
+          return bScore - aScore;
+        });
+      // Don't slice - include all matches for ranking
+      
+      mentorMatches.forEach((match, index) => {
+        recommendations.push({
+          match,
+          rank: index + 1,
+          nodeId: match.menteeId,
+          nodeType: 'mentee'
+        });
+      });
+    }
+    
+    if (selectedMentee) {
+      // Find all mentors for selected mentee (not just top 3)
+      const menteeMatches = matches
+        .filter(m => m.menteeId === selectedMentee)
+        .filter(m => {
+          // Exclude manual non-matches and -inf scores
+          const status = getMatchStatus(m.mentorId, m.menteeId);
+          if (status === 'manual-non-match') return false;
+          if (m.globalScore === -Infinity || (typeof m.globalScore === 'number' && !isFinite(m.globalScore) && m.globalScore < 0)) return false;
+          return true;
+        })
+        .sort((a, b) => {
+          // Sort by score descending, prioritizing manual matches
+          const aStatus = getMatchStatus(a.mentorId, a.menteeId);
+          const bStatus = getMatchStatus(b.mentorId, b.menteeId);
+          
+          // Manual matches always come first
+          if (aStatus === 'manual-match' && bStatus !== 'manual-match') return -1;
+          if (bStatus === 'manual-match' && aStatus !== 'manual-match') return 1;
+          
+          // Then sort by score (handle Infinity properly)
+          const aScore = typeof a.globalScore === 'number' && isFinite(a.globalScore) ? a.globalScore : a.globalScore === Infinity ? 1000 : -1000;
+          const bScore = typeof b.globalScore === 'number' && isFinite(b.globalScore) ? b.globalScore : b.globalScore === Infinity ? 1000 : -1000;
+          return bScore - aScore;
+        });
+      // Don't slice - include all matches for ranking
+      
+      menteeMatches.forEach((match, index) => {
+        recommendations.push({
+          match,
+          rank: index + 1,
+          nodeId: match.mentorId,
+          nodeType: 'mentor'
+        });
+      });
+    }
+    
+    return recommendations;
+  }, [matches, selectedMentor, selectedMentee, getMatchStatus]);
 
   return (
     <div className="relative">
-      <div className="mb-4 flex gap-4 items-center">
+      <div className="mb-4 flex gap-4 items-center flex-wrap">
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-3 border-2 border-purple-600 border-dashed bg-transparent"></div>
+          <span className="text-sm text-gray-600">Recommended</span>
+        </div>
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 rounded-full bg-blue-500"></div>
           <span className="text-sm text-gray-600">High Match ({'>'}0.7)</span>
@@ -248,12 +364,11 @@ export function MatchingGraph({
       </div>
 
       <div className="relative border rounded-lg bg-white overflow-auto" style={{ height: '600px' }}>
-        <canvas
+          <canvas
           ref={canvasRef}
           width={800}
           height={Math.max(600, Math.max(mentors.length, mentees.length) * 80 + 100)}
           onClick={handleCanvasClick}
-          onMouseMove={handleCanvasMouseMove}
           className="cursor-pointer"
         />
 
@@ -266,7 +381,10 @@ export function MatchingGraph({
             const isSelected = node.type === 'mentor' 
               ? selectedMentor === node.id 
               : selectedMentee === node.id;
-            const isHovered = hoveredNode?.id === node.id && hoveredNode?.type === node.type;
+            
+            // Check if this node is in top 3 recommendations
+            const topMatch = topMatches.find(tm => tm.nodeId === node.id && tm.nodeType === node.type);
+            const isRecommended = !!topMatch;
 
             return (
               <g key={node.id}>
@@ -277,8 +395,8 @@ export function MatchingGraph({
                   height="40"
                   rx="8"
                   fill={isSelected ? '#3b82f6' : node.type === 'mentor' ? '#f3f4f6' : '#fef3c7'}
-                  stroke={isHovered ? '#1f2937' : isSelected ? '#2563eb' : '#e5e7eb'}
-                  strokeWidth={isHovered || isSelected ? 2 : 1}
+                  stroke={isSelected ? '#2563eb' : isRecommended ? '#10b981' : '#e5e7eb'}
+                  strokeWidth={isSelected ? 2 : isRecommended ? 2 : 1}
                   className="pointer-events-none"
                 />
                 <text
@@ -294,37 +412,35 @@ export function MatchingGraph({
                     ? `Mentor ${node.id}` 
                     : `Mentee ${node.id}`}
                 </text>
+                {/* Show recommendation badge */}
+                {isRecommended && !isSelected && (
+                  <g>
+                    <circle
+                      cx={node.type === 'mentor' ? node.x + 110 : node.x + 10}
+                      cy={node.y + 10}
+                      r="10"
+                      fill={topMatch.rank <= 3 ? "#10b981" : "#9ca3af"}
+                      className="pointer-events-none"
+                    />
+                    <text
+                      x={node.type === 'mentor' ? node.x + 110 : node.x + 10}
+                      y={node.y + 14}
+                      textAnchor="middle"
+                      fill="#ffffff"
+                      fontSize="10"
+                      fontWeight="700"
+                      className="pointer-events-none"
+                    >
+                      {topMatch.rank}
+                    </text>
+                  </g>
+                )}
               </g>
             );
           })}
         </svg>
       </div>
 
-      {hoveredNode && (
-        <div className="absolute top-4 right-4 bg-white border rounded-lg shadow-lg p-4 max-w-xs z-10">
-          <h3 className="mb-2">{hoveredNode.type === 'mentor' ? 'Mentor' : 'Mentee'} {hoveredNode.id}</h3>
-          <div className="space-y-1 text-sm">
-            {hoveredNode.type === 'mentor' && (
-              <>
-                <p className="text-gray-600"><span className="font-medium">Gender:</span> {(hoveredNode.data as Mentor).gender || 'N/A'}</p>
-                <p className="text-gray-600"><span className="font-medium">Languages:</span> {(hoveredNode.data as Mentor).languages.join(', ') || 'N/A'}</p>
-                <p className="text-gray-600"><span className="font-medium">Location:</span> {(hoveredNode.data as Mentor).location || 'N/A'}</p>
-                <p className="text-gray-600"><span className="font-medium">Degree:</span> {(hoveredNode.data as Mentor).degree || 'N/A'}</p>
-                <p className="text-gray-600"><span className="font-medium">Age:</span> {(hoveredNode.data as Mentor).birthYear ? new Date().getFullYear() - (hoveredNode.data as Mentor).birthYear : 'N/A'}</p>
-              </>
-            )}
-            {hoveredNode.type === 'mentee' && (
-              <>
-                <p className="text-gray-600"><span className="font-medium">Gender:</span> {(hoveredNode.data as Mentee).gender || 'N/A'}</p>
-                <p className="text-gray-600"><span className="font-medium">Languages:</span> {(hoveredNode.data as Mentee).languages.join(', ') || 'N/A'}</p>
-                <p className="text-gray-600"><span className="font-medium">Location:</span> {(hoveredNode.data as Mentee).location || 'N/A'}</p>
-                <p className="text-gray-600"><span className="font-medium">Degree:</span> {(hoveredNode.data as Mentee).degree || 'N/A'}</p>
-                <p className="text-gray-600"><span className="font-medium">Age:</span> {(hoveredNode.data as Mentee).age || 'N/A'}</p>
-              </>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
