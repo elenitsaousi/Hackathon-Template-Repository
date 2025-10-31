@@ -1,9 +1,11 @@
 import json
 import os
+import numpy as np
+from scipy.optimize import linear_sum_assignment
 
 
 # -------------------------------------------------------------
-# Utility functions
+# Utility
 # -------------------------------------------------------------
 def load_json(path):
     with open(path, "r", encoding="utf-8") as f:
@@ -11,10 +13,10 @@ def load_json(path):
 
 
 # -------------------------------------------------------------
-# Combine partial scores into one dictionary
+# Combine all partial results
 # -------------------------------------------------------------
 def combine_scores(results_dir):
-    """Combine all result JSONs into a unified dictionary of pair → scores."""
+    """Combine gender, language, academia, and geographic proximity into unified dict."""
     gender = load_json(os.path.join(results_dir, "results_gender.json"))["gender"]
     languages = load_json(os.path.join(results_dir, "results_languages.json"))["languages"]
     academia = load_json(os.path.join(results_dir, "results_academia.json"))["academia"]
@@ -29,7 +31,6 @@ def combine_scores(results_dir):
         a = academia[pair]["academic_score"]
         d = geo[pair]["distance_score"]
 
-        # even if invalid, keep pair but mark it
         valid = (g > 0 and l > 0)
         total_score = 0.7 * a + 0.3 * d if valid else 0.0
 
@@ -42,105 +43,67 @@ def combine_scores(results_dir):
             "valid": valid,
         }
 
-    print(f"📊 Total pairs loaded: {len(combined)} (including invalid)")
-    valid_count = sum(1 for v in combined.values() if v["valid"])
-    print(f"✅ Valid pairs (gender>0 & language>0): {valid_count}")
-
-    mentees = sorted({int(p.split('-')[0]) for p in combined})
-    mentors = sorted({int(p.split('-')[1]) for p in combined})
-    print(f"Mentees: {mentees}")
-    print(f"Mentors: {mentors}")
-
-    # Optional preview
-    print("\n📋 Preview of all mentor–mentee pairs:")
-    for p, v in list(combined.items())[:15]:
-        m, n = p.split('-')
-        tag = "⭐" if v["valid"] else "❌"
-        print(f"{tag} Mentee {m} – Mentor {n} | Total={v['total_score']}")
-
+    print(f"📊 Total pairs: {len(combined)} (valid={sum(v['valid'] for v in combined.values())})")
     return combined
 
 
 # -------------------------------------------------------------
-# Perform 1–1 matching (unique mentor & mentee)
+# Optimal 1–1 matching (Hungarian algorithm)
 # -------------------------------------------------------------
 def perform_matching(combined):
-    """Greedy 1–1 matching ensuring all mentees and mentors get paired."""
-    valid_pairs = [
-        (int(p.split('-')[0]), int(p.split('-')[1]), p, data["total_score"])
-        for p, data in combined.items() if data["valid"]
-    ]
+    """Find maximum-weight 1–1 matching using only valid (>0) pairs."""
+    mentees = sorted({int(p.split('-')[0]) for p in combined})
+    mentors = sorted({int(p.split('-')[1]) for p in combined})
+    n = len(mentees)
+    m = len(mentors)
 
-    # Sort valid pairs by total_score
-    sorted_pairs = sorted(valid_pairs, key=lambda x: x[3], reverse=True)
+    score_matrix = np.zeros((n, m))
+    mentee_to_idx = {mentee: i for i, mentee in enumerate(mentees)}
+    mentor_to_idx = {mentor: j for j, mentor in enumerate(mentors)}
 
-    matched_mentees = set()
-    matched_mentors = set()
+    for pair, data in combined.items():
+        mentee, mentor = map(int, pair.split('-'))
+        i, j = mentee_to_idx[mentee], mentor_to_idx[mentor]
+        if data["valid"] and data["total_score"] > 0:
+            score_matrix[i, j] = data["total_score"]
+        else:
+            score_matrix[i, j] = 0  # invalid pairs disallowed
+
+    cost_matrix = -score_matrix
+    row_ind, col_ind = linear_sum_assignment(cost_matrix)
+
     selected_pairs = []
+    for i, j in zip(row_ind, col_ind):
+        score = score_matrix[i, j]
+        if score > 0:  # only keep positive valid matches
+            pair = f"{mentees[i]}-{mentors[j]}"
+            selected_pairs.append(pair)
 
-    # First pass: match valid pairs greedily
-    for mentee, mentor, pair_key, score in sorted_pairs:
-        if mentee not in matched_mentees and mentor not in matched_mentors:
-            selected_pairs.append(pair_key)
-            matched_mentees.add(mentee)
-            matched_mentors.add(mentor)
-
-    all_mentees = {int(p.split('-')[0]) for p in combined}
-    all_mentors = {int(p.split('-')[1]) for p in combined}
-
-    # Second pass: handle unmatched mentees
-    for mentee in all_mentees - matched_mentees:
-        best_pair = None
-        best_score = -1
-        for p, data in combined.items():
-            m, n = map(int, p.split('-'))
-            if m == mentee and n not in matched_mentors:
-                if data["total_score"] > best_score:
-                    best_pair = p
-                    best_score = data["total_score"]
-        if best_pair:
-            selected_pairs.append(best_pair)
-            matched_mentees.add(mentee)
-            matched_mentors.add(int(best_pair.split('-')[1]))
-
-    # Third pass: handle unmatched mentors (symmetry)
-    for mentor in all_mentors - matched_mentors:
-        best_pair = None
-        best_score = -1
-        for p, data in combined.items():
-            m, n = map(int, p.split('-'))
-            if n == mentor and m not in matched_mentees:
-                if data["total_score"] > best_score:
-                    best_pair = p
-                    best_score = data["total_score"]
-        if best_pair:
-            selected_pairs.append(best_pair)
-            matched_mentees.add(int(best_pair.split('-')[0]))
-            matched_mentors.add(mentor)
-
-    print(f"\n🎯 Final 1–1 matches: {len(selected_pairs)} total.")
+    print(f"\n🎯 Final 1–1 valid matches: {len(selected_pairs)} total")
     return selected_pairs
 
 
-
 # -------------------------------------------------------------
-# Save all pairs (100 total), highlighting the chosen ones
+# Save results
 # -------------------------------------------------------------
-def save_results(selected_pairs, combined, output_path):
-    """Save all pairs with 'selected' flag for matched ones."""
-    result = {}
+def save_results(selected_pairs, combined, output_all, output_best):
+    # Save all pairs (100)
+    result_all = {}
     for pair, data in combined.items():
-        result[pair] = {
-            **data,
-            "selected": pair in selected_pairs,
-        }
+        result_all[pair] = {**data, "selected": pair in selected_pairs}
 
-    with open(output_path, "w", encoding="utf-8") as f:
-        json.dump(result, f, indent=2, ensure_ascii=False)
+    with open(output_all, "w", encoding="utf-8") as f:
+        json.dump(result_all, f, indent=2, ensure_ascii=False)
 
-    print(f"\n💾 Results saved to {output_path}")
+    # Save only best (selected) pairs
+    result_best = {p: combined[p] for p in selected_pairs}
+    with open(output_best, "w", encoding="utf-8") as f:
+        json.dump(result_best, f, indent=2, ensure_ascii=False)
 
-    print("\n🏆 Final matches:")
+    print(f"\n💾 Saved all pairs to {output_all}")
+    print(f"💾 Saved best 1–1 matches to {output_best}\n")
+
+    print("🏆 Final matches:")
     for p in selected_pairs:
         m, n = p.split('-')
         print(f"  Mentee {m} → Mentor {n} | Score: {combined[p]['total_score']:.3f}")
@@ -151,12 +114,13 @@ def save_results(selected_pairs, combined, output_path):
 # -------------------------------------------------------------
 def main():
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    results_dir = os.path.join(base_dir, "..")  # JSON folder path
-    output_path = os.path.join(base_dir, "..", "results_final.json")
+    results_dir = os.path.join(base_dir, "..")
+    output_all = os.path.join(base_dir, "..", "results_final.json")
+    output_best = os.path.join(base_dir, "..", "best_matches.json")
 
     combined = combine_scores(results_dir)
     selected_pairs = perform_matching(combined)
-    save_results(selected_pairs, combined, output_path)
+    save_results(selected_pairs, combined, output_all, output_best)
 
 
 if __name__ == "__main__":
