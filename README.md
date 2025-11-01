@@ -68,7 +68,16 @@ SEET Match is an intelligent mentor-mentee matching system that automates and op
 7. **Review**: View detailed profiles, individual scores, and final matching results in the dashboard
 
 ### Demo
-*(Add screenshots here showing the graph visualization, parameter controls, and detail panels)*
+<img width="1012" height="278" alt="image" src="https://github.com/user-attachments/assets/ecb7ada4-6a68-4378-863c-c84ae3e90654" />
+
+<img width="1007" height="981" alt="image" src="https://github.com/user-attachments/assets/238b66bf-15c0-47e2-9d6a-d9b8f501b84b" />
+
+<img width="999" height="648" alt="image" src="https://github.com/user-attachments/assets/aeb864f6-e9b3-4237-be39-1e41e0646bc0" />
+
+<img width="804" height="388" alt="image" src="https://github.com/user-attachments/assets/d15ccdad-676c-40be-a755-be20773a6a4e" />
+
+
+
 
 ### Tech Stack
 
