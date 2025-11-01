@@ -523,71 +523,84 @@ export function MatchingGraph({
             const isPartOfRecommendedPair = (node.type === 'mentor' && selectedMentee && isRecommendedPair(node.id, selectedMentee)) ||
                                             (node.type === 'mentee' && selectedMentor && isRecommendedPair(selectedMentor, node.id));
             
-            // Check if this node is connected to the selected node via a red edge
-            // Red edges are: manual non-match, score = 0, or -infinity scores
-            let isConnectedViaRedEdge = false;
-            let redEdgeMatch: Match | undefined = undefined;
+            // Determine edge color for this node based on connections to selected node
+            // This applies to both selected and non-selected nodes
+            let edgeColor: 'red' | 'purple' | 'green' | 'blue' | 'gray' = 'gray';
+            let connectedMatch: Match | undefined = undefined;
             let redEdgeRank: number | undefined = undefined;
             
-            if (!isSelected && (selectedMentor || selectedMentee)) {
-              const connectedMatch = matches.find(m => {
-                if (node.type === 'mentor') {
-                  // Check if this mentor is connected to selected mentee
-                  return m.mentorId === node.id && m.menteeId === selectedMentee;
-                } else {
-                  // Check if this mentee is connected to selected mentor
-                  return m.menteeId === node.id && m.mentorId === selectedMentor;
-                }
-              });
+            // Find the relevant edge based on selection
+            // Priority: Check connection to the selected opposite node
+            if ((selectedMentor || selectedMentee) && 
+                !(node.type === 'mentor' && node.id === selectedMentor) && 
+                !(node.type === 'mentee' && node.id === selectedMentee)) {
+              // Node is NOT selected, check connection to selected opposite node
+              if (node.type === 'mentor' && selectedMentee) {
+                // Check edge from this mentor to selected mentee
+                connectedMatch = matches.find(m => m.mentorId === node.id && m.menteeId === selectedMentee);
+              } else if (node.type === 'mentee' && selectedMentor) {
+                // Check edge from selected mentor to this mentee
+                connectedMatch = matches.find(m => m.mentorId === selectedMentor && m.menteeId === node.id);
+              }
+            } else if (node.type === 'mentor' && node.id === selectedMentor && selectedMentee) {
+              // This mentor is selected, check edge to selected mentee
+              connectedMatch = matches.find(m => m.mentorId === node.id && m.menteeId === selectedMentee);
+            } else if (node.type === 'mentee' && node.id === selectedMentee && selectedMentor) {
+              // This mentee is selected, check edge from selected mentor
+              connectedMatch = matches.find(m => m.mentorId === selectedMentor && m.menteeId === node.id);
+            }
+            
+            if (connectedMatch) {
+              const status = getMatchStatus(connectedMatch.mentorId, connectedMatch.menteeId);
+              const isRecommended = isRecommendedPair(connectedMatch.mentorId, connectedMatch.menteeId);
               
-              if (connectedMatch) {
-                const status = getMatchStatus(connectedMatch.mentorId, connectedMatch.menteeId);
-                const isRedEdge = status === 'manual-non-match' ||
-                                  connectedMatch.globalScore === 0 ||
-                                  (typeof connectedMatch.globalScore === 'number' && Math.abs(connectedMatch.globalScore) < 0.001) ||
-                                  connectedMatch.globalScore === -Infinity ||
-                                  (typeof connectedMatch.globalScore === 'string' && (connectedMatch.globalScore === '-Infinity' || connectedMatch.globalScore === '-inf')) ||
-                                  (typeof connectedMatch.globalScore === 'number' && !isFinite(connectedMatch.globalScore) && connectedMatch.globalScore < 0);
-                
-                if (isRedEdge) {
-                  isConnectedViaRedEdge = true;
-                  redEdgeMatch = connectedMatch;
-                  
-                  // Find the rank of this connection
-                  if (node.type === 'mentor' && selectedMentee) {
-                    // Find rank of this mentor for the selected mentee
-                    const mentorMatches = matches
-                      .filter(m => m.menteeId === selectedMentee && m.mentorId === node.id)
-                      .sort((a, b) => {
-                        const aScore = typeof a.globalScore === 'number' && isFinite(a.globalScore) ? a.globalScore : a.globalScore === Infinity ? 1000 : -1000;
-                        const bScore = typeof b.globalScore === 'number' && isFinite(b.globalScore) ? b.globalScore : b.globalScore === Infinity ? 1000 : -1000;
-                        return bScore - aScore;
-                      });
-                    // Find position in all matches for selected mentee
-                    const allMatchesForMentee = matches
-                      .filter(m => m.menteeId === selectedMentee)
-                      .sort((a, b) => {
-                        const aScore = typeof a.globalScore === 'number' && isFinite(a.globalScore) ? a.globalScore : a.globalScore === Infinity ? 1000 : -1000;
-                        const bScore = typeof b.globalScore === 'number' && isFinite(b.globalScore) ? b.globalScore : b.globalScore === Infinity ? 1000 : -1000;
-                        return bScore - aScore;
-                      });
-                    const rankIndex = allMatchesForMentee.findIndex(m => m.mentorId === node.id);
-                    redEdgeRank = rankIndex >= 0 ? rankIndex + 1 : undefined;
-                  } else if (node.type === 'mentee' && selectedMentor) {
-                    // Find rank of this mentee for the selected mentor
-                    const allMatchesForMentor = matches
-                      .filter(m => m.mentorId === selectedMentor)
-                      .sort((a, b) => {
-                        const aScore = typeof a.globalScore === 'number' && isFinite(a.globalScore) ? a.globalScore : a.globalScore === Infinity ? 1000 : -1000;
-                        const bScore = typeof b.globalScore === 'number' && isFinite(b.globalScore) ? b.globalScore : b.globalScore === Infinity ? 1000 : -1000;
-                        return bScore - aScore;
-                      });
-                    const rankIndex = allMatchesForMentor.findIndex(m => m.menteeId === node.id);
-                    redEdgeRank = rankIndex >= 0 ? rankIndex + 1 : undefined;
-                  }
+              // Determine edge color based on the same logic as edge drawing
+              if (status === 'manual-match' || connectedMatch.globalScore === Infinity || 
+                  connectedMatch.globalScore === 1000 || 
+                  (typeof connectedMatch.globalScore === 'string' && (connectedMatch.globalScore === 'Infinity' || connectedMatch.globalScore === 'inf'))) {
+                edgeColor = 'green';
+              } else if (status === 'manual-non-match' || 
+                        connectedMatch.globalScore === -Infinity || 
+                        (typeof connectedMatch.globalScore === 'string' && (connectedMatch.globalScore === '-Infinity' || connectedMatch.globalScore === '-inf')) ||
+                        (typeof connectedMatch.globalScore === 'number' && !isFinite(connectedMatch.globalScore) && connectedMatch.globalScore < 0) ||
+                        connectedMatch.globalScore === 0 ||
+                        (typeof connectedMatch.globalScore === 'number' && Math.abs(connectedMatch.globalScore) < 0.001)) {
+                edgeColor = 'red';
+              } else if (isRecommended) {
+                edgeColor = 'purple';
+              } else if (connectedMatch.globalScore === 1 || 
+                        (typeof connectedMatch.globalScore === 'number' && Math.abs(connectedMatch.globalScore - 1) < 0.001)) {
+                edgeColor = 'blue';
+              }
+              
+              // Calculate rank for red edges
+              if (edgeColor === 'red') {
+                if (node.type === 'mentor' && selectedMentee) {
+                  const allMatchesForMentee = matches
+                    .filter(m => m.menteeId === selectedMentee)
+                    .sort((a, b) => {
+                      const aScore = typeof a.globalScore === 'number' && isFinite(a.globalScore) ? a.globalScore : a.globalScore === Infinity ? 1000 : -1000;
+                      const bScore = typeof b.globalScore === 'number' && isFinite(b.globalScore) ? b.globalScore : b.globalScore === Infinity ? 1000 : -1000;
+                      return bScore - aScore;
+                    });
+                  const rankIndex = allMatchesForMentee.findIndex(m => m.mentorId === node.id);
+                  redEdgeRank = rankIndex >= 0 ? rankIndex + 1 : undefined;
+                } else if (node.type === 'mentee' && selectedMentor) {
+                  const allMatchesForMentor = matches
+                    .filter(m => m.mentorId === selectedMentor)
+                    .sort((a, b) => {
+                      const aScore = typeof a.globalScore === 'number' && isFinite(a.globalScore) ? a.globalScore : a.globalScore === Infinity ? 1000 : -1000;
+                      const bScore = typeof b.globalScore === 'number' && isFinite(b.globalScore) ? b.globalScore : b.globalScore === Infinity ? 1000 : -1000;
+                      return bScore - aScore;
+                    });
+                  const rankIndex = allMatchesForMentor.findIndex(m => m.menteeId === node.id);
+                  redEdgeRank = rankIndex >= 0 ? rankIndex + 1 : undefined;
                 }
               }
             }
+            
+            // For backward compatibility, set isConnectedViaRedEdge
+            const isConnectedViaRedEdge = edgeColor === 'red';
 
             return (
               <g key={node.id}>
@@ -599,17 +612,19 @@ export function MatchingGraph({
                   rx="8"
                   fill={isSelected ? '#3b82f6' : node.type === 'mentor' ? '#f3f4f6' : '#fef3c7'}
                   stroke={
-                    isSelected 
-                      ? '#2563eb' 
-                      : isConnectedViaRedEdge
-                      ? '#ef4444'  // Red for nodes connected via red edge
-                      : isPartOfRecommendedPair 
-                      ? '#9333ea'  // Purple for recommended pair
-                      : isRecommended 
-                      ? '#10b981'  // Green for general recommendations
+                    edgeColor === 'red'
+                      ? '#ef4444'  // Red for red edges
+                      : edgeColor === 'purple'
+                      ? '#9333ea'  // Purple for recommended pairs
+                      : edgeColor === 'green'
+                      ? '#10b981'  // Green for high matches
+                      : edgeColor === 'blue'
+                      ? '#3b82f6'  // Blue for score = 1
+                      : isSelected
+                      ? '#2563eb'  // Blue for selected nodes (if no edge color)
                       : '#e5e7eb'  // Gray for regular nodes
                   }
-                  strokeWidth={isSelected ? 2 : (isConnectedViaRedEdge || isPartOfRecommendedPair || isRecommended) ? 2 : 1}
+                  strokeWidth={(isSelected || edgeColor !== 'gray') ? 2 : 1}
                   className="pointer-events-none"
                 />
                 <text
@@ -625,19 +640,25 @@ export function MatchingGraph({
                     ? `Mentor ${node.id}` 
                     : `Mentee ${node.id}`}
                 </text>
-                {/* Show recommendation badge */}
-                {isRecommended && !isSelected && topMatch && (
+                {/* Show badge based on edge color - visible even when selected */}
+                {(edgeColor !== 'gray' || (isRecommended && topMatch)) && (
                   <g>
                     <circle
                       cx={node.type === 'mentor' ? node.x + 110 : node.x + 10}
                       cy={node.y + 10}
                       r="10"
                       fill={
-                        isConnectedViaRedEdge 
-                          ? "#ef4444"  // Red for red edge connections (priority over other colors)
-                          : isPartOfRecommendedPair 
-                          ? "#9333ea"  // Purple for recommended pair
-                          : (topMatch.rank <= 3 ? "#10b981" : "#9ca3af")  // Green/gray for other recommendations
+                        edgeColor === 'red'
+                          ? "#ef4444"  // Red for red edges
+                          : edgeColor === 'purple'
+                          ? "#9333ea"  // Purple for recommended pairs
+                          : edgeColor === 'green'
+                          ? "#10b981"  // Green for high matches
+                          : edgeColor === 'blue'
+                          ? "#3b82f6"  // Blue for score = 1
+                          : (isRecommended && topMatch && topMatch.rank <= 3)
+                          ? "#10b981"  // Green for top 3 recommendations
+                          : "#9ca3af"  // Gray for other recommendations
                       }
                       className="pointer-events-none"
                     />
@@ -650,30 +671,11 @@ export function MatchingGraph({
                       fontWeight="700"
                       className="pointer-events-none"
                     >
-                      {topMatch.rank}
-                    </text>
-                  </g>
-                )}
-                {/* Show badge for nodes connected via red edge (even if not in top recommendations) */}
-                {isConnectedViaRedEdge && !isSelected && !isRecommended && (
-                  <g>
-                    <circle
-                      cx={node.type === 'mentor' ? node.x + 110 : node.x + 10}
-                      cy={node.y + 10}
-                      r="10"
-                      fill="#ef4444"
-                      className="pointer-events-none"
-                    />
-                    <text
-                      x={node.type === 'mentor' ? node.x + 110 : node.x + 10}
-                      y={node.y + 14}
-                      textAnchor="middle"
-                      fill="#ffffff"
-                      fontSize="10"
-                      fontWeight="700"
-                      className="pointer-events-none"
-                    >
-                      {redEdgeRank || '!'}
+                      {edgeColor === 'red' && redEdgeRank
+                        ? redEdgeRank
+                        : isRecommended && topMatch
+                        ? topMatch.rank
+                        : '!'}
                     </text>
                   </g>
                 )}
