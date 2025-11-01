@@ -509,9 +509,14 @@ export function MatchingGraph({
               ? selectedMentor === node.id 
               : selectedMentee === node.id;
             
-            // Check if this node is in top 3 recommendations
+            // Check if this node is in top recommendations
             const topMatch = topMatches.find(tm => tm.nodeId === node.id && tm.nodeType === node.type);
             const isRecommended = !!topMatch;
+            
+            // Check if this node is part of a recommended pair (has purple dashed line)
+            // This happens when the opposite node type is selected and this node is the recommended match
+            const isPartOfRecommendedPair = (node.type === 'mentor' && selectedMentee && isRecommendedPair(node.id, selectedMentee)) ||
+                                            (node.type === 'mentee' && selectedMentor && isRecommendedPair(selectedMentor, node.id));
 
             return (
               <g key={node.id}>
@@ -522,8 +527,16 @@ export function MatchingGraph({
                   height="40"
                   rx="8"
                   fill={isSelected ? '#3b82f6' : node.type === 'mentor' ? '#f3f4f6' : '#fef3c7'}
-                  stroke={isSelected ? '#2563eb' : isRecommended ? '#10b981' : '#e5e7eb'}
-                  strokeWidth={isSelected ? 2 : isRecommended ? 2 : 1}
+                  stroke={
+                    isSelected 
+                      ? '#2563eb' 
+                      : isPartOfRecommendedPair 
+                      ? '#9333ea'  // Purple for recommended pair
+                      : isRecommended 
+                      ? '#10b981'  // Green for general recommendations
+                      : '#e5e7eb'  // Gray for regular nodes
+                  }
+                  strokeWidth={isSelected ? 2 : (isPartOfRecommendedPair || isRecommended) ? 2 : 1}
                   className="pointer-events-none"
                 />
                 <text
@@ -540,13 +553,13 @@ export function MatchingGraph({
                     : `Mentee ${node.id}`}
                 </text>
                 {/* Show recommendation badge */}
-                {isRecommended && !isSelected && (
+                {isRecommended && !isSelected && topMatch && (
                   <g>
                     <circle
                       cx={node.type === 'mentor' ? node.x + 110 : node.x + 10}
                       cy={node.y + 10}
                       r="10"
-                      fill={topMatch.rank <= 3 ? "#10b981" : "#9ca3af"}
+                      fill={isPartOfRecommendedPair ? "#9333ea" : (topMatch.rank <= 3 ? "#10b981" : "#9ca3af")}
                       className="pointer-events-none"
                     />
                     <text

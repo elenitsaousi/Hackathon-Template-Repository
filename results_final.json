@@ -1,4 +1,22 @@
 {
+  "2-8": {
+    "total_score": 0.389,
+    "academic_score": 0.555,
+    "gender_score": 0.75,
+    "language_score": 0.698,
+    "distance_score": 0.0,
+    "valid": true,
+    "selected": false
+  },
+  "8-7": {
+    "total_score": 0.66,
+    "academic_score": 0.571,
+    "gender_score": 0.75,
+    "language_score": 0.494,
+    "distance_score": 0.869,
+    "valid": true,
+    "selected": false
+  },
   "10-1": {
     "total_score": 0.0,
     "academic_score": 0.488,
@@ -8,30 +26,57 @@
     "valid": false,
     "selected": false
   },
-  "10-9": {
-    "total_score": 0.637,
-    "academic_score": 0.481,
-    "gender_score": 1.0,
+  "3-9": {
+    "total_score": 0.758,
+    "academic_score": 0.655,
+    "gender_score": 0.75,
     "language_score": 0.371,
     "distance_score": 1.0,
     "valid": true,
     "selected": false
   },
-  "8-6": {
-    "total_score": 0.538,
-    "academic_score": 0.396,
+  "1-7": {
+    "total_score": 0.567,
+    "academic_score": 0.435,
     "gender_score": 0.75,
-    "language_score": 0.338,
-    "distance_score": 0.869,
+    "language_score": 0.754,
+    "distance_score": 0.876,
     "valid": true,
     "selected": false
   },
-  "7-7": {
-    "total_score": 0.414,
-    "academic_score": 0.362,
+  "7-2": {
+    "total_score": 0.124,
+    "academic_score": 0.0,
     "gender_score": 0.75,
+    "language_score": 0.405,
+    "distance_score": 0.415,
+    "valid": true,
+    "selected": false
+  },
+  "1-2": {
+    "total_score": 0.653,
+    "academic_score": 0.61,
+    "gender_score": 0.75,
+    "language_score": 0.731,
+    "distance_score": 0.753,
+    "valid": true,
+    "selected": true
+  },
+  "1-8": {
+    "total_score": 0.37,
+    "academic_score": 0.528,
+    "gender_score": 0.75,
+    "language_score": 0.664,
+    "distance_score": 0.0,
+    "valid": true,
+    "selected": false
+  },
+  "6-10": {
+    "total_score": 0.555,
+    "academic_score": 0.417,
+    "gender_score": 1.0,
     "language_score": 0.427,
-    "distance_score": 0.537,
+    "distance_score": 0.876,
     "valid": true,
     "selected": false
   },
@@ -53,15 +98,6 @@
     "valid": true,
     "selected": false
   },
-  "3-1": {
-    "total_score": 0.762,
-    "academic_score": 0.66,
-    "gender_score": 0.75,
-    "language_score": 0.405,
-    "distance_score": 1.0,
-    "valid": true,
-    "selected": false
-  },
   "8-3": {
     "total_score": 0.773,
     "academic_score": 0.732,
@@ -71,48 +107,111 @@
     "valid": true,
     "selected": true
   },
-  "7-6": {
-    "total_score": 0.402,
-    "academic_score": 0.344,
+  "1-6": {
+    "total_score": 0.646,
+    "academic_score": 0.548,
     "gender_score": 0.75,
-    "language_score": 0.371,
+    "language_score": 0.775,
+    "distance_score": 0.876,
+    "valid": true,
+    "selected": false
+  },
+  "7-7": {
+    "total_score": 0.414,
+    "academic_score": 0.362,
+    "gender_score": 0.75,
+    "language_score": 0.427,
     "distance_score": 0.537,
     "valid": true,
     "selected": false
   },
-  "10-2": {
-    "total_score": 0.403,
-    "academic_score": 0.2,
+  "7-8": {
+    "total_score": 0.247,
+    "academic_score": 0.353,
+    "gender_score": 0.75,
+    "language_score": 0.338,
+    "distance_score": 0.0,
+    "valid": true,
+    "selected": true
+  },
+  "5-6": {
+    "total_score": 0.5,
+    "academic_score": 0.547,
+    "gender_score": 0.75,
+    "language_score": 0.709,
+    "distance_score": 0.389,
+    "valid": true,
+    "selected": false
+  },
+  "5-9": {
+    "total_score": 0.493,
+    "academic_score": 0.538,
+    "gender_score": 0.75,
+    "language_score": 0.405,
+    "distance_score": 0.389,
+    "valid": true,
+    "selected": false
+  },
+  "9-7": {
+    "total_score": 0.565,
+    "academic_score": 0.426,
+    "gender_score": 0.75,
+    "language_score": 0.72,
+    "distance_score": 0.888,
+    "valid": true,
+    "selected": false
+  },
+  "1-3": {
+    "total_score": 0.594,
+    "academic_score": 0.473,
+    "gender_score": 0.75,
+    "language_score": 0.471,
+    "distance_score": 0.876,
+    "valid": true,
+    "selected": false
+  },
+  "6-1": {
+    "total_score": 0.696,
+    "academic_score": 0.619,
     "gender_score": 1.0,
-    "language_score": 0.799,
+    "language_score": 0.405,
     "distance_score": 0.876,
     "valid": true,
-    "selected": false
+    "selected": true
   },
-  "3-2": {
-    "total_score": 0.771,
-    "academic_score": 0.726,
+  "2-5": {
+    "total_score": 0.63,
+    "academic_score": 0.64,
     "gender_score": 0.75,
-    "language_score": 0.899,
-    "distance_score": 0.876,
+    "language_score": 0.471,
+    "distance_score": 0.606,
     "valid": true,
+    "selected": true
+  },
+  "6-7": {
+    "total_score": 0.0,
+    "academic_score": 0.422,
+    "gender_score": 0.0,
+    "language_score": 0.427,
+    "distance_score": 0.876,
+    "valid": false,
     "selected": false
   },
-  "5-5": {
-    "total_score": 0.417,
-    "academic_score": 0.429,
+  "5-10": {
+    "total_score": 0.4,
+    "academic_score": 0.405,
     "gender_score": 0.75,
-    "language_score": 0.338,
+    "language_score": 0.888,
     "distance_score": 0.389,
     "valid": true,
     "selected": false
   },
-  "5-3": {
-    "total_score": 0.498,
-    "academic_score": 0.544,
-    "gender_score": 0.75,
-    "language_score": 0.338,
-    "distance_score": 0.389,
+  "6-5": {
+    "total_score": 0.567,
+    "academic_score": 0.434,
+    "gender_score": 1.0,
+    "language_score": 0.405,
+    "distance_score": 0.876,
     "valid": true,
     "selected": false
   },
@@ -125,6 +224,51 @@
     "valid": true,
     "selected": false
   },
+  "4-10": {
+    "total_score": 0.525,
+    "academic_score": 0.429,
+    "gender_score": 0.75,
+    "language_score": 0.821,
+    "distance_score": 0.75,
+    "valid": true,
+    "selected": true
+  },
+  "7-6": {
+    "total_score": 0.402,
+    "academic_score": 0.344,
+    "gender_score": 0.75,
+    "language_score": 0.371,
+    "distance_score": 0.537,
+    "valid": true,
+    "selected": false
+  },
+  "9-8": {
+    "total_score": 0.389,
+    "academic_score": 0.556,
+    "gender_score": 0.75,
+    "language_score": 0.63,
+    "distance_score": 0.0,
+    "valid": true,
+    "selected": false
+  },
+  "9-3": {
+    "total_score": 0.583,
+    "academic_score": 0.453,
+    "gender_score": 0.75,
+    "language_score": 0.338,
+    "distance_score": 0.888,
+    "valid": true,
+    "selected": false
+  },
+  "4-1": {
+    "total_score": 0.66,
+    "academic_score": 0.622,
+    "gender_score": 0.75,
+    "language_score": 0.371,
+    "distance_score": 0.75,
+    "valid": true,
+    "selected": false
+  },
   "9-9": {
     "total_score": 0.665,
     "academic_score": 0.569,
@@ -134,45 +278,36 @@
     "valid": true,
     "selected": true
   },
-  "2-8": {
-    "total_score": 0.389,
-    "academic_score": 0.555,
+  "3-6": {
+    "total_score": 0.695,
+    "academic_score": 0.564,
+    "gender_score": 0.75,
+    "language_score": 0.742,
+    "distance_score": 1.0,
+    "valid": true,
+    "selected": false
+  },
+  "3-2": {
+    "total_score": 0.771,
+    "academic_score": 0.726,
+    "gender_score": 0.75,
+    "language_score": 0.899,
+    "distance_score": 0.876,
+    "valid": true,
+    "selected": false
+  },
+  "9-2": {
+    "total_score": 0.425,
+    "academic_score": 0.26,
     "gender_score": 0.75,
     "language_score": 0.698,
-    "distance_score": 0.0,
+    "distance_score": 0.81,
     "valid": true,
     "selected": false
   },
-  "6-8": {
-    "total_score": 0.276,
-    "academic_score": 0.394,
-    "gender_score": 1.0,
-    "language_score": 0.338,
-    "distance_score": 0.0,
-    "valid": true,
-    "selected": false
-  },
-  "6-4": {
-    "total_score": 0.0,
-    "academic_score": 0.541,
-    "gender_score": 0.0,
-    "language_score": 0.427,
-    "distance_score": 0.227,
-    "valid": false,
-    "selected": false
-  },
-  "6-7": {
-    "total_score": 0.0,
-    "academic_score": 0.422,
-    "gender_score": 0.0,
-    "language_score": 0.427,
-    "distance_score": 0.876,
-    "valid": false,
-    "selected": false
-  },
-  "9-5": {
-    "total_score": 0.535,
-    "academic_score": 0.384,
+  "9-1": {
+    "total_score": 0.643,
+    "academic_score": 0.538,
     "gender_score": 0.75,
     "language_score": 0.338,
     "distance_score": 0.888,
@@ -188,300 +323,21 @@
     "valid": true,
     "selected": false
   },
-  "1-5": {
-    "total_score": 0.548,
-    "academic_score": 0.407,
-    "gender_score": 0.75,
-    "language_score": 0.471,
-    "distance_score": 0.876,
-    "valid": true,
-    "selected": false
-  },
-  "1-4": {
-    "total_score": 0.514,
-    "academic_score": 0.637,
-    "gender_score": 0.75,
-    "language_score": 0.664,
-    "distance_score": 0.227,
-    "valid": true,
-    "selected": false
-  },
-  "8-4": {
-    "total_score": 0.526,
-    "academic_score": 0.652,
-    "gender_score": 0.75,
-    "language_score": 0.394,
-    "distance_score": 0.233,
-    "valid": true,
-    "selected": false
-  },
-  "8-7": {
-    "total_score": 0.66,
-    "academic_score": 0.571,
-    "gender_score": 0.75,
-    "language_score": 0.494,
-    "distance_score": 0.869,
-    "valid": true,
-    "selected": false
-  },
-  "9-2": {
-    "total_score": 0.425,
-    "academic_score": 0.26,
-    "gender_score": 0.75,
-    "language_score": 0.698,
-    "distance_score": 0.81,
-    "valid": true,
-    "selected": false
-  },
-  "3-5": {
-    "total_score": 0.707,
-    "academic_score": 0.581,
-    "gender_score": 0.75,
-    "language_score": 0.405,
-    "distance_score": 1.0,
-    "valid": true,
-    "selected": false
-  },
-  "7-9": {
-    "total_score": 0.0,
-    "academic_score": 0.404,
-    "gender_score": 0.75,
-    "language_score": 0.0,
-    "distance_score": 0.537,
-    "valid": false,
-    "selected": false
-  },
-  "6-9": {
-    "total_score": 0.0,
-    "academic_score": 0.484,
-    "gender_score": 0.0,
-    "language_score": 0.0,
-    "distance_score": 0.876,
-    "valid": false,
-    "selected": false
-  },
-  "3-7": {
-    "total_score": 0.801,
-    "academic_score": 0.716,
-    "gender_score": 0.75,
-    "language_score": 0.921,
-    "distance_score": 1.0,
-    "valid": true,
-    "selected": true
-  },
-  "10-6": {
-    "total_score": 0.592,
-    "academic_score": 0.417,
-    "gender_score": 1.0,
-    "language_score": 0.742,
-    "distance_score": 1.0,
-    "valid": true,
-    "selected": true
-  },
-  "5-9": {
-    "total_score": 0.493,
-    "academic_score": 0.538,
-    "gender_score": 0.75,
-    "language_score": 0.405,
-    "distance_score": 0.389,
-    "valid": true,
-    "selected": false
-  },
-  "4-2": {
-    "total_score": 0.365,
-    "academic_score": 0.253,
-    "gender_score": 0.75,
-    "language_score": 0.899,
-    "distance_score": 0.627,
-    "valid": true,
-    "selected": false
-  },
-  "9-6": {
-    "total_score": 0.618,
-    "academic_score": 0.503,
-    "gender_score": 0.75,
-    "language_score": 0.641,
-    "distance_score": 0.888,
-    "valid": true,
-    "selected": false
-  },
-  "6-3": {
-    "total_score": 0.0,
-    "academic_score": 0.436,
-    "gender_score": 0.0,
-    "language_score": 0.405,
-    "distance_score": 0.876,
-    "valid": false,
-    "selected": false
-  },
-  "6-6": {
-    "total_score": 0.0,
-    "academic_score": 0.399,
-    "gender_score": 0.0,
-    "language_score": 0.371,
-    "distance_score": 0.876,
-    "valid": false,
-    "selected": false
-  },
-  "10-4": {
-    "total_score": 0.47,
-    "academic_score": 0.529,
-    "gender_score": 1.0,
-    "language_score": 0.731,
-    "distance_score": 0.331,
-    "valid": true,
-    "selected": false
-  },
-  "10-8": {
-    "total_score": 0.0,
-    "academic_score": 0.477,
-    "gender_score": 0.0,
-    "language_score": 0.731,
-    "distance_score": 0.0,
-    "valid": false,
-    "selected": false
-  },
-  "6-1": {
-    "total_score": 0.696,
-    "academic_score": 0.619,
-    "gender_score": 1.0,
-    "language_score": 0.405,
-    "distance_score": 0.876,
-    "valid": true,
-    "selected": true
-  },
-  "1-10": {
-    "total_score": 0.525,
-    "academic_score": 0.374,
-    "gender_score": 0.75,
-    "language_score": 0.754,
-    "distance_score": 0.876,
-    "valid": true,
-    "selected": false
-  },
-  "3-4": {
-    "total_score": 0.499,
-    "academic_score": 0.571,
-    "gender_score": 0.75,
-    "language_score": 0.731,
-    "distance_score": 0.331,
-    "valid": true,
-    "selected": false
-  },
-  "3-9": {
-    "total_score": 0.758,
-    "academic_score": 0.655,
-    "gender_score": 0.75,
-    "language_score": 0.371,
-    "distance_score": 1.0,
-    "valid": true,
-    "selected": false
-  },
-  "2-7": {
-    "total_score": 0.731,
-    "academic_score": 0.784,
-    "gender_score": 0.75,
-    "language_score": 0.787,
-    "distance_score": 0.606,
-    "valid": true,
-    "selected": false
-  },
-  "4-8": {
-    "total_score": 0.255,
-    "academic_score": 0.364,
-    "gender_score": 0.75,
-    "language_score": 0.831,
-    "distance_score": 0.0,
-    "valid": true,
-    "selected": false
-  },
-  "5-8": {
-    "total_score": 0.384,
-    "academic_score": 0.548,
-    "gender_score": 0.75,
-    "language_score": 0.698,
-    "distance_score": 0.0,
-    "valid": true,
-    "selected": false
-  },
-  "1-8": {
-    "total_score": 0.37,
-    "academic_score": 0.528,
-    "gender_score": 0.75,
-    "language_score": 0.664,
-    "distance_score": 0.0,
-    "valid": true,
-    "selected": false
-  },
-  "7-10": {
-    "total_score": 0.412,
-    "academic_score": 0.359,
-    "gender_score": 0.75,
-    "language_score": 0.427,
-    "distance_score": 0.537,
-    "valid": true,
-    "selected": false
-  },
-  "6-10": {
-    "total_score": 0.555,
-    "academic_score": 0.417,
-    "gender_score": 1.0,
-    "language_score": 0.427,
-    "distance_score": 0.876,
-    "valid": true,
-    "selected": false
-  },
-  "2-5": {
-    "total_score": 0.63,
-    "academic_score": 0.64,
-    "gender_score": 0.75,
-    "language_score": 0.471,
-    "distance_score": 0.606,
-    "valid": true,
-    "selected": true
-  },
-  "3-10": {
-    "total_score": 0.605,
-    "academic_score": 0.435,
-    "gender_score": 0.75,
-    "language_score": 0.921,
-    "distance_score": 1.0,
-    "valid": true,
-    "selected": false
-  },
-  "7-3": {
-    "total_score": 0.531,
-    "academic_score": 0.529,
-    "gender_score": 0.75,
-    "language_score": 0.405,
-    "distance_score": 0.537,
-    "valid": true,
-    "selected": false
-  },
-  "4-9": {
-    "total_score": 0.541,
-    "academic_score": 0.451,
-    "gender_score": 0.75,
-    "language_score": 0.405,
-    "distance_score": 0.75,
-    "valid": true,
-    "selected": false
-  },
-  "2-3": {
-    "total_score": 0.595,
-    "academic_score": 0.591,
-    "gender_score": 0.75,
-    "language_score": 0.471,
-    "distance_score": 0.606,
-    "valid": true,
-    "selected": false
-  },
   "2-10": {
     "total_score": 0.438,
     "academic_score": 0.366,
     "gender_score": 0.75,
     "language_score": 0.787,
     "distance_score": 0.606,
+    "valid": true,
+    "selected": false
+  },
+  "3-1": {
+    "total_score": 0.762,
+    "academic_score": 0.66,
+    "gender_score": 0.75,
+    "language_score": 0.405,
+    "distance_score": 1.0,
     "valid": true,
     "selected": false
   },
@@ -494,137 +350,83 @@
     "valid": true,
     "selected": false
   },
-  "8-9": {
-    "total_score": 0.0,
-    "academic_score": 0.48,
+  "8-10": {
+    "total_score": 0.531,
+    "academic_score": 0.386,
     "gender_score": 0.75,
-    "language_score": 0.0,
-    "distance_score": 0.869,
-    "valid": false,
-    "selected": false
-  },
-  "10-5": {
-    "total_score": 0.0,
-    "academic_score": 0.379,
-    "gender_score": 0.0,
-    "language_score": 0.405,
-    "distance_score": 1.0,
-    "valid": false,
-    "selected": false
-  },
-  "8-1": {
-    "total_score": 0.684,
-    "academic_score": 0.605,
-    "gender_score": 0.75,
-    "language_score": 0.371,
+    "language_score": 0.494,
     "distance_score": 0.869,
     "valid": true,
     "selected": false
   },
-  "6-2": {
-    "total_score": 0.0,
-    "academic_score": 0.579,
-    "gender_score": 0.0,
-    "language_score": 0.405,
-    "distance_score": 0.753,
-    "valid": false,
-    "selected": false
-  },
-  "5-1": {
-    "total_score": 0.486,
-    "academic_score": 0.528,
-    "gender_score": 0.75,
-    "language_score": 0.338,
-    "distance_score": 0.389,
-    "valid": true,
-    "selected": false
-  },
-  "2-2": {
-    "total_score": 0.364,
-    "academic_score": 0.253,
-    "gender_score": 0.75,
-    "language_score": 0.765,
-    "distance_score": 0.622,
-    "valid": true,
-    "selected": false
-  },
-  "1-2": {
-    "total_score": 0.653,
-    "academic_score": 0.61,
-    "gender_score": 0.75,
-    "language_score": 0.731,
-    "distance_score": 0.753,
-    "valid": true,
-    "selected": true
-  },
-  "4-10": {
-    "total_score": 0.525,
-    "academic_score": 0.429,
-    "gender_score": 0.75,
-    "language_score": 0.821,
-    "distance_score": 0.75,
-    "valid": true,
-    "selected": true
-  },
-  "7-2": {
-    "total_score": 0.124,
-    "academic_score": 0.0,
-    "gender_score": 0.75,
-    "language_score": 0.405,
-    "distance_score": 0.415,
-    "valid": true,
-    "selected": false
-  },
-  "7-8": {
-    "total_score": 0.247,
-    "academic_score": 0.353,
-    "gender_score": 0.75,
-    "language_score": 0.338,
-    "distance_score": 0.0,
-    "valid": true,
-    "selected": true
-  },
-  "7-4": {
-    "total_score": 0.37,
-    "academic_score": 0.348,
-    "gender_score": 0.75,
-    "language_score": 0.427,
-    "distance_score": 0.423,
-    "valid": true,
-    "selected": false
-  },
-  "10-10": {
-    "total_score": 0.0,
-    "academic_score": 0.379,
-    "gender_score": 0.0,
+  "10-7": {
+    "total_score": 0.602,
+    "academic_score": 0.432,
+    "gender_score": 1.0,
     "language_score": 0.921,
     "distance_score": 1.0,
+    "valid": true,
+    "selected": false
+  },
+  "9-4": {
+    "total_score": 0.48,
+    "academic_score": 0.566,
+    "gender_score": 0.75,
+    "language_score": 0.63,
+    "distance_score": 0.279,
+    "valid": true,
+    "selected": false
+  },
+  "6-6": {
+    "total_score": 0.0,
+    "academic_score": 0.399,
+    "gender_score": 0.0,
+    "language_score": 0.371,
+    "distance_score": 0.876,
     "valid": false,
     "selected": false
   },
-  "8-8": {
-    "total_score": 0.305,
-    "academic_score": 0.436,
+  "4-2": {
+    "total_score": 0.365,
+    "academic_score": 0.253,
     "gender_score": 0.75,
-    "language_score": 0.304,
-    "distance_score": 0.0,
+    "language_score": 0.899,
+    "distance_score": 0.627,
     "valid": true,
     "selected": false
   },
-  "2-4": {
-    "total_score": 0.42,
-    "academic_score": 0.298,
+  "7-9": {
+    "total_score": 0.0,
+    "academic_score": 0.404,
     "gender_score": 0.75,
-    "language_score": 0.698,
-    "distance_score": 0.704,
+    "language_score": 0.0,
+    "distance_score": 0.537,
+    "valid": false,
+    "selected": false
+  },
+  "4-6": {
+    "total_score": 0.483,
+    "academic_score": 0.368,
+    "gender_score": 0.75,
+    "language_score": 0.743,
+    "distance_score": 0.75,
     "valid": true,
     "selected": false
   },
-  "6-5": {
-    "total_score": 0.567,
-    "academic_score": 0.434,
+  "9-5": {
+    "total_score": 0.535,
+    "academic_score": 0.384,
+    "gender_score": 0.75,
+    "language_score": 0.338,
+    "distance_score": 0.888,
+    "valid": true,
+    "selected": false
+  },
+  "10-2": {
+    "total_score": 0.403,
+    "academic_score": 0.2,
     "gender_score": 1.0,
-    "language_score": 0.405,
+    "language_score": 0.799,
     "distance_score": 0.876,
     "valid": true,
     "selected": false
@@ -638,30 +440,183 @@
     "valid": true,
     "selected": false
   },
-  "1-3": {
-    "total_score": 0.594,
-    "academic_score": 0.473,
+  "2-6": {
+    "total_score": 0.6,
+    "academic_score": 0.597,
+    "gender_score": 0.75,
+    "language_score": 0.809,
+    "distance_score": 0.606,
+    "valid": true,
+    "selected": false
+  },
+  "3-4": {
+    "total_score": 0.499,
+    "academic_score": 0.571,
+    "gender_score": 0.75,
+    "language_score": 0.731,
+    "distance_score": 0.331,
+    "valid": true,
+    "selected": false
+  },
+  "7-4": {
+    "total_score": 0.37,
+    "academic_score": 0.348,
+    "gender_score": 0.75,
+    "language_score": 0.427,
+    "distance_score": 0.423,
+    "valid": true,
+    "selected": false
+  },
+  "3-10": {
+    "total_score": 0.605,
+    "academic_score": 0.435,
+    "gender_score": 0.75,
+    "language_score": 0.921,
+    "distance_score": 1.0,
+    "valid": true,
+    "selected": false
+  },
+  "4-8": {
+    "total_score": 0.255,
+    "academic_score": 0.364,
+    "gender_score": 0.75,
+    "language_score": 0.831,
+    "distance_score": 0.0,
+    "valid": true,
+    "selected": false
+  },
+  "5-5": {
+    "total_score": 0.417,
+    "academic_score": 0.429,
+    "gender_score": 0.75,
+    "language_score": 0.338,
+    "distance_score": 0.389,
+    "valid": true,
+    "selected": false
+  },
+  "10-6": {
+    "total_score": 0.592,
+    "academic_score": 0.417,
+    "gender_score": 1.0,
+    "language_score": 0.742,
+    "distance_score": 1.0,
+    "valid": true,
+    "selected": true
+  },
+  "3-7": {
+    "total_score": 0.801,
+    "academic_score": 0.716,
+    "gender_score": 0.75,
+    "language_score": 0.921,
+    "distance_score": 1.0,
+    "valid": true,
+    "selected": true
+  },
+  "4-5": {
+    "total_score": 0.51,
+    "academic_score": 0.407,
+    "gender_score": 0.75,
+    "language_score": 0.371,
+    "distance_score": 0.75,
+    "valid": true,
+    "selected": false
+  },
+  "10-9": {
+    "total_score": 0.637,
+    "academic_score": 0.481,
+    "gender_score": 1.0,
+    "language_score": 0.371,
+    "distance_score": 1.0,
+    "valid": true,
+    "selected": false
+  },
+  "1-5": {
+    "total_score": 0.548,
+    "academic_score": 0.407,
     "gender_score": 0.75,
     "language_score": 0.471,
     "distance_score": 0.876,
     "valid": true,
     "selected": false
   },
-  "2-1": {
-    "total_score": 0.581,
-    "academic_score": 0.571,
+  "4-3": {
+    "total_score": 0.562,
+    "academic_score": 0.482,
     "gender_score": 0.75,
-    "language_score": 0.471,
-    "distance_score": 0.606,
+    "language_score": 0.371,
+    "distance_score": 0.75,
     "valid": true,
     "selected": false
   },
-  "8-2": {
-    "total_score": 0.67,
-    "academic_score": 0.637,
+  "10-10": {
+    "total_score": 0.0,
+    "academic_score": 0.379,
+    "gender_score": 0.0,
+    "language_score": 0.921,
+    "distance_score": 1.0,
+    "valid": false,
+    "selected": false
+  },
+  "2-2": {
+    "total_score": 0.364,
+    "academic_score": 0.253,
     "gender_score": 0.75,
-    "language_score": 0.471,
-    "distance_score": 0.746,
+    "language_score": 0.765,
+    "distance_score": 0.622,
+    "valid": true,
+    "selected": false
+  },
+  "1-10": {
+    "total_score": 0.525,
+    "academic_score": 0.374,
+    "gender_score": 0.75,
+    "language_score": 0.754,
+    "distance_score": 0.876,
+    "valid": true,
+    "selected": false
+  },
+  "8-8": {
+    "total_score": 0.305,
+    "academic_score": 0.436,
+    "gender_score": 0.75,
+    "language_score": 0.304,
+    "distance_score": 0.0,
+    "valid": true,
+    "selected": false
+  },
+  "7-5": {
+    "total_score": 0.385,
+    "academic_score": 0.32,
+    "gender_score": 0.75,
+    "language_score": 0.405,
+    "distance_score": 0.537,
+    "valid": true,
+    "selected": false
+  },
+  "7-10": {
+    "total_score": 0.412,
+    "academic_score": 0.359,
+    "gender_score": 0.75,
+    "language_score": 0.427,
+    "distance_score": 0.537,
+    "valid": true,
+    "selected": false
+  },
+  "10-8": {
+    "total_score": 0.0,
+    "academic_score": 0.477,
+    "gender_score": 0.0,
+    "language_score": 0.731,
+    "distance_score": 0.0,
+    "valid": false,
+    "selected": false
+  },
+  "3-8": {
+    "total_score": 0.372,
+    "academic_score": 0.532,
+    "gender_score": 0.75,
+    "language_score": 0.731,
+    "distance_score": 0.0,
     "valid": true,
     "selected": false
   },
@@ -674,66 +629,165 @@
     "valid": true,
     "selected": false
   },
-  "5-4": {
-    "total_score": 0.662,
-    "academic_score": 0.548,
+  "2-3": {
+    "total_score": 0.595,
+    "academic_score": 0.591,
     "gender_score": 0.75,
-    "language_score": 0.698,
-    "distance_score": 0.928,
-    "valid": true,
-    "selected": true
-  },
-  "4-6": {
-    "total_score": 0.483,
-    "academic_score": 0.368,
-    "gender_score": 0.75,
-    "language_score": 0.743,
-    "distance_score": 0.75,
+    "language_score": 0.471,
+    "distance_score": 0.606,
     "valid": true,
     "selected": false
   },
-  "9-8": {
-    "total_score": 0.389,
-    "academic_score": 0.556,
+  "6-9": {
+    "total_score": 0.0,
+    "academic_score": 0.484,
+    "gender_score": 0.0,
+    "language_score": 0.0,
+    "distance_score": 0.876,
+    "valid": false,
+    "selected": false
+  },
+  "2-7": {
+    "total_score": 0.731,
+    "academic_score": 0.784,
     "gender_score": 0.75,
-    "language_score": 0.63,
+    "language_score": 0.787,
+    "distance_score": 0.606,
+    "valid": true,
+    "selected": false
+  },
+  "6-8": {
+    "total_score": 0.276,
+    "academic_score": 0.394,
+    "gender_score": 1.0,
+    "language_score": 0.338,
     "distance_score": 0.0,
     "valid": true,
     "selected": false
   },
-  "5-2": {
-    "total_score": 0.301,
-    "academic_score": 0.315,
+  "8-6": {
+    "total_score": 0.538,
+    "academic_score": 0.396,
     "gender_score": 0.75,
-    "language_score": 0.765,
-    "distance_score": 0.267,
+    "language_score": 0.338,
+    "distance_score": 0.869,
     "valid": true,
     "selected": false
   },
-  "9-4": {
-    "total_score": 0.48,
-    "academic_score": 0.566,
+  "2-1": {
+    "total_score": 0.581,
+    "academic_score": 0.571,
     "gender_score": 0.75,
-    "language_score": 0.63,
-    "distance_score": 0.279,
+    "language_score": 0.471,
+    "distance_score": 0.606,
     "valid": true,
     "selected": false
   },
-  "1-7": {
-    "total_score": 0.567,
-    "academic_score": 0.435,
+  "8-1": {
+    "total_score": 0.684,
+    "academic_score": 0.605,
     "gender_score": 0.75,
-    "language_score": 0.754,
+    "language_score": 0.371,
+    "distance_score": 0.869,
+    "valid": true,
+    "selected": false
+  },
+  "6-3": {
+    "total_score": 0.0,
+    "academic_score": 0.436,
+    "gender_score": 0.0,
+    "language_score": 0.405,
     "distance_score": 0.876,
+    "valid": false,
+    "selected": false
+  },
+  "1-4": {
+    "total_score": 0.514,
+    "academic_score": 0.637,
+    "gender_score": 0.75,
+    "language_score": 0.664,
+    "distance_score": 0.227,
     "valid": true,
     "selected": false
   },
-  "5-7": {
-    "total_score": 0.485,
-    "academic_score": 0.526,
+  "10-5": {
+    "total_score": 0.0,
+    "academic_score": 0.379,
+    "gender_score": 0.0,
+    "language_score": 0.405,
+    "distance_score": 1.0,
+    "valid": false,
+    "selected": false
+  },
+  "5-1": {
+    "total_score": 0.486,
+    "academic_score": 0.528,
     "gender_score": 0.75,
-    "language_score": 0.888,
+    "language_score": 0.338,
     "distance_score": 0.389,
+    "valid": true,
+    "selected": false
+  },
+  "10-4": {
+    "total_score": 0.47,
+    "academic_score": 0.529,
+    "gender_score": 1.0,
+    "language_score": 0.731,
+    "distance_score": 0.331,
+    "valid": true,
+    "selected": false
+  },
+  "8-2": {
+    "total_score": 0.67,
+    "academic_score": 0.637,
+    "gender_score": 0.75,
+    "language_score": 0.471,
+    "distance_score": 0.746,
+    "valid": true,
+    "selected": false
+  },
+  "8-9": {
+    "total_score": 0.0,
+    "academic_score": 0.48,
+    "gender_score": 0.75,
+    "language_score": 0.0,
+    "distance_score": 0.869,
+    "valid": false,
+    "selected": false
+  },
+  "5-8": {
+    "total_score": 0.384,
+    "academic_score": 0.548,
+    "gender_score": 0.75,
+    "language_score": 0.698,
+    "distance_score": 0.0,
+    "valid": true,
+    "selected": false
+  },
+  "4-7": {
+    "total_score": 0.531,
+    "academic_score": 0.437,
+    "gender_score": 0.75,
+    "language_score": 0.921,
+    "distance_score": 0.75,
+    "valid": true,
+    "selected": false
+  },
+  "6-4": {
+    "total_score": 0.0,
+    "academic_score": 0.541,
+    "gender_score": 0.0,
+    "language_score": 0.427,
+    "distance_score": 0.227,
+    "valid": false,
+    "selected": false
+  },
+  "9-6": {
+    "total_score": 0.618,
+    "academic_score": 0.503,
+    "gender_score": 0.75,
+    "language_score": 0.641,
+    "distance_score": 0.888,
     "valid": true,
     "selected": false
   },
@@ -755,147 +809,93 @@
     "valid": true,
     "selected": false
   },
-  "8-10": {
-    "total_score": 0.531,
-    "academic_score": 0.386,
+  "8-4": {
+    "total_score": 0.526,
+    "academic_score": 0.652,
     "gender_score": 0.75,
-    "language_score": 0.494,
-    "distance_score": 0.869,
+    "language_score": 0.394,
+    "distance_score": 0.233,
     "valid": true,
     "selected": false
   },
-  "3-6": {
-    "total_score": 0.695,
-    "academic_score": 0.564,
+  "6-2": {
+    "total_score": 0.0,
+    "academic_score": 0.579,
+    "gender_score": 0.0,
+    "language_score": 0.405,
+    "distance_score": 0.753,
+    "valid": false,
+    "selected": false
+  },
+  "5-3": {
+    "total_score": 0.498,
+    "academic_score": 0.544,
     "gender_score": 0.75,
-    "language_score": 0.742,
-    "distance_score": 1.0,
+    "language_score": 0.338,
+    "distance_score": 0.389,
     "valid": true,
     "selected": false
   },
-  "4-1": {
-    "total_score": 0.66,
-    "academic_score": 0.622,
+  "5-2": {
+    "total_score": 0.301,
+    "academic_score": 0.315,
     "gender_score": 0.75,
-    "language_score": 0.371,
-    "distance_score": 0.75,
+    "language_score": 0.765,
+    "distance_score": 0.267,
     "valid": true,
     "selected": false
   },
-  "5-10": {
-    "total_score": 0.4,
-    "academic_score": 0.405,
+  "5-7": {
+    "total_score": 0.485,
+    "academic_score": 0.526,
     "gender_score": 0.75,
     "language_score": 0.888,
     "distance_score": 0.389,
     "valid": true,
     "selected": false
   },
-  "9-1": {
-    "total_score": 0.643,
-    "academic_score": 0.538,
-    "gender_score": 0.75,
-    "language_score": 0.338,
-    "distance_score": 0.888,
-    "valid": true,
-    "selected": false
-  },
-  "9-3": {
-    "total_score": 0.583,
-    "academic_score": 0.453,
-    "gender_score": 0.75,
-    "language_score": 0.338,
-    "distance_score": 0.888,
-    "valid": true,
-    "selected": false
-  },
-  "3-8": {
-    "total_score": 0.372,
-    "academic_score": 0.532,
-    "gender_score": 0.75,
-    "language_score": 0.731,
-    "distance_score": 0.0,
-    "valid": true,
-    "selected": false
-  },
-  "5-6": {
-    "total_score": 0.5,
-    "academic_score": 0.547,
-    "gender_score": 0.75,
-    "language_score": 0.709,
-    "distance_score": 0.389,
-    "valid": true,
-    "selected": false
-  },
-  "4-7": {
-    "total_score": 0.531,
-    "academic_score": 0.437,
-    "gender_score": 0.75,
-    "language_score": 0.921,
-    "distance_score": 0.75,
-    "valid": true,
-    "selected": false
-  },
-  "7-5": {
-    "total_score": 0.385,
-    "academic_score": 0.32,
+  "3-5": {
+    "total_score": 0.707,
+    "academic_score": 0.581,
     "gender_score": 0.75,
     "language_score": 0.405,
-    "distance_score": 0.537,
-    "valid": true,
-    "selected": false
-  },
-  "2-6": {
-    "total_score": 0.6,
-    "academic_score": 0.597,
-    "gender_score": 0.75,
-    "language_score": 0.809,
-    "distance_score": 0.606,
-    "valid": true,
-    "selected": false
-  },
-  "10-7": {
-    "total_score": 0.602,
-    "academic_score": 0.432,
-    "gender_score": 1.0,
-    "language_score": 0.921,
     "distance_score": 1.0,
     "valid": true,
     "selected": false
   },
-  "9-7": {
-    "total_score": 0.565,
-    "academic_score": 0.426,
+  "4-9": {
+    "total_score": 0.541,
+    "academic_score": 0.451,
     "gender_score": 0.75,
-    "language_score": 0.72,
-    "distance_score": 0.888,
-    "valid": true,
-    "selected": false
-  },
-  "4-3": {
-    "total_score": 0.562,
-    "academic_score": 0.482,
-    "gender_score": 0.75,
-    "language_score": 0.371,
+    "language_score": 0.405,
     "distance_score": 0.75,
     "valid": true,
     "selected": false
   },
-  "4-5": {
-    "total_score": 0.51,
-    "academic_score": 0.407,
-    "gender_score": 0.75,
-    "language_score": 0.371,
-    "distance_score": 0.75,
-    "valid": true,
-    "selected": false
-  },
-  "1-6": {
-    "total_score": 0.646,
+  "5-4": {
+    "total_score": 0.662,
     "academic_score": 0.548,
     "gender_score": 0.75,
-    "language_score": 0.775,
-    "distance_score": 0.876,
+    "language_score": 0.698,
+    "distance_score": 0.928,
+    "valid": true,
+    "selected": true
+  },
+  "2-4": {
+    "total_score": 0.42,
+    "academic_score": 0.298,
+    "gender_score": 0.75,
+    "language_score": 0.698,
+    "distance_score": 0.704,
+    "valid": true,
+    "selected": false
+  },
+  "7-3": {
+    "total_score": 0.531,
+    "academic_score": 0.529,
+    "gender_score": 0.75,
+    "language_score": 0.405,
+    "distance_score": 0.537,
     "valid": true,
     "selected": false
   }
