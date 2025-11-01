@@ -1,1 +1,0 @@
-Time/Phase;What happened?;Who was involved?;Impact;Why was this significant?;How did the team react?;Role of AI

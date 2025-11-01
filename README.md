@@ -1,20 +1,19 @@
-# Hackathon-Template-Repository
-This is the official template repository for the **"Hackathon for Crisis Apps for GaaP"** seminar hackathon. All teams must use this template to create their project repository.
+# SEET Match
+- Eleni Tsaousi
+- Patrik Valach
+- Margareta Karaqi
 
-## 🚀 Quick Start: Creating Your Team Repository
-1. Fork this repository
-3. Add your team members as contributors
-4. This repository must be open source (and licensed) in order to submit
-5. Document your project following the instruction below
+SEET provides invaluable mentoring to help refugees enter higher education in Switzerland. Currently,
+the process of matching a new mentee with the right volunteer mentor is done manually. This is timeconsuming and limits the program's ability to scale. An effective match is critical for success and depends on complex factors like academic goals, field of study, language skills, and personality.
 
-## 💻 Project Documentation
-In the `README.md` file cover the following points:
-1. Title of the project
-2. List all team members
-3. Describe challenge
+The challenge is to design a system that automates and enhances this matching process. The goal is to
+create a tool that helps SEET administrators make faster, higher-quality matches between refugee
+mentees and volunteer mentors, ultimately improving outcomes for the mentees, and making the
+program more scalable.
+
+
+## Our Solution
 4. Explain your solution (you can use screenshots and demo)
+
+### Tech Stack
 5. Specify tech stack
-
-Before the pitch session put your presentation in the `pitch/` folder.
-
-Happy hacking!

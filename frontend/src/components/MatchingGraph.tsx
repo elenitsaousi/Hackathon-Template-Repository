@@ -473,7 +473,7 @@ export function MatchingGraph({
     <div className="relative">
       <div className="mb-4 flex gap-4 items-center flex-wrap">
         <div className="flex items-center gap-2">
-          <div className="w-4 h-3 border-2 border-purple-600 border-dashed bg-transparent"></div>
+          <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#9333ea' }}></div>
           <span className="text-sm text-gray-600">Recommended</span>
         </div>
         <div className="flex items-center gap-2">
