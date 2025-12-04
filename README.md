@@ -119,8 +119,7 @@ This approach ensures that administrators can leverage both algorithmic optimiza
 
 <img width="804" height="388" alt="image" src="https://github.com/user-attachments/assets/d15ccdad-676c-40be-a755-be20773a6a4e" />
 
-
-
+https://uzh.sharepoint.com/:v:/s/SeminarDigitalPlatformsforResilienceinCrisisBScMSc/Eb8Khbhbmf1Hu4piOnQdr6sBlDYjvxwjgemCPOqPUhCx6g?e=S9jBC3
 
 ### Tech Stack
 
