@@ -234,6 +234,302 @@ These should be placed in the `data/` directory. The system will automatically u
 
 ---
 
+## API Documentation
+
+The SEET Match API is a RESTful service built with FastAPI that provides endpoints for computing mentor-mentee matching scores. The API accepts CSV file uploads and returns comprehensive matching results across multiple categories.
+
+### Base URL
+
+```
+http://localhost:8000
+```
+
+When running locally, the API is available at `http://localhost:8000`. For production deployments, replace with the appropriate base URL.
+
+### Authentication
+
+Currently, the API does not require authentication. In production, consider implementing API key authentication or OAuth2.
+
+### Endpoints
+
+#### 1. Root Endpoint
+
+**GET** `/`
+
+Returns API information and available endpoints.
+
+**Response:**
+```json
+{
+  "message": "Mentor-Mentee Matching API",
+  "version": "1.0.0",
+  "endpoints": {
+    "/matching": "POST - Compute matching scores with optional parameters",
+    "/health": "GET - Health check endpoint",
+    "/demo-csv?filename={filename}": "GET - Serve CSV files from data directory for demo purposes"
+  }
+}
+```
+
+**Example:**
+```bash
+curl http://localhost:8000/
+```
+
+---
+
+#### 2. Health Check
+
+**GET** `/health`
+
+Simple health check endpoint to verify the API is running.
+
+**Response:**
+```json
+{
+  "status": "healthy"
+}
+```
+
+**Example:**
+```bash
+curl http://localhost:8000/health
+```
+
+---
+
+#### 3. Get Demo CSV File
+
+**GET** `/demo-csv?filename={filename}`
+
+Retrieves CSV files from the data directory for demo purposes. This endpoint is used by the frontend to load default data files.
+
+**Parameters:**
+- `filename` (query, required): Name of the CSV file in the data directory. Must be URL-encoded if it contains spaces.
+
+**Available Files:**
+- `GaaP Data - Backup - Mentors Application.csv`
+- `GaaP Data - Backup - Mentors Interview.csv`
+- `GaaP Data - Backup - Mentee Application.csv`
+- `GaaP Data - Backup - Mentee Interview.csv`
+
+**Response:**
+- Content-Type: `text/csv`
+- Body: CSV file content
+
+**Example:**
+```bash
+curl "http://localhost:8000/demo-csv?filename=GaaP%20Data%20-%20Backup%20-%20Mentors%20Application.csv"
+```
+
+**Error Responses:**
+- `400 Bad Request`: Invalid filename or path traversal attempt
+- `404 Not Found`: File does not exist in data directory
+- `500 Internal Server Error`: Error reading file
+
+---
+
+#### 4. Compute Matching Scores
+
+**POST** `/matching`
+
+The main endpoint for computing mentor-mentee matching scores. Accepts CSV file uploads and optional matching parameters.
+
+**Content-Type:** `multipart/form-data`
+
+**Request Parameters:**
+
+| Parameter                      | Type            | Required  | Description                                                                 |
+|--------------------------------|-----------------|-----------|-----------------------------------------------------------------------------|
+| `mentor_application_file`      | File            | No*       | CSV file containing mentor application data                                 |
+| `mentor_interview_file`        | File            | No*       | CSV file containing mentor interview data                                   |
+| `mentee_application_file`      | File            | No*       | CSV file containing mentee application data                                 |
+| `mentee_interview_file`        | File            | No*       | CSV file containing mentee interview data                                   |
+| `importance_modifiers_json`    | String (JSON)   | No        | JSON string with importance modifiers for each category                     |
+| `age_max_difference`           | Integer         | No        | Maximum allowed age difference in years (default: 30)                       |
+| `geographic_max_distance`      | Integer         | No        | Maximum allowed geographic distance in km (default: 200)                    |
+| `manual_matches_json`          | String (JSON)   | No        | JSON array of pairs to force as matches (format: `["mentor_id-mentee_id"]`) |
+| `manual_non_matches_json`      | String (JSON)   | No        | JSON array of pairs to exclude (format: `["mentor_id-mentee_id"]`)          |
+
+\* If files are not provided, the API will attempt to use default files from the `data/` directory.
+
+**Importance Modifiers JSON Format:**
+```json
+{
+  "gender": 1.0,
+  "academia": 1.5,
+  "languages": 0.8,
+  "age_difference": 1.0,
+  "geographic_proximity": 1.2
+}
+```
+
+All modifiers are optional and default to `1.0` if not provided. Values typically range from `0.0` to `2.0`.
+
+**Manual Matches/Non-Matches JSON Format:**
+```json
+["1-5", "2-7", "3-9"]
+```
+
+Each string follows the format `"mentor_id-mentee_id"`.
+
+**Response:**
+
+```json
+{
+  "category_scores": {
+    "gender": {
+      "1-5": {
+        "gender_score": 1.0,
+        "details": { ... }
+      },
+      ...
+    },
+    "academia": {
+      "1-5": {
+        "academic_score": 0.85,
+        "mentee_academics": { ... },
+        "mentor_academics": { ... },
+        "mentoring_synergy": { ... }
+      },
+      ...
+    },
+    "languages": {
+      "1-5": {
+        "language_score": 0.92,
+        "details": { ... }
+      },
+      ...
+    },
+    "age_difference": {
+      "1-5": {
+        "age_difference_score": 0.75,
+        "details": { ... }
+      },
+      ...
+    },
+    "geographic_proximity": {
+      "1-5": {
+        "geographic_score": 0.88,
+        "details": { ... }
+      },
+      ...
+    }
+  },
+  "final_matches": [
+    {
+      "mentor_id": "1",
+      "mentee_id": "5",
+      "global_score": 0.88,
+      "category_scores": {
+        "gender": 1.0,
+        "academia": 0.85,
+        "languages": 0.92,
+        "age_difference": 0.75,
+        "geographic_proximity": 0.88
+      },
+      "rank": 1,
+      ...
+    },
+    ...
+  ]
+}
+```
+
+**Response Fields:**
+
+- `category_scores`: Dictionary containing detailed scores for each matching category (gender, academia, languages, age_difference, geographic_proximity). Keys are in format `"mentor_id-mentee_id"`.
+- `final_matches`: List of final matched pairs with aggregated scores. Each match includes:
+  - `mentor_id`: Mentor identifier
+  - `mentee_id`: Mentee identifier
+  - `global_score`: Overall compatibility score (0.0 to 1.0, or Infinity/-Infinity for manual matches/non-matches)
+  - `category_scores`: Individual category scores
+  - `rank`: Ranking of this match (if applicable)
+
+**Example Request (cURL):**
+
+```bash
+curl -X POST "http://localhost:8000/matching" \
+  -F "mentor_application_file=@mentors_app.csv" \
+  -F "mentor_interview_file=@mentors_int.csv" \
+  -F "mentee_application_file=@mentees_app.csv" \
+  -F "mentee_interview_file=@mentees_int.csv" \
+  -F "importance_modifiers_json={\"gender\": 1.0, \"academia\": 1.5}" \
+  -F "age_max_difference=30" \
+  -F "geographic_max_distance=200" \
+  -F "manual_matches_json=[\"1-5\", \"2-7\"]" \
+  -F "manual_non_matches_json=[\"1-3\"]"
+```
+
+**Example Request (JavaScript/Fetch):**
+
+```javascript
+const formData = new FormData();
+formData.append('mentor_application_file', mentorAppFile);
+formData.append('mentor_interview_file', mentorIntFile);
+formData.append('mentee_application_file', menteeAppFile);
+formData.append('mentee_interview_file', menteeIntFile);
+formData.append('importance_modifiers_json', JSON.stringify({
+  gender: 1.0,
+  academia: 1.5,
+  languages: 0.8
+}));
+formData.append('age_max_difference', '30');
+formData.append('geographic_max_distance', '200');
+formData.append('manual_matches_json', JSON.stringify(['1-5', '2-7']));
+
+const response = await fetch('http://localhost:8000/matching', {
+  method: 'POST',
+  body: formData
+});
+
+const data = await response.json();
+```
+
+**Error Responses:**
+
+- `400 Bad Request`: 
+  - Missing required CSV files
+  - Invalid JSON format for parameters
+  - Invalid file format
+- `404 Not Found`: 
+  - Default CSV files not found in data directory
+- `500 Internal Server Error`: 
+  - Error processing files
+  - Error in matching algorithm
+  - Server-side exception
+
+**Notes:**
+
+1. **File Merging**: The API automatically merges application and interview CSVs on their ID columns (`Mentee Number` / `Mentor Number`) before processing.
+
+2. **Score Ranges**: 
+   - Normal scores: `0.0` to `1.0`
+   - Manual matches: `Infinity` (or `1000` in some contexts)
+   - Manual non-matches: `-Infinity` (or `-1000` in some contexts)
+   - Blocked pairs (exceeding thresholds): `-Infinity`
+
+3. **Key Format**: All pair keys in responses use the format `"mentor_id-mentee_id"` as strings for JSON compatibility.
+
+4. **Performance**: Matching computation can take several seconds depending on the number of mentors and mentees. The API processes all pairs sequentially.
+
+---
+
+### Interactive API Documentation
+
+FastAPI automatically generates interactive API documentation:
+
+- **Swagger UI**: `http://localhost:8000/docs`
+- **ReDoc**: `http://localhost:8000/redoc`
+
+These interfaces allow you to:
+- View all available endpoints
+- See request/response schemas
+- Test endpoints directly from the browser
+- View example requests and responses
+
+---
+
 ## AI Usage in Development
 
 This project was developed with active use of AI-assisted coding tools, specifically **Cursor** (powered by GPT-4) and **ChatGPT**. We believe in transparency about the role of AI in our development process.
